@@ -8,7 +8,19 @@ import eslintPluginPrettier from "eslint-plugin-prettier/recommended";
 import reactCompiler from "eslint-plugin-react-compiler";
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+ { 
+    ignores: [
+      '**/dist/*',
+      '**/node_modules/*',
+      '**/*.config.js',
+      '**/*.d.ts',
+      '**/coverage/*',
+      '**/build/*',
+      '**/.next/*',
+      '**/.out/*',
+      '**/public/*'
+    ]
+   },
   {
     extends: [
       js.configs.recommended,
