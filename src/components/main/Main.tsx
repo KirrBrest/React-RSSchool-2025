@@ -1,5 +1,6 @@
 import type { MainProps, MainState } from '@/types/interfaces';
 import { Component } from 'react';
+import PokemonCard from '@/components/searchcard/SearchCard';
 
 class Main extends Component<MainProps, MainState> {
   state: MainState = {
@@ -8,44 +9,64 @@ class Main extends Component<MainProps, MainState> {
     error: null,
   };
 
+  componentDidMount() {
+    this.fetchData();
+  }
+
   componentDidUpdate(prevProps: MainProps) {
+    console.log('ping2'); //11111111111111111111111
     if (prevProps.searchQuery !== this.props.searchQuery) {
+      console.log('ping1'); //1111111111111111111111111
       this.fetchData();
     }
   }
 
   fetchData() {
+    const query = this.props.searchQuery.trim().toLowerCase();
+
     this.setState({ loading: true, error: null });
-    const query = this.props.searchQuery;
-    //API вызов тут
-    // Пока что временно имитация:
-    setTimeout(() => {
-      if (query === 'error') {
-        this.setState({ error: 'Ошибка загрузки', loading: false });
-      } else {
-        this.setState({
-          results: [
-            { title: 'Элемент 1', description: 'Описание 1' },
-            { title: 'Элемент 2', description: 'Описание 2' },
-          ],
-          loading: false,
+
+    if (query) {
+      fetch(`https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(query)}`)
+        .then((res) => {
+          if (!res.ok) throw new Error('Pokemon not found');
+          return res.json();
+        })
+        .then((data) => {
+          this.setState({ results: [data], loading: false });
+        })
+        .catch((err) => {
+          this.setState({ error: err.message, loading: false });
         });
-      }
-    }, 1000);
+    } else {
+      fetch(`https://pokeapi.co/api/v2/pokemon?limit=20&offset=0`)
+        .then((res) => {
+          if (!res.ok) throw new Error('Download Error');
+          return res.json();
+        })
+        .then((data) => {
+          this.setState({ results: data.results, loading: false });
+        })
+        .catch((err) => {
+          this.setState({ error: err.message, loading: false });
+        });
+    }
   }
 
   render() {
     const { results, loading, error } = this.state;
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
+
     return (
       <div>
-        {results.map((item, index) => (
-          <div key={index}>
-            <h3>{item.title}</h3>
-            <p>{item.description}</p>
-          </div>
-        ))}
+        {results.length === 0 ? (
+          <div>No results</div>
+        ) : (
+          results.map((item, index) => (
+            <PokemonCard key={index} url={item.url} name={item.name} />
+          ))
+        )}
       </div>
     );
   }

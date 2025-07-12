@@ -7,7 +7,7 @@ export interface MainProps {
 }
 
 export interface MainState {
-  results: Array<{ title: string; description: string }>;
+  results: Array<{ name: string; url: string }>;
   loading: boolean;
   error: string | null;
 }
@@ -27,4 +27,13 @@ export interface ErrorBoundaryState {
 
 export interface ErrorBoundaryProps {
   children?: React.ReactNode;
+}
+
+export interface PokemonCardProps {
+  url: string;
+  name: string;
+}
+
+export interface PokemonCardState {
+  sprite: string | null;
 }
