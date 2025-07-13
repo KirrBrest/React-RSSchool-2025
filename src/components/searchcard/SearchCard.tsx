@@ -26,6 +26,8 @@ class PokemonCard extends Component<PokemonCardProps, PokemonCardState> {
       .then((data) => {
         if (data && data.sprites && data.sprites.front_default) {
           this.setState({ sprite: data.sprites.front_default });
+          console.log(data.sprites.front_default);
+          console.log('ping');
         } else {
           this.setState({ sprite: null });
         }
@@ -39,6 +41,8 @@ class PokemonCard extends Component<PokemonCardProps, PokemonCardState> {
   render() {
     const { name } = this.props;
     const { sprite } = this.state;
+    console.log(this.props.url);
+    console.log('ping2');
 
     return (
       <div className="card">
