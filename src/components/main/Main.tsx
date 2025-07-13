@@ -34,13 +34,17 @@ class Main extends Component<MainProps, MainState> {
           return res.json();
         })
         .then((data) => {
-          this.setState({ results: [data.species], loading: false });
+          const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${data.id}/`;
+          this.setState({
+            results: [{ name: data.name, url: pokemonUrl }],
+            loading: false,
+          });
         })
         .catch((err) => {
           this.setState({ error: err.message, loading: false });
         });
     } else {
-      fetch(`https://pokeapi.co/api/v2/pokemon?limit=10&offset=0`)
+      fetch(`https://pokeapi.co/api/v2/pokemon?limit=30&offset=0`)
         .then((res) => {
           if (!res.ok) throw new Error('Download Error');
           return res.json();
