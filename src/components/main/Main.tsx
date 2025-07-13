@@ -35,7 +35,6 @@ class Main extends Component<MainProps, MainState> {
         })
         .then((data) => {
           this.setState({ results: [data.species], loading: false });
-          console.log(data); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         })
         .catch((err) => {
           this.setState({ error: err.message, loading: false });
@@ -48,7 +47,6 @@ class Main extends Component<MainProps, MainState> {
         })
         .then((data) => {
           this.setState({ results: data.results, loading: false });
-          console.log(data.results); //!!!!!!!!!!!!!!!!!!!!
         })
         .catch((err) => {
           this.setState({ error: err.message, loading: false });

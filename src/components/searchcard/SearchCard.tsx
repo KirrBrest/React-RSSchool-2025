@@ -12,9 +12,6 @@ class PokemonCard extends Component<PokemonCardProps, PokemonCardState> {
 
   componentDidUpdate(prevProps: PokemonCardProps) {
     if (prevProps.url !== this.props.url) {
-      console.log(prevProps); //!!!!!!!!!!!!
-      console.log(this.props.url); //!!!!!!!!!!!
-      console.log('ping'); //!!!!!!!!!!!!!1
       this.loadSprite();
     }
   }

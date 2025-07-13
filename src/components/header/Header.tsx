@@ -23,7 +23,6 @@ class Header extends Component<HeaderProps, HeaderState> {
     } else {
       this.setState({ errorMsg: '' });
       this.props.onSearch(processed);
-      console.log(this.props); //!!!!!!!!!!!!
       localStorage.setItem('searchQuery', processed);
     }
   };
