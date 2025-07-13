@@ -1,5 +1,5 @@
 import type { PokemonCardProps, PokemonCardState } from '@/types/interfaces';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 class PokemonCard extends Component<PokemonCardProps, PokemonCardState> {
   state: PokemonCardState = {
@@ -7,10 +7,35 @@ class PokemonCard extends Component<PokemonCardProps, PokemonCardState> {
   };
 
   componentDidMount() {
+    this.loadSprite();
+  }
+
+  componentDidUpdate(prevProps: PokemonCardProps) {
+    if (prevProps.url !== this.props.url) {
+      console.log(prevProps); //!!!!!!!!!!!!
+      console.log(this.props.url); //!!!!!!!!!!!
+      console.log('ping'); //!!!!!!!!!!!!!1
+      this.loadSprite();
+    }
+  }
+
+  loadSprite() {
+    this.setState({ sprite: null });
     fetch(this.props.url)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
       .then((data) => {
-        this.setState({ sprite: data.sprites.front_default });
+        if (data && data.sprites && data.sprites.front_default) {
+          this.setState({ sprite: data.sprites.front_default });
+        } else {
+          this.setState({ sprite: null });
+        }
+      })
+      .catch((err) => {
+        console.error('Fetch error:', err);
+        this.setState({ sprite: null });
       });
   }
 
@@ -19,7 +44,7 @@ class PokemonCard extends Component<PokemonCardProps, PokemonCardState> {
     const { sprite } = this.state;
 
     return (
-      <div className="search-wrap">
+      <div className="card">
         <h3>{name}</h3>
         {sprite ? <img src={sprite} alt={name} /> : <div>Loading image...</div>}
       </div>

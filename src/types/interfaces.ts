@@ -18,6 +18,7 @@ export interface HeaderProps {
 
 export interface HeaderState {
   input: string;
+  errorMsg: string;
 }
 
 export interface ErrorBoundaryState {

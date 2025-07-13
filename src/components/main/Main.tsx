@@ -1,6 +1,8 @@
 import type { MainProps, MainState } from '@/types/interfaces';
 import { Component } from 'react';
 import PokemonCard from '@/components/searchcard/SearchCard';
+import './Main.css';
+import { processSearchQuery } from '@/utils/validation';
 
 class Main extends Component<MainProps, MainState> {
   state: MainState = {
@@ -14,15 +16,14 @@ class Main extends Component<MainProps, MainState> {
   }
 
   componentDidUpdate(prevProps: MainProps) {
-    console.log('ping2'); //11111111111111111111111
     if (prevProps.searchQuery !== this.props.searchQuery) {
-      console.log('ping1'); //1111111111111111111111111
       this.fetchData();
     }
   }
 
   fetchData() {
-    const query = this.props.searchQuery.trim().toLowerCase();
+    const rawQuery = this.props.searchQuery.trim().toLowerCase();
+    const query = processSearchQuery(rawQuery);
 
     this.setState({ loading: true, error: null });
 
@@ -33,19 +34,21 @@ class Main extends Component<MainProps, MainState> {
           return res.json();
         })
         .then((data) => {
-          this.setState({ results: [data], loading: false });
+          this.setState({ results: [data.species], loading: false });
+          console.log(data); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         })
         .catch((err) => {
           this.setState({ error: err.message, loading: false });
         });
     } else {
-      fetch(`https://pokeapi.co/api/v2/pokemon?limit=20&offset=0`)
+      fetch(`https://pokeapi.co/api/v2/pokemon?limit=10&offset=0`)
         .then((res) => {
           if (!res.ok) throw new Error('Download Error');
           return res.json();
         })
         .then((data) => {
           this.setState({ results: data.results, loading: false });
+          console.log(data.results); //!!!!!!!!!!!!!!!!!!!!
         })
         .catch((err) => {
           this.setState({ error: err.message, loading: false });
@@ -59,7 +62,7 @@ class Main extends Component<MainProps, MainState> {
     if (error) return <div>Error: {error}</div>;
 
     return (
-      <div>
+      <div className="cards-container">
         {results.length === 0 ? (
           <div>No results</div>
         ) : (
