@@ -46,7 +46,8 @@ class Main extends Component<MainProps, MainState> {
     } else {
       fetch(`https://pokeapi.co/api/v2/pokemon?limit=30&offset=0`)
         .then((res) => {
-          if (!res.ok) throw new Error('Download Error');
+          if (!res.ok)
+            throw new Error(`Error ${res.status}: ${res.statusText}`);
           return res.json();
         })
         .then((data) => {

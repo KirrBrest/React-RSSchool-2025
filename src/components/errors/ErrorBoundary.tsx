@@ -2,33 +2,58 @@ import type {
   ErrorBoundaryProps,
   ErrorBoundaryState,
 } from '@/types/interfaces';
-import React, { Component, type ErrorInfo } from 'react';
+import { Component, type ErrorInfo } from 'react';
+import ErrorModal from './ErrorModal';
 
-class ErrorBoundary extends Component<
-  React.PropsWithChildren<ErrorBoundaryProps>,
-  ErrorBoundaryState
-> {
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = {
     hasError: false,
     errorMessage: '',
+    errorType: '',
+    showErrorModal: false,
   };
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     console.error(error, info);
-    this.setState({ hasError: true, errorMessage: error.toString() });
+    this.setState({
+      hasError: true,
+      errorMessage: error.message,
+      errorType: 'caught',
+      errorDetails: error.stack,
+      showErrorModal: true,
+    });
   }
 
-  handleErrorButton = () => {
-    throw new Error('Test error');
+  handleRetry = () => {
+    window.location.reload();
+  };
+
+  handleTestError = () => {
+    try {
+      throw new Error('Test error');
+    } catch (err) {
+      const error = err as Error;
+      console.error('Test error:', err);
+      this.setState({
+        hasError: true,
+        errorMessage: error.message,
+        errorType: 'test',
+      });
+    }
   };
 
   render() {
     if (this.state.hasError) {
       return (
-        <div>
-          <h2>Error</h2>
-          <button onClick={this.handleErrorButton}>Show error</button>
-        </div>
+        <>
+          {this.state.showErrorModal && (
+            <ErrorModal
+              message={this.state.errorMessage}
+              details={this.state.errorDetails}
+              onRetry={this.handleRetry}
+            />
+          )}
+        </>
       );
     }
     return this.props.children;

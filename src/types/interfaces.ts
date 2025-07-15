@@ -24,10 +24,22 @@ export interface HeaderState {
 export interface ErrorBoundaryState {
   hasError: boolean;
   errorMessage: string;
+  errorType: string;
+  errorDetails?: string;
+  showErrorModal: boolean;
 }
 
 export interface ErrorBoundaryProps {
   children?: React.ReactNode;
+}
+export interface ErrorModalProps {
+  message: string;
+  details?: string;
+  onRetry: () => void;
+}
+
+export interface ErrorModalState {
+  unknown: unknown;
 }
 
 export interface PokemonCardProps {
