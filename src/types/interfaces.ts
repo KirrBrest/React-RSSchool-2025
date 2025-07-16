@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 export interface AppState {
   searchQuery: string;
 }
@@ -30,7 +32,7 @@ export interface ErrorBoundaryState {
 }
 
 export interface ErrorBoundaryProps {
-  children?: React.ReactNode;
+  children: ReactNode;
 }
 export interface ErrorModalProps {
   message: string;

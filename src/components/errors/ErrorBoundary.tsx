@@ -24,6 +24,16 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     });
   }
 
+  static getDerivedStateFromError(error: Error) {
+    return {
+      hasError: true,
+      errorMessage: error.message,
+      errorDetails: error.stack,
+      errorType: 'caught',
+      showErrorModal: true,
+    };
+  }
+
   handleRetry = () => {
     window.location.reload();
   };
