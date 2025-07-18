@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 export interface AppState {
   searchQuery: string;
+  error: boolean;
 }
 
 export interface MainProps {
