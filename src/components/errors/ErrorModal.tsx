@@ -2,10 +2,6 @@ import type { ErrorModalProps, ErrorModalState } from '@/types/interfaces';
 import { Component } from 'react';
 
 class ErrorModal extends Component<ErrorModalProps, ErrorModalState> {
-  test = () => {
-    console.log('ping');
-  };
-
   render() {
     const { message, details, onRetry } = this.props;
     return (
