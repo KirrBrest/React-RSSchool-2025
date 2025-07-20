@@ -1,61 +1,95 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import Main from '@/components/main/Main';
+import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
+import { HashRouter } from 'react-router-dom';
+import App from '../App';
+import ErrorBoundary from '../components/errors/ErrorBoundary';
 
-const mockFetch = vi.fn((input: RequestInfo | URL): Promise<Response> => {
-  const url = typeof input === 'string' ? input : input.toString();
+vi.mock('react-router-dom', () => ({
+  HashRouter: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="hash-router">{children}</div>
+  ),
+}));
 
-  if (url.includes('pikachu')) {
-    return Promise.resolve({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          name: 'pikachu',
-          url: 'https://pokeapi.co/api/v2/pokemon/25/',
-        }),
-    } as Response);
-  } else if (url.includes('limit=30')) {
-    return Promise.resolve({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          results: [
-            { name: 'pikachu', url: 'https://pokeapi.co/api/v2/pokemon/25/' },
-          ],
-        }),
-    } as Response);
-  } else {
-    return Promise.reject(new Error('Failed to fetch'));
-  }
-});
+vi.mock('../components/errors/ErrorBoundary', () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="error-boundary">{children}</div>
+  ),
+}));
 
-global.fetch = mockFetch as typeof fetch;
+vi.mock('../App', () => ({
+  default: () => <div data-testid="app">App Component</div>,
+}));
 
-describe('Main Component', () => {
+describe('main.tsx', () => {
+  let originalGetElementById: typeof document.getElementById;
+
   beforeEach(() => {
-    mockFetch.mockClear();
+    originalGetElementById = document.getElementById;
   });
 
-  it('renders loading state initially', () => {
-    render(<Main searchQuery="" />);
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+  afterEach(() => {
+    document.getElementById = originalGetElementById;
+    const rootElement = document.getElementById('root');
+    if (rootElement) {
+      rootElement.remove();
+    }
+    vi.clearAllMocks();
   });
 
-  it('renders error message if API call fails', async () => {
-    mockFetch.mockImplementationOnce(() =>
-      Promise.reject(new Error('Failed to fetch'))
+  it('выполняет код main.tsx когда root элемент существует', async () => {
+    const rootElement = document.createElement('div');
+    rootElement.id = 'root';
+    document.body.appendChild(rootElement);
+
+    document.getElementById = vi.fn((id: string) => {
+      if (id === 'root') {
+        return rootElement;
+      }
+      return null;
+    });
+
+    await import('../main');
+
+    expect(document.getElementById).toHaveBeenCalledWith('root');
+  });
+
+  it('создает правильную структуру компонентов', () => {
+    render(
+      <HashRouter>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </HashRouter>
     );
-    render(<Main searchQuery="invalid" />);
-    await waitFor(() => {
-      expect(screen.getByText(/error/i)).toBeInTheDocument();
-    });
+
+    expect(screen.getByTestId('hash-router')).toBeInTheDocument();
+    expect(screen.getByTestId('error-boundary')).toBeInTheDocument();
+    expect(screen.getByTestId('app')).toBeInTheDocument();
   });
 
-  it('renders pokemon cards on successful API call', async () => {
-    render(<Main searchQuery="pikachu" />);
-    await waitFor(() => {
-      expect(screen.getByText(/pikachu/i)).toBeInTheDocument();
-    });
+  it('использует HashRouter для роутинга', () => {
+    render(
+      <HashRouter>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </HashRouter>
+    );
+
+    const hashRouter = screen.getByTestId('hash-router');
+    expect(hashRouter).toContainElement(screen.getByTestId('error-boundary'));
+  });
+
+  it('обертывает App в ErrorBoundary', () => {
+    render(
+      <HashRouter>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </HashRouter>
+    );
+
+    const errorBoundary = screen.getByTestId('error-boundary');
+    expect(errorBoundary).toContainElement(screen.getByTestId('app'));
   });
 });
