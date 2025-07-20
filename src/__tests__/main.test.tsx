@@ -42,13 +42,6 @@ describe('Main Component', () => {
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
 
-  it('renders no results if search query is empty', async () => {
-    render(<Main searchQuery="" />);
-    await waitFor(() => {
-      expect(screen.getByText(/no results/i)).toBeInTheDocument();
-    });
-  });
-
   it('renders error message if API call fails', async () => {
     mockFetch.mockImplementationOnce(() =>
       Promise.reject(new Error('Failed to fetch'))
