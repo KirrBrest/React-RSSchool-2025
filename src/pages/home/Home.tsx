@@ -1,10 +1,10 @@
 import type { MainProps, MainState } from '@/types/interfaces';
 import { Component } from 'react';
 import PokemonCard from '@/components/searchcard/SearchCard';
-import './Main.css';
+import './Home.css';
 import { processSearchQuery } from '@/utils/validation';
 
-class Main extends Component<MainProps, MainState> {
+class Home extends Component<MainProps, MainState> {
   state: MainState = {
     results: [],
     loading: false,
@@ -78,4 +78,4 @@ class Main extends Component<MainProps, MainState> {
   }
 }
 
-export default Main;
+export default Home;
