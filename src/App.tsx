@@ -1,43 +1,21 @@
 import './App.css';
-import { Component } from 'react';
-import Header from '@/components/header/Header';
+import { Routes, Route } from 'react-router-dom';
 import Home from '@/pages/home/Home';
-import type { AppState } from './types/interfaces';
-import ErrorBoundary from './components/errors/ErrorBoundary';
+import About from '@/pages/about/About';
+import Page404 from '@/pages/page404/Page404';
+import Header from '@/components/header/Header';
 
-class App extends Component<unknown, AppState> {
-  state: AppState = {
-    searchQuery: '',
-    error: false,
-  };
-
-  setSearchQuery = (query: string) => {
-    this.setState({ searchQuery: query });
-  };
-
-  componentDidMount() {
-    const savedQuery = localStorage.getItem('searchQuery') || '';
-    if (savedQuery) {
-      this.setState({ searchQuery: savedQuery });
-    }
-  }
-
-  throwError = () => {
-    this.setState({ error: true });
-  };
-
-  render() {
-    if (this.state.error) {
-      throw new Error('This is a test error');
-    }
-    return (
-      <ErrorBoundary>
-        <Header onSearch={this.setSearchQuery} />
-        <Home searchQuery={this.state.searchQuery} />
-        <button onClick={this.throwError}>Throw Error</button>
-      </ErrorBoundary>
-    );
-  }
-}
+const App = () => {
+  return (
+    <>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="*" element={<Page404 />} />
+      </Routes>
+    </>
+  );
+};
 
 export default App;

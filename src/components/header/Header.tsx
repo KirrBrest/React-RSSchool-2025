@@ -1,58 +1,46 @@
-import type { HeaderProps, HeaderState } from '@/types/interfaces';
-import React, { Component } from 'react';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './Header.css';
-import { processSearchQuery } from '@/utils/validation';
 
-class Header extends Component<HeaderProps, HeaderState> {
-  state: HeaderState = {
-    input: '',
-    errorMsg: '',
+const Header: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleHomeClick = () => {
+    navigate('/');
   };
 
-  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ input: e.target.value });
+  const handleAboutClick = () => {
+    navigate('/about');
   };
 
-  handleSearch = () => {
-    const { input } = this.state;
-    const processed = processSearchQuery(input);
-    if (processed === null) {
-      this.setState({
-        errorMsg: 'The field must not contain spaces',
-      });
-    } else {
-      this.setState({ errorMsg: '' });
-      this.props.onSearch(processed);
-      localStorage.setItem('searchQuery', processed);
-    }
-  };
+  return (
+    <div className="header">
+      <div className="header-top">
+        <div className="header-logo">
+          <span className="pokemon-icon">⚡</span>
+          <h1>Pokemon Explorer</h1>
+        </div>
 
-  componentDidMount() {
-    const savedQuery = localStorage.getItem('searchQuery') || '';
-    this.setState({ input: savedQuery });
-  }
-
-  render() {
-    return (
-      <div className="header">
-        <input
-          name="search"
-          className="header-query-text"
-          type="text"
-          value={this.state.input}
-          onChange={(e) => this.setState({ input: e.target.value })}
-        />
-        <button className="header-query-button" onClick={this.handleSearch}>
-          Search
-        </button>
-        {this.state.errorMsg && (
-          <div style={{ color: 'red', marginTop: '5px' }}>
-            {this.state.errorMsg}
-          </div>
-        )}
+        <nav className="header-nav">
+          <button
+            onClick={handleHomeClick}
+            className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+          >
+            <span className="nav-icon">🏠</span>
+            Home
+          </button>
+          <button
+            onClick={handleAboutClick}
+            className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}
+          >
+            <span className="nav-icon">ℹ️</span>
+            About
+          </button>
+        </nav>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default Header;

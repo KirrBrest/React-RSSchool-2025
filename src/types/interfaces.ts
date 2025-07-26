@@ -53,3 +53,12 @@ export interface PokemonCardProps {
 export interface PokemonCardState {
   sprite: string | null;
 }
+
+export interface ButtonProps {
+  children: React.ReactNode;
+  onClick?: () => void;
+  className?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  variant?: 'primary' | 'secondary' | 'error';
+}

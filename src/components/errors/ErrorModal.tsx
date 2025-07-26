@@ -1,24 +1,21 @@
-import type { ErrorModalProps, ErrorModalState } from '@/types/interfaces';
-import { Component } from 'react';
+import type { ErrorModalProps } from '@/types/interfaces';
+import Button from '@/components/button/Button';
 
-class ErrorModal extends Component<ErrorModalProps, ErrorModalState> {
-  render() {
-    const { message, details, onRetry } = this.props;
-    return (
-      <div className="error-wrap">
-        <div className="error-modal">
-          <h2>ERROR</h2>
-          <p>
-            <strong>Message:</strong> {message}
-          </p>
-          {details && <pre className="error-details">{details}</pre>}
-          <button className="error-button" onClick={onRetry}>
-            Try again
-          </button>
-        </div>
+const ErrorModal = ({ message, details, onRetry }: ErrorModalProps) => {
+  return (
+    <div className="error-wrap">
+      <div className="error-modal">
+        <h2>ERROR</h2>
+        <p>
+          <strong>Message:</strong> {message}
+        </p>
+        {details && <pre className="error-details">{details}</pre>}
+        <Button className="error-button" onClick={onRetry} variant="error">
+          Try again
+        </Button>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default ErrorModal;
