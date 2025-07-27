@@ -1,52 +1,46 @@
-import type { PokemonCardProps, PokemonCardState } from '@/types/interfaces';
-import { Component } from 'react';
+import type { PokemonCardProps } from '@/types/interfaces';
+import { useState, useEffect, useCallback } from 'react';
 
-class PokemonCard extends Component<PokemonCardProps, PokemonCardState> {
-  state: PokemonCardState = {
-    sprite: null,
-  };
+const PokemonCard = ({ url, name, onSelect }: PokemonCardProps) => {
+  const [sprite, setSprite] = useState<string | null>(null);
 
-  componentDidMount() {
-    this.loadSprite();
-  }
-
-  componentDidUpdate(prevProps: PokemonCardProps) {
-    if (prevProps.url !== this.props.url) {
-      this.loadSprite();
-    }
-  }
-
-  loadSprite() {
-    this.setState({ sprite: null });
-    fetch(this.props.url)
+  const loadSprite = useCallback(() => {
+    setSprite(null);
+    fetch(url)
       .then((res) => {
         if (!res.ok) throw new Error('Network response was not ok');
         return res.json();
       })
       .then((data) => {
         if (data && data.sprites && data.sprites.front_default) {
-          this.setState({ sprite: data.sprites.front_default });
+          setSprite(data.sprites.front_default);
         } else {
-          this.setState({ sprite: null });
+          setSprite(null);
         }
       })
       .catch((err) => {
         console.error('Fetch error:', err);
-        this.setState({ sprite: null });
+        setSprite(null);
       });
-  }
+  }, [url]);
 
-  render() {
-    const { name } = this.props;
-    const { sprite } = this.state;
+  useEffect(() => {
+    loadSprite();
+  }, [loadSprite]);
 
-    return (
-      <div className="card">
-        <h3>{name}</h3>
-        {sprite ? <img src={sprite} alt={name} /> : <div>Loading image...</div>}
-      </div>
-    );
-  }
-}
+  const handleCardClick = () => {
+    const pokemonId = url.split('/').filter(Boolean).pop();
+    if (pokemonId && onSelect) {
+      onSelect(pokemonId);
+    }
+  };
+
+  return (
+    <div className="card" onClick={handleCardClick}>
+      <h3>{name}</h3>
+      {sprite ? <img src={sprite} alt={name} /> : <div>Loading image...</div>}
+    </div>
+  );
+};
 
 export default PokemonCard;

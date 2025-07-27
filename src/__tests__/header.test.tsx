@@ -1,88 +1,101 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { BrowserRouter } from 'react-router-dom';
 import Header from '@/components/header/Header';
 import { vi } from 'vitest';
 
-const localStorageMock = (() => {
-  let store: Record<string, string> = {};
+const mockNavigate = vi.fn();
+let mockLocation = { pathname: '/' };
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
   return {
-    getItem: (key: string): string | null => store[key] || null,
-    setItem: (key: string, value: string): void => {
-      store[key] = value;
-    },
-    clear: (): void => {
-      store = {};
-    },
+    ...actual,
+    useNavigate: () => mockNavigate,
+    useLocation: () => mockLocation,
   };
-})();
-Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+});
+
+const renderWithRouter = (component: React.ReactElement) => {
+  return render(<BrowserRouter>{component}</BrowserRouter>);
+};
 
 describe('Header Component', () => {
-  const onSearchMock = vi.fn();
-
   beforeEach(() => {
-    localStorage.clear();
-    onSearchMock.mockClear();
+    vi.clearAllMocks();
+    mockLocation = { pathname: '/' };
   });
 
-  it('renders search input and button', () => {
-    render(<Header onSearch={onSearchMock} />);
-    expect(screen.getByRole('textbox')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
+  it('renders Pokemon logo and title', () => {
+    renderWithRouter(<Header />);
+    expect(screen.getByText('⚡')).toBeInTheDocument();
+    expect(screen.getByText('Pokemon Explorer')).toBeInTheDocument();
   });
 
-  it('displays saved search query from localStorage on mount', () => {
-    localStorage.setItem('searchQuery', 'pikachu');
-    render(<Header onSearch={onSearchMock} />);
-    expect(screen.getByRole('textbox')).toHaveValue('pikachu');
+  it('renders navigation links', () => {
+    renderWithRouter(<Header />);
+    expect(screen.getByText('Home')).toBeInTheDocument();
+    expect(screen.getByText('About')).toBeInTheDocument();
   });
 
-  it('shows empty input if no saved term exists', () => {
-    render(<Header onSearch={onSearchMock} />);
-    expect(screen.getByRole('textbox')).toHaveValue('');
+  it('shows active state for home page', () => {
+    mockLocation = { pathname: '/' };
+    renderWithRouter(<Header />);
+    const homeButton = screen.getByText('Home').closest('button');
+    expect(homeButton).toHaveClass('active');
   });
 
-  it('updates input value when user types', () => {
-    render(<Header onSearch={onSearchMock} />);
-    const input = screen.getByRole('textbox');
-    fireEvent.change(input, { target: { value: 'charizard' } });
-    expect(input).toHaveValue('charizard');
+  it('shows active state for about page', () => {
+    mockLocation = { pathname: '/about' };
+    renderWithRouter(<Header />);
+    const aboutButton = screen.getByText('About').closest('button');
+    expect(aboutButton).toHaveClass('active');
   });
 
-  it('saves search query to localStorage and triggers callback on search', () => {
-    render(<Header onSearch={onSearchMock} />);
-    const input = screen.getByRole('textbox');
-    const button = screen.getByRole('button', { name: /search/i });
-
-    fireEvent.change(input, { target: { value: 'bulbasaur' } });
-    fireEvent.click(button);
-
-    expect(localStorage.getItem('searchQuery')).toBe('bulbasaur');
-    expect(onSearchMock).toHaveBeenCalledWith('bulbasaur');
+  it('shows no active state for other pages', () => {
+    mockLocation = { pathname: '/other' };
+    renderWithRouter(<Header />);
+    const homeButton = screen.getByText('Home').closest('button');
+    const aboutButton = screen.getByText('About').closest('button');
+    expect(homeButton).not.toHaveClass('active');
+    expect(aboutButton).not.toHaveClass('active');
   });
 
-  it('trims spaces from search query before saving', () => {
-    render(<Header onSearch={onSearchMock} />);
-    const input = screen.getByRole('textbox');
-    const button = screen.getByRole('button', { name: /search/i });
-
-    fireEvent.change(input, { target: { value: '  charmander  ' } });
-    fireEvent.click(button);
-
-    expect(localStorage.getItem('searchQuery')).toBe('charmander');
-    expect(onSearchMock).toHaveBeenCalledWith('charmander');
+  it('navigates to home page when Home button is clicked', () => {
+    renderWithRouter(<Header />);
+    const homeButton = screen.getByText('Home').closest('button');
+    if (homeButton) {
+      fireEvent.click(homeButton);
+      expect(mockNavigate).toHaveBeenCalledWith('/');
+    }
   });
 
-  it('shows error message if search query contains spaces', () => {
-    render(<Header onSearch={onSearchMock} />);
-    const input = screen.getByRole('textbox');
-    const button = screen.getByRole('button', { name: /search/i });
+  it('navigates to about page when About button is clicked', () => {
+    renderWithRouter(<Header />);
+    const aboutButton = screen.getByText('About').closest('button');
+    if (aboutButton) {
+      fireEvent.click(aboutButton);
+      expect(mockNavigate).toHaveBeenCalledWith('/about');
+    }
+  });
 
-    fireEvent.change(input, { target: { value: 'pokemon with space' } });
-    fireEvent.click(button);
+  it('has correct navigation icons', () => {
+    renderWithRouter(<Header />);
+    expect(screen.getByText('🏠')).toBeInTheDocument();
+    expect(screen.getByText('ℹ️')).toBeInTheDocument();
+  });
 
-    expect(
-      screen.getByText(/The field must not contain spaces/i)
-    ).toBeInTheDocument();
+  it('renders header with correct structure', () => {
+    renderWithRouter(<Header />);
+    const header = screen.getByText('Pokemon Explorer').closest('.header');
+    expect(header).toBeInTheDocument();
+  });
+
+  it('has correct CSS classes for navigation buttons', () => {
+    renderWithRouter(<Header />);
+    const homeButton = screen.getByText('Home').closest('button');
+    const aboutButton = screen.getByText('About').closest('button');
+    expect(homeButton).toHaveClass('nav-link');
+    expect(aboutButton).toHaveClass('nav-link');
   });
 });

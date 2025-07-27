@@ -1,7 +1,28 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import App from '../App';
 import ErrorBoundary from '../components/errors/ErrorBoundary';
 import { vi } from 'vitest';
+
+const mockNavigate = vi.fn();
+const mockLocation = { pathname: '/' };
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+    useLocation: () => mockLocation,
+  };
+});
+
+const renderWithRouter = (component: React.ReactElement) => {
+  return render(
+    <BrowserRouter>
+      <ErrorBoundary>{component}</ErrorBoundary>
+    </BrowserRouter>
+  );
+};
 
 const ThrowError = () => {
   throw new Error('Test error');
@@ -10,6 +31,7 @@ const ThrowError = () => {
 describe('App', () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.clearAllMocks();
 
     vi.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
@@ -21,130 +43,41 @@ describe('App', () => {
     vi.restoreAllMocks();
   });
 
-  it('рендерит инпут поиска, кнопку поиска, кнопку Throw Error и контейнер карточек', async () => {
-    render(<App />);
-    expect(screen.getByRole('textbox')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: /throw error/i })
-    ).toBeInTheDocument();
-
-    expect(await screen.findByText(/no results/i)).toBeInTheDocument();
+  it('рендерит Header компонент', () => {
+    renderWithRouter(<App />);
+    expect(screen.getByText('Pokemon Explorer')).toBeInTheDocument();
+    expect(screen.getByText('Home')).toBeInTheDocument();
+    expect(screen.getByText('About')).toBeInTheDocument();
   });
 
-  it('кнопка Throw Error вызывает ошибку при клике', () => {
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-    render(<App />);
-
-    const errorButton = screen.getByRole('button', { name: /throw error/i });
-    expect(errorButton).toBeInTheDocument();
-
-    expect(() => {
-      fireEvent.click(errorButton);
-    }).toThrow('This is a test error');
-
-    error.mockRestore();
+  it('рендерит навигационные ссылки в Header', () => {
+    renderWithRouter(<App />);
+    const homeLink = screen.getByText('Home');
+    const aboutLink = screen.getByText('About');
+    expect(homeLink).toBeInTheDocument();
+    expect(aboutLink).toBeInTheDocument();
   });
 
-  it('setSearchQuery обновляет состояние и передает в Main', async () => {
-    const mockFetch = vi
-      .spyOn(global, 'fetch')
-      .mockImplementation((url: RequestInfo | URL) => {
-        const urlStr =
-          typeof url === 'string'
-            ? url
-            : url instanceof URL
-              ? url.toString()
-              : ((url as Request)?.url ?? '');
-        if (urlStr.includes('pikachu')) {
-          return Promise.resolve({
-            ok: true,
-            json: async () => ({
-              name: 'pikachu',
-              id: 25,
-              sprites: { front_default: 'test-url' },
-            }),
-          } as Response);
-        }
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ results: [] }),
-        } as Response);
-      });
-
-    render(<App />);
-
-    const searchInput = screen.getByRole('textbox');
-    const searchButton = screen.getByRole('button', { name: /search/i });
-
-    fireEvent.change(searchInput, { target: { value: 'pikachu' } });
-    fireEvent.click(searchButton);
-
-    expect(await screen.findByText('pikachu')).toBeInTheDocument();
-
-    mockFetch.mockRestore();
+  it('показывает активное состояние для текущей страницы', () => {
+    renderWithRouter(<App />);
+    const homeLink = screen.getByText('Home').closest('button');
+    expect(homeLink).toHaveClass('active');
   });
 
-  it('throwError устанавливает состояние error в true', () => {
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-    render(<App />);
-
-    const errorButton = screen.getByRole('button', { name: /throw error/i });
-
-    expect(() => {
-      fireEvent.click(errorButton);
-    }).toThrow('This is a test error');
-
-    error.mockRestore();
+  it('рендерит главную страницу по умолчанию', () => {
+    renderWithRouter(<App />);
+    expect(screen.getByText('Pokemon Explorer')).toBeInTheDocument();
   });
 
-  it('componentDidMount загружает searchQuery из localStorage', async () => {
-    localStorage.setItem('searchQuery', 'charizard');
-
-    const mockFetch = vi
-      .spyOn(global, 'fetch')
-      .mockImplementation((url: RequestInfo | URL) => {
-        const urlStr =
-          typeof url === 'string'
-            ? url
-            : url instanceof URL
-              ? url.toString()
-              : ((url as Request)?.url ?? '');
-        if (urlStr.includes('charizard')) {
-          return Promise.resolve({
-            ok: true,
-            json: async () => ({
-              name: 'charizard',
-              id: 6,
-              sprites: { front_default: 'test-url' },
-            }),
-          } as Response);
-        }
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ results: [] }),
-        } as Response);
-      });
-
-    render(<App />);
-
-    const searchInput = screen.getByRole('textbox') as HTMLInputElement;
-    expect(searchInput.value).toBe('charizard');
-
-    expect(await screen.findByText('charizard')).toBeInTheDocument();
-
-    mockFetch.mockRestore();
-  });
-
-  it('ErrorBoundary ловит ошибку в простом компоненте', () => {
+  it('ErrorBoundary ловит ошибку в компоненте', () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     render(
-      <ErrorBoundary>
-        <ThrowError />
-      </ErrorBoundary>
+      <BrowserRouter>
+        <ErrorBoundary>
+          <ThrowError />
+        </ErrorBoundary>
+      </BrowserRouter>
     );
 
     expect(screen.getByRole('heading', { name: /error/i })).toBeInTheDocument();
@@ -153,5 +86,18 @@ describe('App', () => {
       screen.getByRole('button', { name: /try again/i })
     ).toBeInTheDocument();
     error.mockRestore();
+  });
+
+  it('Header содержит Pokemon логотип', () => {
+    renderWithRouter(<App />);
+    const logo = screen.getByText('⚡');
+    expect(logo).toBeInTheDocument();
+  });
+
+  it('Header содержит правильный заголовок', () => {
+    renderWithRouter(<App />);
+    const title = screen.getByText('Pokemon Explorer');
+    expect(title).toBeInTheDocument();
+    expect(title.tagName).toBe('H1');
   });
 });
