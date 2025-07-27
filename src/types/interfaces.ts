@@ -15,11 +15,11 @@ export interface MainState {
   error: string | null;
 }
 
-export interface HeaderProps {
+export interface SearchProps {
   onSearch: (query: string) => void;
 }
 
-export interface HeaderState {
+export interface SearchState {
   input: string;
   errorMsg: string;
 }
@@ -48,6 +48,7 @@ export interface ErrorModalState {
 export interface PokemonCardProps {
   url: string;
   name: string;
+  onSelect?: (pokemonId: string) => void;
 }
 
 export interface PokemonCardState {
@@ -68,4 +69,9 @@ export interface PokemonListResponse {
   next: string | null;
   previous: string | null;
   results: Array<{ name: string; url: string }>;
+}
+
+export interface PokemonDetailsProps {
+  pokemonId: string;
+  onClose: () => void;
 }

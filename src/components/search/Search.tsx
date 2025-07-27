@@ -1,10 +1,10 @@
-import type { HeaderProps } from '@/types/interfaces';
+import type { SearchProps } from '@/types/interfaces';
 import React, { useState, useEffect } from 'react';
 import './Search.css';
 import processSearchQuery from '@/utils/validation';
 import Button from '@/components/button/Button';
 
-const Header = ({ onSearch }: HeaderProps) => {
+const Search = ({ onSearch }: SearchProps) => {
   const [input, setInput] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -47,4 +47,4 @@ const Header = ({ onSearch }: HeaderProps) => {
   );
 };
 
-export default Header;
+export default Search;

@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import Header from '@/components/search/Search';
+import Search from '@/components/search/Search';
 import Searchresult from '@/components/searchresult/Searchresult';
 import ErrorBoundary from '@/components/errors/ErrorBoundary';
 import useLocalStorage from '@/utils/useLocalStorage';
 import Button from '@/components/button/Button';
+import './Home.css';
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useLocalStorage('searchQuery', '');
@@ -23,11 +24,17 @@ const Home = () => {
 
   return (
     <ErrorBoundary>
-      <Header onSearch={handleSearchQuery} />
-      <Searchresult searchQuery={searchQuery} />
-      <Button onClick={throwError} variant="error">
-        Throw Error
-      </Button>
+      <div className="home-container">
+        <div className="home-content">
+          <Search onSearch={handleSearchQuery} />
+          <div className="search-section">
+            <Searchresult searchQuery={searchQuery} />
+          </div>
+          <Button onClick={throwError} variant="error">
+            Throw Error
+          </Button>
+        </div>
+      </div>
     </ErrorBoundary>
   );
 };

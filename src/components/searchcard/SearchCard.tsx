@@ -1,7 +1,7 @@
 import type { PokemonCardProps } from '@/types/interfaces';
 import { useState, useEffect, useCallback } from 'react';
 
-const PokemonCard = ({ url, name }: PokemonCardProps) => {
+const PokemonCard = ({ url, name, onSelect }: PokemonCardProps) => {
   const [sprite, setSprite] = useState<string | null>(null);
 
   const loadSprite = useCallback(() => {
@@ -28,8 +28,15 @@ const PokemonCard = ({ url, name }: PokemonCardProps) => {
     loadSprite();
   }, [loadSprite]);
 
+  const handleCardClick = () => {
+    const pokemonId = url.split('/').filter(Boolean).pop();
+    if (pokemonId && onSelect) {
+      onSelect(pokemonId);
+    }
+  };
+
   return (
-    <div className="card">
+    <div className="card" onClick={handleCardClick}>
       <h3>{name}</h3>
       {sprite ? <img src={sprite} alt={name} /> : <div>Loading image...</div>}
     </div>
