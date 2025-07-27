@@ -2,5 +2,140 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: 32px 24px;
+  padding: 24px 0;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.cards-container > * {
+  flex: 1 1 calc(25% - 24px);
+  max-width: calc(25% - 24px);
+  min-width: 220px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1100px) {
+  .cards-container > * {
+    flex-basis: calc(50% - 24px);
+    max-width: calc(50% - 24px);
+  }
+}
+
+@media (max-width: 700px) {
+  .cards-container > * {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+}
+
+.pagination {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 32px 0 0 0;
+  flex-wrap: nowrap;
+  /* Убираем скролл */
+  overflow-x: visible;
+  min-height: 48px;
+}
+
+.pagination-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  margin: 0 auto;
+}
+
+.pagination::-webkit-scrollbar {
+  height: 6px;
+}
+.pagination::-webkit-scrollbar-thumb {
+  background: #4ecdc4;
+  border-radius: 4px;
+}
+.pagination::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
+
+.pagination button {
+  background: #fff;
+  border: 1px solid #4ecdc4;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border 0.2s;
+  min-width: 36px;
+  white-space: nowrap;
+}
+
+.pagination button.active {
+  background: linear-gradient(90deg, #4ecdc4, #45b7d1);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border: 2px solid #45b7d1;
+  box-shadow: 0 2px 8px rgba(76, 205, 196, 0.15);
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-arrow {
+  font-size: 1.3rem;
+  background: none;
+  border: none;
+  color: #4ecdc4;
+  padding: 0 8px;
+  min-width: 28px;
+}
+
+.pagination-ellipsis {
+  color: #aaa;
+  font-size: 1.1rem;
+  padding: 0 4px;
+  user-select: none;
+}
+
+@media (max-width: 900px) {
+  .pagination button,
+  .pagination button.active {
+    font-size: 1rem;
+    padding: 6px 10px;
+    min-width: 28px;
+  }
+  .pagination-arrow {
+    font-size: 1.1rem;
+    min-width: 22px;
+  }
+}
+
+/* Крупные карточки */
+.cards-container .pokemon-card {
+  min-height: 200px;
+  font-size: 1.1rem;
+  padding: 20px 10px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(76, 205, 196, 0.08);
+  background: #fff;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.cards-container .pokemon-card:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow: 0 8px 32px rgba(76, 205, 196, 0.18);
 }
