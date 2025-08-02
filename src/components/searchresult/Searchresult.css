@@ -1,40 +1,7 @@
-.searchresult-container {
-  display: flex;
+.pokemon-list-container {
   width: 100%;
   height: 100%;
   transition: all 0.3s ease;
-}
-
-.cards-section {
-  flex: 1;
-  transition: all 0.3s ease;
-  overflow-y: auto;
-}
-
-.searchresult-container.has-details .cards-section {
-  flex: 0 0 66.666%;
-  max-width: 66.666%;
-}
-
-.details-section {
-  flex: 0 0 33.333%;
-  max-width: 33.333%;
-  height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-left: 3px solid #4ecdc4;
-  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
-  overflow-y: auto;
-  animation: slideIn 0.3s ease-out;
-  position: relative;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
 }
 
 .cards-container {
@@ -223,7 +190,9 @@
   transform: translateY(-1px) scale(1.02);
 }
 
-.cards-container > div:not(.pagination) {
+.loading,
+.error,
+.no-results {
   width: 100%;
   text-align: center;
   padding: 20px 10px;
@@ -231,61 +200,15 @@
   color: #666;
 }
 
-.cards-container > div:not(.pagination):empty::before {
-  content: 'No results found';
-  display: block;
+.loading {
+  color: #4ecdc4;
+}
+
+.error {
+  color: #e74c3c;
+}
+
+.no-results {
   color: #999;
   font-style: italic;
-}
-
-@media (max-width: 1024px) {
-  .searchresult-container.has-details .cards-section {
-    flex: 0 0 60%;
-    max-width: 60%;
-  }
-
-  .details-section {
-    flex: 0 0 40%;
-    max-width: 40%;
-  }
-}
-
-@media (max-width: 768px) {
-  .searchresult-container {
-    flex-direction: column;
-  }
-
-  .searchresult-container.has-details .cards-section {
-    flex: 0 0 100%;
-    max-width: 100%;
-    display: none;
-  }
-
-  .details-section {
-    flex: 0 0 100%;
-    max-width: 100%;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1000;
-    animation: slideUp 0.3s ease-out;
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-    }
-    to {
-      transform: translateY(0);
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .details-section {
-    animation: slideUp 0.3s ease-out;
-  }
 }

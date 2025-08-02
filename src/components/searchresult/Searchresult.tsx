@@ -1,8 +1,7 @@
 import type { MainProps } from '@/types/interfaces';
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import PokemonCard from '@/components/searchcard/SearchCard';
-import PokemonDetails from '@/components/pokemon-details/PokemonDetails';
 import './Searchresult.css';
 import processSearchQuery from '@/utils/validation';
 import { getPokemonList } from '@/api/pokemonApi';
@@ -23,7 +22,7 @@ const Searchresult = ({ searchQuery }: MainProps) => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page')) || 1;
-  const detailsId = searchParams.get('details');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,22 +76,17 @@ const Searchresult = ({ searchQuery }: MainProps) => {
 
   const handlePokemonSelect = (pokemonId: string) => {
     const currentParams = new URLSearchParams(searchParams);
-    currentParams.set('details', pokemonId);
-    setSearchParams(currentParams);
-  };
-
-  const handleCloseDetails = () => {
-    const currentParams = new URLSearchParams(searchParams);
-    currentParams.delete('details');
-    setSearchParams(currentParams);
+    const queryString = currentParams.toString();
+    const targetPath = queryString
+      ? `/pokemon/${pokemonId}?${queryString}`
+      : `/pokemon/${pokemonId}`;
+    navigate(targetPath);
   };
 
   const totalPages = Math.ceil(count / PAGE_SIZE);
   const handlePageChange = (newPage: number) => {
     const currentParams = new URLSearchParams(searchParams);
     currentParams.set('page', String(newPage));
-
-    currentParams.delete('details');
     setSearchParams(currentParams);
   };
 
@@ -181,49 +175,41 @@ const Searchresult = ({ searchQuery }: MainProps) => {
     );
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div className="loading">Loading...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
 
   return (
-    <div className={`searchresult-container ${detailsId ? 'has-details' : ''}`}>
-      <div className="cards-section">
-        <div className="cards-container">
-          {searchMode ? (
-            searchResult.length === 0 ? (
-              <div>No results</div>
-            ) : (
-              searchResult.map((item, index) => (
-                <PokemonCard
-                  key={index}
-                  url={item.url}
-                  name={item.name}
-                  onSelect={handlePokemonSelect}
-                />
-              ))
-            )
-          ) : results.length === 0 ? (
-            <div>No results</div>
+    <div className="pokemon-list-container">
+      <div className="cards-container">
+        {searchMode ? (
+          searchResult.length === 0 ? (
+            <div className="no-results">No results</div>
           ) : (
-            <>
-              {results.map((item, index) => (
-                <PokemonCard
-                  key={index}
-                  url={item.url}
-                  name={item.name}
-                  onSelect={handlePokemonSelect}
-                />
-              ))}
-              {renderPagination()}
-            </>
-          )}
-        </div>
+            searchResult.map((item, index) => (
+              <PokemonCard
+                key={index}
+                url={item.url}
+                name={item.name}
+                onSelect={handlePokemonSelect}
+              />
+            ))
+          )
+        ) : results.length === 0 ? (
+          <div className="no-results">No results</div>
+        ) : (
+          <>
+            {results.map((item, index) => (
+              <PokemonCard
+                key={index}
+                url={item.url}
+                name={item.name}
+                onSelect={handlePokemonSelect}
+              />
+            ))}
+            {renderPagination()}
+          </>
+        )}
       </div>
-
-      {detailsId && (
-        <div className="details-section">
-          <PokemonDetails pokemonId={detailsId} onClose={handleCloseDetails} />
-        </div>
-      )}
     </div>
   );
 };

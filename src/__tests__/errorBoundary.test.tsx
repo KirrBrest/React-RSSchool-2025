@@ -76,7 +76,7 @@ describe('ErrorBoundary', () => {
     expect(retryButton).toBeInTheDocument();
   });
 
-  it('вызывает handleTestError и устанавливает состояние', () => {
+  it('рендерит children когда нет ошибок', () => {
     render(
       <ErrorBoundary>
         <div>Normal content</div>

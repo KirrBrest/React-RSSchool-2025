@@ -38,20 +38,6 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     window.location.reload();
   };
 
-  handleTestError = () => {
-    try {
-      throw new Error('Test error');
-    } catch (err) {
-      const error = err as Error;
-      console.error('Test error:', err);
-      this.setState({
-        hasError: true,
-        errorMessage: error.message,
-        errorType: 'test',
-      });
-    }
-  };
-
   render() {
     if (this.state.hasError) {
       return (

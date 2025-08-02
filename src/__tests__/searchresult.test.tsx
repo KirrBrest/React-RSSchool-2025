@@ -1,11 +1,12 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import Searchresult from '@/components/searchresult/Searchresult';
 import type { Mock } from 'vitest';
 
 vi.mock('react-router-dom', () => ({
   useSearchParams: vi.fn(),
+  useNavigate: vi.fn(),
 }));
 
 vi.mock('@/api/pokemonApi', () => ({
@@ -21,7 +22,9 @@ vi.mock('@/components/searchcard/SearchCard', () => ({
 }));
 
 const mockUseSearchParams = useSearchParams as unknown as Mock;
+const mockUseNavigate = useNavigate as unknown as Mock;
 const mockSetSearchParams = vi.fn();
+const mockNavigate = vi.fn();
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -29,9 +32,10 @@ beforeEach(() => {
     new URLSearchParams('?page=1'),
     mockSetSearchParams,
   ]);
+  mockUseNavigate.mockReturnValue(mockNavigate);
 });
 
-describe('Поиск по имени Pokemon', () => {
+describe('Поиск по имени Покемона', () => {
   it('отображает результат поиска по имени', async () => {
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
@@ -57,7 +61,7 @@ describe('Поиск по имени Pokemon', () => {
     });
   });
 
-  it('отображает "No results" при пустом результате поиска', async () => {
+  it('отображает "Нет результатов" при пустом результате поиска', async () => {
     global.fetch = vi
       .fn()
       .mockRejectedValueOnce(new Error('Pokemon not found'));
@@ -109,8 +113,8 @@ describe('Поиск по имени Pokemon', () => {
   });
 });
 
-describe('Отображение списка Pokemon', () => {
-  it('отображает список Pokemon при пустом запросе', async () => {
+describe('Отображение списка Покемонов', () => {
+  it('отображает список Покемонов при пустом запросе', async () => {
     const { getPokemonList } = await import('@/api/pokemonApi');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
@@ -141,7 +145,7 @@ describe('Отображение списка Pokemon', () => {
     });
   });
 
-  it('отображает "No results" при пустом списке', async () => {
+  it('отображает "Нет результатов" при пустом списке', async () => {
     const { getPokemonList } = await import('@/api/pokemonApi');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 0,
@@ -280,7 +284,7 @@ describe('Пагинация', () => {
     });
   });
 
-  it('отображает кнопки пагинации с правильными disabled состояниями', async () => {
+  it('отображает кнопки пагинации с правильными отключенными состояниями', async () => {
     mockUseSearchParams.mockReturnValue([
       new URLSearchParams('?page=1'),
       mockSetSearchParams,
@@ -522,29 +526,6 @@ describe('Пагинация', () => {
     });
   });
 
-  it('обрабатывает закрытие деталей покемона', async () => {
-    mockUseSearchParams.mockReturnValue([
-      new URLSearchParams('?page=1&details=25'),
-      mockSetSearchParams,
-    ]);
-
-    const { getPokemonList } = await import('@/api/pokemonApi');
-    vi.mocked(getPokemonList).mockResolvedValueOnce({
-      count: 1281,
-      next: 'https://pokeapi.co/api/v2/pokemon?offset=16&limit=16',
-      previous: null,
-      results: [
-        { name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon/1/' },
-      ],
-    });
-
-    render(<Searchresult searchQuery="" />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Error')).toBeInTheDocument();
-    });
-  });
-
   it('отображает "No results" при пустом результате поиска', async () => {
     const { getPokemonList } = await import('@/api/pokemonApi');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
@@ -605,7 +586,7 @@ describe('Обработка URL параметров', () => {
     render(<Searchresult searchQuery="" />);
 
     await waitFor(() => {
-      expect(getPokemonList).toHaveBeenCalledWith(16, 32); // (3-1) * 16 = 32
+      expect(getPokemonList).toHaveBeenCalledWith(16, 32);
     });
   });
 
