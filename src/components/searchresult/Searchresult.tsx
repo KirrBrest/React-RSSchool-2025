@@ -1,6 +1,6 @@
 import type { MainProps } from '@/types/interfaces';
 import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import PokemonCard from '@/components/searchcard/SearchCard';
 import './Searchresult.css';
 import processSearchQuery from '@/utils/validation';
@@ -22,7 +22,6 @@ const Searchresult = ({ searchQuery }: MainProps) => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page')) || 1;
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,17 +75,15 @@ const Searchresult = ({ searchQuery }: MainProps) => {
 
   const handlePokemonSelect = (pokemonId: string) => {
     const currentParams = new URLSearchParams(searchParams);
-    const queryString = currentParams.toString();
-    const targetPath = queryString
-      ? `/pokemon/${pokemonId}?${queryString}`
-      : `/pokemon/${pokemonId}`;
-    navigate(targetPath);
+    currentParams.set('details', pokemonId);
+    setSearchParams(currentParams);
   };
 
   const totalPages = Math.ceil(count / PAGE_SIZE);
   const handlePageChange = (newPage: number) => {
     const currentParams = new URLSearchParams(searchParams);
     currentParams.set('page', String(newPage));
+    // Сохраняем details при смене страницы
     setSearchParams(currentParams);
   };
 
@@ -179,38 +176,40 @@ const Searchresult = ({ searchQuery }: MainProps) => {
   if (error) return <div className="error">Error: {error}</div>;
 
   return (
-    <div className="pokemon-list-container">
-      <div className="cards-container">
-        {searchMode ? (
-          searchResult.length === 0 ? (
+    <>
+      <div className="pokemon-list-container">
+        <div className="cards-container">
+          {searchMode ? (
+            searchResult.length === 0 ? (
+              <div className="no-results">No results</div>
+            ) : (
+              searchResult.map((item, index) => (
+                <PokemonCard
+                  key={index}
+                  url={item.url}
+                  name={item.name}
+                  onSelect={handlePokemonSelect}
+                />
+              ))
+            )
+          ) : results.length === 0 ? (
             <div className="no-results">No results</div>
           ) : (
-            searchResult.map((item, index) => (
-              <PokemonCard
-                key={index}
-                url={item.url}
-                name={item.name}
-                onSelect={handlePokemonSelect}
-              />
-            ))
-          )
-        ) : results.length === 0 ? (
-          <div className="no-results">No results</div>
-        ) : (
-          <>
-            {results.map((item, index) => (
-              <PokemonCard
-                key={index}
-                url={item.url}
-                name={item.name}
-                onSelect={handlePokemonSelect}
-              />
-            ))}
-            {renderPagination()}
-          </>
-        )}
+            <>
+              {results.map((item, index) => (
+                <PokemonCard
+                  key={index}
+                  url={item.url}
+                  name={item.name}
+                  onSelect={handlePokemonSelect}
+                />
+              ))}
+              {renderPagination()}
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

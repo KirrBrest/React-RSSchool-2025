@@ -43,6 +43,18 @@
   position: relative;
 }
 
+.pokemon-details-section:empty {
+  display: none;
+}
+
+.pokemon-details-section:not(:has(*)) {
+  display: none;
+}
+
+.pokemon-details-section.hidden {
+  display: none;
+}
+
 @keyframes slideIn {
   from {
     transform: translateX(100%);

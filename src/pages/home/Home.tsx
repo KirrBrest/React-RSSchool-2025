@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useSearchParams } from 'react-router-dom';
 import Search from '@/components/search/Search';
 import Searchresult from '@/components/searchresult/Searchresult';
 import ErrorBoundary from '@/components/errors/ErrorBoundary';
@@ -10,8 +10,10 @@ import './Home.css';
 const Home = () => {
   const [searchQuery, setSearchQuery] = useLocalStorage('searchQuery', '');
   const [error, setError] = useState(false);
-  const location = useLocation();
-  const isPokemonDetailsOpen = location.pathname.includes('/pokemon/');
+  const [searchParams] = useSearchParams();
+
+  const detailsId = searchParams.get('details');
+  const isPokemonDetailsOpen = detailsId;
 
   const handleSearchQuery = (query: string) => {
     setSearchQuery(query);
@@ -38,11 +40,13 @@ const Home = () => {
             >
               <Searchresult searchQuery={searchQuery} />
             </div>
-            {isPokemonDetailsOpen && (
-              <div className="pokemon-details-section">
-                <Outlet />
-              </div>
-            )}
+            <div
+              className={`pokemon-details-section ${
+                !isPokemonDetailsOpen ? 'hidden' : ''
+              }`}
+            >
+              <Outlet />
+            </div>
           </div>
           <Button onClick={throwError} variant="error">
             Throw Error

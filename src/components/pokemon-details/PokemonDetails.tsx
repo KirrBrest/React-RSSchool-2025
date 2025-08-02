@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './PokemonDetails.css';
 import type { PokemonDetailsProps, PokemonData } from '@/types/interfaces';
 
 const PokemonDetails: React.FC<PokemonDetailsProps> = (props) => {
-  const params = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const pokemonId = props.pokemonId || params.pokemonId;
+  const pokemonId = props.pokemonId;
 
   const handleClose = () => {
     const searchParams = new URLSearchParams(location.search);
+    searchParams.delete('details');
     const currentPath = searchParams.toString()
       ? `/?${searchParams.toString()}`
       : '/';
