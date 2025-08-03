@@ -1,4 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  afterAll,
+} from 'vitest';
 import { createPokemonCSV } from '@/utils/csvExport';
 import type { Pokemon } from '@/types/interfaces';
 
@@ -11,6 +19,14 @@ describe('csvExport', () => {
       writable: true,
     });
 
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterAll(() => {
     vi.clearAllMocks();
   });
 

@@ -1,5 +1,11 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  cleanup,
+} from '@testing-library/react';
+import { vi, afterEach, afterAll } from 'vitest';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import PokemonDetails from '@/components/pokemon-details/PokemonDetails';
 
@@ -27,6 +33,16 @@ describe('PokemonDetails', () => {
     vi.mocked(useParams).mockReturnValue({ pokemonId: undefined });
     vi.mocked(useNavigate).mockReturnValue(mockNavigate);
     vi.mocked(useLocation).mockReturnValue(mockLocation);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    cleanup(); // Очистка DOM
+  });
+
+  afterAll(() => {
+    vi.clearAllMocks();
+    cleanup(); // Очистка DOM
   });
 
   it('рендерит компонент с переданным pokemonId', () => {

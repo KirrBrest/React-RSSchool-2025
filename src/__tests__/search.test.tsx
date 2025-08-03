@@ -1,6 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import Search from '@/components/search/Search';
-import { vi } from 'vitest';
+import { vi, afterEach, afterAll } from 'vitest';
 
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
@@ -22,6 +22,18 @@ describe('Search Component', () => {
   beforeEach(() => {
     localStorage.clear();
     onSearchMock.mockClear();
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    onSearchMock.mockClear();
+    cleanup();
+  });
+
+  afterAll(() => {
+    localStorage.clear();
+    onSearchMock.mockClear();
+    cleanup();
   });
 
   it('отображает поле поиска и кнопку', () => {

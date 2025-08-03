@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach, afterAll } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { HashRouter } from 'react-router-dom';
 import PokemonDetailsRoute from '@/components/pokemon-details/PokemonDetailsRoute';
@@ -21,6 +21,14 @@ vi.mock('react-router-dom', async () => {
 });
 
 describe('PokemonDetailsRoute', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.clearAllMocks();
+  });
+
   it('рендерит PokemonDetails когда detailsId присутствует', () => {
     mockUseSearchParams.mockReturnValue([
       new URLSearchParams('?details=25'),

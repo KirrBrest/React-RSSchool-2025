@@ -1,5 +1,13 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  afterAll,
+} from 'vitest';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 
 const mockLocalStorage = {
@@ -30,6 +38,20 @@ describe('ThemeContext', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     document.documentElement.removeAttribute('data-theme');
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.clear();
+    cleanup();
+  });
+
+  afterAll(() => {
+    vi.clearAllMocks();
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.clear();
+    cleanup();
   });
 
   it('предоставляет светлую тему по умолчанию', () => {

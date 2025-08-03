@@ -1,6 +1,6 @@
 import { HashRouter } from 'react-router-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach, afterAll } from 'vitest';
 import Page404 from '../pages/page404/Page404';
 
 const mockNavigate = vi.fn();
@@ -20,6 +20,16 @@ const renderWithRouter = (component: React.ReactElement) => {
 describe('Page404', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    cleanup(); // Очистка DOM
+  });
+
+  afterAll(() => {
+    vi.clearAllMocks();
+    cleanup(); // Очистка DOM
   });
 
   it('рендерит заголовок 404', () => {

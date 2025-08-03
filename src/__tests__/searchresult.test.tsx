@@ -1,5 +1,11 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  cleanup,
+} from '@testing-library/react';
+import { vi, afterEach, afterAll } from 'vitest';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import Searchresult from '@/components/searchresult/Searchresult';
 import type { Mock } from 'vitest';
@@ -33,6 +39,16 @@ beforeEach(() => {
     mockSetSearchParams,
   ]);
   mockUseNavigate.mockReturnValue(mockNavigate);
+});
+
+afterEach(() => {
+  vi.clearAllMocks();
+  cleanup();
+});
+
+afterAll(() => {
+  vi.clearAllMocks();
+  cleanup();
 });
 
 describe('Поиск по имени Покемона', () => {

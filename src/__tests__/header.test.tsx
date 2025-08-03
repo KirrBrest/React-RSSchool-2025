@@ -1,6 +1,14 @@
 import { HashRouter } from 'react-router-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  afterAll,
+} from 'vitest';
 import Header from '@/components/header/Header';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
@@ -28,6 +36,18 @@ describe('Header', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockLocalStorage.getItem.mockReturnValue('light');
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    cleanup();
+  });
+
+  afterAll(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    cleanup();
   });
 
   it('рендерит логотип Pokemon Explorer', () => {

@@ -1,10 +1,18 @@
-import { vi } from 'vitest';
+import { vi, afterEach, afterAll } from 'vitest';
 import { getPokemonList } from '@/api/pokemonApi';
 
 global.fetch = vi.fn();
 
 describe('pokemonApi', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterAll(() => {
     vi.clearAllMocks();
   });
 

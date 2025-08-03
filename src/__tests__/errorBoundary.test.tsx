@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, afterAll } from 'vitest';
 import ErrorBoundary from '../components/errors/ErrorBoundary';
 import ErrorModal from '../components/errors/ErrorModal';
 
@@ -19,6 +19,10 @@ describe('ErrorBoundary', () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  afterAll(() => {
     vi.restoreAllMocks();
   });
 

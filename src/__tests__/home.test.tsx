@@ -1,5 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  afterAll,
+} from 'vitest';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import pokemonReducer from '@/store/pokemonSlice';
@@ -31,22 +45,37 @@ describe('Home', () => {
         getItem: vi.fn(),
         setItem: vi.fn(),
         removeItem: vi.fn(),
+        clear: vi.fn(),
       },
       writable: true,
     });
+    cleanup();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    cleanup();
+  });
+
+  afterAll(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    cleanup();
   });
 
   const renderWithProviders = (
     initialState = { pokemon: { selectedPokemons: [] } }
   ) => {
     const store = createTestStore(initialState);
-    return render(
+    const result = render(
       <Provider store={store}>
         <HashRouter>
           <Home />
         </HashRouter>
       </Provider>
     );
+    return result;
   };
 
   it('рендерит Search компонент', () => {
@@ -96,6 +125,7 @@ describe('Home', () => {
         getItem: mockGetItem,
         setItem: vi.fn(),
         removeItem: vi.fn(),
+        clear: vi.fn(),
       },
       writable: true,
     });
@@ -151,6 +181,7 @@ describe('Home', () => {
         getItem: vi.fn().mockReturnValue(''),
         setItem: mockSetItem,
         removeItem: vi.fn(),
+        clear: vi.fn(),
       },
       writable: true,
     });
@@ -170,6 +201,7 @@ describe('Home', () => {
         getItem: vi.fn().mockReturnValue(''),
         setItem: mockSetItem,
         removeItem: vi.fn(),
+        clear: vi.fn(),
       },
       writable: true,
     });
@@ -192,6 +224,7 @@ describe('Home', () => {
     }).toThrow('This is a test error');
 
     consoleSpy.mockRestore();
+    cleanup();
   });
 
   it('выбрасывает ошибку когда error состояние true', () => {
@@ -216,5 +249,6 @@ describe('Home', () => {
     }).toThrow('This is a test error');
 
     consoleSpy.mockRestore();
+    cleanup();
   });
 });
