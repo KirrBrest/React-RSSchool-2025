@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { clearSelectedPokemons } from '@/store/pokemonSlice';
-import { downloadPokemonCSV } from '@/utils/csvExport';
+import DownloadLink from '@/components/download-link/DownloadLink';
 import './SelectedPokemon.css';
 
 const SelectedPokemon: React.FC = () => {
@@ -12,10 +12,6 @@ const SelectedPokemon: React.FC = () => {
 
   const handleClearAll = (): void => {
     dispatch(clearSelectedPokemons());
-  };
-
-  const handleDownload = (): void => {
-    downloadPokemonCSV(selectedPokemons);
   };
 
   if (selectedPokemons.length === 0) {
@@ -39,13 +35,12 @@ const SelectedPokemon: React.FC = () => {
           >
             Unselect all
           </button>
-          <button
+          <DownloadLink
+            pokemons={selectedPokemons}
             className="flyout-button download"
-            onClick={handleDownload}
-            type="button"
           >
             Download
-          </button>
+          </DownloadLink>
         </div>
       </div>
     </div>

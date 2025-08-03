@@ -1,8 +1,10 @@
 import type { Pokemon } from '@/types/interfaces';
 
-export const downloadPokemonCSV = (pokemons: Pokemon[]): void => {
+export const createPokemonCSV = (
+  pokemons: Pokemon[]
+): { url: string; filename: string } | null => {
   if (pokemons.length === 0) {
-    return;
+    return null;
   }
 
   const headers = ['ID', 'Name', 'URL', 'Details URL'];
@@ -19,15 +21,10 @@ export const downloadPokemonCSV = (pokemons: Pokemon[]): void => {
   ].join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
 
-  if (link.download !== undefined) {
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${pokemons.length}_items.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+  return {
+    url,
+    filename: `${pokemons.length}_items.csv`,
+  };
 };

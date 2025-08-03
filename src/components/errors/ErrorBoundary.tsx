@@ -35,7 +35,12 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   handleRetry = () => {
-    window.location.reload();
+    this.setState({
+      hasError: false,
+      errorMessage: '',
+      errorType: '',
+      showErrorModal: false,
+    });
   };
 
   render() {
