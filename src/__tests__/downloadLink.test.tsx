@@ -1,10 +1,8 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import DownloadLink from '@/components/download-link/DownloadLink';
 import type { Pokemon } from '@/types/interfaces';
 
-// Мокаем URL.createObjectURL и URL.revokeObjectURL
 const mockCreateObjectURL = vi.fn();
 const mockRevokeObjectURL = vi.fn();
 
@@ -18,7 +16,6 @@ Object.defineProperty(global.URL, 'revokeObjectURL', {
   writable: true,
 });
 
-// Мокаем setTimeout
 vi.useFakeTimers();
 
 describe('DownloadLink', () => {
@@ -61,7 +58,6 @@ describe('DownloadLink', () => {
     const button = screen.getByRole('button');
     fireEvent.click(button);
 
-    // Проверяем, что createObjectURL не был вызван
     expect(mockCreateObjectURL).not.toHaveBeenCalled();
   });
 
@@ -71,7 +67,6 @@ describe('DownloadLink', () => {
     const button = screen.getByRole('button');
     fireEvent.click(button);
 
-    // Проверяем, что createObjectURL был вызван (строка 32)
     expect(mockCreateObjectURL).toHaveBeenCalled();
   });
 
@@ -81,7 +76,6 @@ describe('DownloadLink', () => {
     const button = screen.getByRole('button');
     fireEvent.click(button);
 
-    // Проверяем, что createObjectURL был вызван с Blob (строки 32-33)
     expect(mockCreateObjectURL).toHaveBeenCalled();
     const blobCall = mockCreateObjectURL.mock.calls[0][0];
     expect(blobCall).toBeInstanceOf(Blob);
@@ -96,7 +90,6 @@ describe('DownloadLink', () => {
 
     expect(mockRevokeObjectURL).not.toHaveBeenCalled();
 
-    // Продвигаем время на 100ms (строка 42)
     vi.advanceTimersByTime(100);
 
     expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:test-url');
