@@ -1,41 +1,25 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './PokemonDetails.css';
-import type { PokemonDetailsProps } from '@/types/interfaces';
+import type { PokemonDetailsProps, PokemonData } from '@/types/interfaces';
 
-interface PokemonData {
-  id: number;
-  name: string;
-  height: number;
-  weight: number;
-  sprites: {
-    front_default: string;
-    back_default: string;
-    front_shiny: string;
-    back_shiny: string;
+const PokemonDetails: React.FC<PokemonDetailsProps> = (props) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const pokemonId = props.pokemonId;
+
+  const handleClose = () => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.delete('details');
+    const currentPath = searchParams.toString()
+      ? `/?${searchParams.toString()}`
+      : '/';
+    navigate(currentPath);
   };
-  types: Array<{
-    type: {
-      name: string;
-    };
-  }>;
-  abilities: Array<{
-    ability: {
-      name: string;
-    };
-    is_hidden: boolean;
-  }>;
-  stats: Array<{
-    base_stat: number;
-    stat: {
-      name: string;
-    };
-  }>;
-}
 
-const PokemonDetails: React.FC<PokemonDetailsProps> = ({
-  pokemonId,
-  onClose,
-}) => {
+  const onClose = props.onClose || handleClose;
+
   const [pokemon, setPokemon] = useState<PokemonData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -72,7 +56,7 @@ const PokemonDetails: React.FC<PokemonDetailsProps> = ({
     fetchPokemonDetails();
   }, [pokemonId]);
 
-  const handleClose = () => {
+  const handleCloseClick = () => {
     onClose();
   };
 
@@ -96,7 +80,7 @@ const PokemonDetails: React.FC<PokemonDetailsProps> = ({
           <div className="pokemon-details-error">
             <h3>Error</h3>
             <p>{error}</p>
-            <button className="close-button" onClick={handleClose}>
+            <button className="close-button" onClick={handleCloseClick}>
               Close
             </button>
           </div>
@@ -112,7 +96,7 @@ const PokemonDetails: React.FC<PokemonDetailsProps> = ({
           <div className="pokemon-details-error">
             <h3>Error</h3>
             <p>Pokemon not found</p>
-            <button className="close-button" onClick={handleClose}>
+            <button className="close-button" onClick={handleCloseClick}>
               Close
             </button>
           </div>
@@ -125,7 +109,7 @@ const PokemonDetails: React.FC<PokemonDetailsProps> = ({
     <div className="pokemon-details-panel">
       <div className="pokemon-details-content">
         <button
-          onClick={handleClose}
+          onClick={handleCloseClick}
           className="close-button"
           aria-label="Close"
         >

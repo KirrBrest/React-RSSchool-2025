@@ -3,8 +3,13 @@
   justify-content: center;
   align-items: center;
   min-height: 70vh;
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--bg-primary),
+    var(--bg-secondary),
+    var(--bg-tertiary)
+  );
+  color: var(--text-primary);
   font-family: 'Arial', sans-serif;
   text-align: center;
   position: relative;
@@ -19,23 +24,25 @@
 .page404__content_title {
   font-size: 8rem;
   margin: 0;
-  color: #ff6b6b;
+  color: var(--accent-color);
 }
 
 .page404__content_subtitle {
   font-size: 2rem;
   margin: 10px 0;
+  color: #000000;
 }
 
 .page404__content_text {
   font-size: 1.2rem;
   margin: 30px;
+  color: #000000;
 }
 
 .page404__content_button {
   padding: 12px 24px;
-  background: #ff6b6b;
-  color: white;
+  background: var(--accent-color);
+  color: var(--text-primary);
   border: none;
   border-radius: 50px;
   font-size: 1rem;
@@ -44,7 +51,7 @@
 }
 
 .page404__content_button:hover {
-  background: #ff5252;
+  background: var(--accent-hover);
   transform: scale(1.05);
 }
 
@@ -56,8 +63,8 @@
     rotate 8s linear infinite !important;
   opacity: 0.6 !important;
   z-index: 1 !important;
-  filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.5)) !important;
-  text-shadow: 0 0 50px rgba(255, 255, 255, 0.8) !important;
+  filter: drop-shadow(0 0 30px var(--shadow-color)) !important;
+  text-shadow: 0 0 50px var(--shadow-color) !important;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;

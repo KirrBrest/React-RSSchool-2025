@@ -1,14 +1,48 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  cleanup,
+} from '@testing-library/react';
+import { vi, afterEach, afterAll } from 'vitest';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import PokemonDetails from '@/components/pokemon-details/PokemonDetails';
+
+vi.mock('react-router-dom', () => ({
+  useParams: vi.fn(),
+  useNavigate: vi.fn(),
+  useLocation: vi.fn(),
+}));
 
 global.fetch = vi.fn();
 
 describe('PokemonDetails', () => {
   const mockOnClose = vi.fn();
+  const mockNavigate = vi.fn();
+  const mockLocation = {
+    pathname: '/pokemon/25',
+    search: '?page=2',
+    hash: '',
+    state: null,
+    key: 'default',
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(useParams).mockReturnValue({ pokemonId: undefined });
+    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
+    vi.mocked(useLocation).mockReturnValue(mockLocation);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    cleanup(); // Очистка DOM
+  });
+
+  afterAll(() => {
+    vi.clearAllMocks();
+    cleanup(); // Очистка DOM
   });
 
   it('рендерит компонент с переданным pokemonId', () => {

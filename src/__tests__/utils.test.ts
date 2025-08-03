@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import processSearchQuery from '@/utils/validation';
 import useLocalStorage from '@/utils/useLocalStorage';
+import { afterEach, afterAll } from 'vitest';
 
 describe('validation utils', () => {
   describe('processSearchQuery', () => {
@@ -42,6 +43,14 @@ describe('useLocalStorage hook', () => {
 
   beforeEach(() => {
     Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  afterAll(() => {
     localStorage.clear();
   });
 

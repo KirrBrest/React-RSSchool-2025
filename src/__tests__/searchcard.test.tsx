@@ -1,161 +1,372 @@
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  afterAll,
+} from 'vitest';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import pokemonReducer from '@/store/pokemonSlice';
 import PokemonCard from '@/components/searchcard/SearchCard';
+import type { PokemonCardProps } from '@/types/interfaces';
 
-const mockData = {
-  sprites: { front_default: 'https://pokeapi.co/media/sprites/pokemon/25.png' },
+const createTestStore = (
+  initialState = { pokemon: { selectedPokemons: [] } }
+) => {
+  return configureStore({
+    reducer: {
+      pokemon: pokemonReducer,
+    },
+    preloadedState: initialState,
+  });
 };
 
+type MockFetch = ReturnType<typeof vi.fn>;
+
+const mockFetch = vi.fn() as MockFetch;
+global.fetch = mockFetch;
+
 describe('PokemonCard', () => {
-  const props = {
-    name: 'pikachu',
-    url: 'https://pokeapi.co/media/sprites/pokemon/25.png',
-  };
-
-  const url = 'https://pokeapi.co/api/v2/pokemon/25';
-
   beforeEach(() => {
-    vi.spyOn(global, 'fetch').mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(mockData),
-      } as Response)
-    );
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    vi.clearAllMocks();
+    cleanup();
   });
 
-  it('renders name and sprite image after fetch', async () => {
-    render(<PokemonCard name="pikachu" url={url} />);
-    expect(screen.getByText(/pikachu/i)).toBeInTheDocument();
-    const img = await screen.findByRole('img');
-    expect(img).toHaveAttribute('src', mockData.sprites.front_default);
+  afterAll(() => {
+    vi.clearAllMocks();
+    cleanup();
   });
 
-  it('renders name and image correctly', async () => {
-    render(<PokemonCard {...props} />);
-    expect(screen.getByText(/pikachu/i)).toBeInTheDocument();
-    const img = await screen.findByRole('img');
-    expect(img).toHaveAttribute('src', props.url);
-  });
-
-  it('renders placeholder or fallback if URL is missing', () => {
-    render(<PokemonCard name="pikachu" url="" />);
-  });
-
-  it('shows loading state when sprite is not loaded', () => {
-    render(<PokemonCard name="pikachu" url={url} />);
-    expect(screen.getByText('Loading image...')).toBeInTheDocument();
-  });
-
-  it('handles network error when fetching sprite', async () => {
-    vi.spyOn(global, 'fetch').mockImplementation(() =>
-      Promise.reject(new Error('Network error'))
+  const renderWithProvider = (
+    props: PokemonCardProps,
+    initialState = { pokemon: { selectedPokemons: [] } }
+  ) => {
+    const store = createTestStore(initialState);
+    return render(
+      <Provider store={store}>
+        <PokemonCard {...props} />
+      </Provider>
     );
+  };
 
-    render(<PokemonCard name="pikachu" url={url} />);
+  it('отображает имя и спрайт после загрузки', async () => {
+    const mockResponse = {
+      sprites: {
+        front_default: 'https://example.com/sprite.png',
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    } as Response);
+
+    renderWithProvider({
+      url: 'https://pokeapi.co/api/v2/pokemon/1/',
+      name: 'bulbasaur',
+    });
 
     await waitFor(() => {
-      expect(screen.getByText('Loading image...')).toBeInTheDocument();
+      expect(screen.getByText('bulbasaur')).toBeInTheDocument();
+    });
+
+    const sprite = screen.getByAltText('bulbasaur');
+    expect(sprite).toBeInTheDocument();
+  });
+
+  it('отображает имя и изображение корректно', async () => {
+    const mockResponse = {
+      sprites: {
+        front_default: 'https://example.com/sprite.png',
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    } as Response);
+
+    renderWithProvider({
+      url: 'https://pokeapi.co/api/v2/pokemon/1/',
+      name: 'bulbasaur',
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('bulbasaur')).toBeInTheDocument();
+    });
+
+    const sprite = screen.getByAltText('bulbasaur');
+    expect(sprite).toHaveAttribute('src', 'https://example.com/sprite.png');
+  });
+
+  it('отображает заглушку если URL отсутствует', async () => {
+    const mockResponse = {
+      sprites: {
+        front_default: null,
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    } as Response);
+
+    renderWithProvider({
+      url: 'https://pokeapi.co/api/v2/pokemon/1/',
+      name: 'bulbasaur',
+    });
+
+    await waitFor(() => {
+      const sprite = screen.getByAltText('bulbasaur');
+      expect(sprite).toHaveAttribute('src', '/placeholder-sprite.png');
     });
   });
 
-  it('handles non-ok response when fetching sprite', async () => {
-    vi.spyOn(global, 'fetch').mockImplementation(() =>
-      Promise.resolve({
-        ok: false,
-        status: 404,
-      } as Response)
-    );
+  it('показывает состояние загрузки когда спрайт не загружен', () => {
+    mockFetch.mockImplementationOnce(() => new Promise(() => {}));
 
-    render(<PokemonCard name="pikachu" url={url} />);
+    renderWithProvider({
+      url: 'https://pokeapi.co/api/v2/pokemon/1/',
+      name: 'bulbasaur',
+    });
+
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+  });
+
+  it('обрабатывает сетевую ошибку при загрузке спрайта', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('Network error'));
+
+    renderWithProvider({
+      url: 'https://pokeapi.co/api/v2/pokemon/1/',
+      name: 'bulbasaur',
+    });
 
     await waitFor(() => {
-      expect(screen.getByText('Loading image...')).toBeInTheDocument();
+      expect(screen.getByText('Error: Network error')).toBeInTheDocument();
     });
   });
 
-  it('handles missing sprites in response', async () => {
-    vi.spyOn(global, 'fetch').mockImplementation(() =>
-      Promise.resolve({
+  it('обрабатывает неуспешный ответ при загрузке спрайта', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+    } as Response);
+
+    renderWithProvider({
+      url: 'https://pokeapi.co/api/v2/pokemon/1/',
+      name: 'bulbasaur',
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Error: Network response was not ok')
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('обрабатывает отсутствующие спрайты в ответе', async () => {
+    const mockResponse = {
+      sprites: {},
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    } as Response);
+
+    renderWithProvider({
+      url: 'https://pokeapi.co/api/v2/pokemon/1/',
+      name: 'bulbasaur',
+    });
+
+    await waitFor(() => {
+      const sprite = screen.getByAltText('bulbasaur');
+      expect(sprite).toHaveAttribute('src', '/placeholder-sprite.png');
+    });
+  });
+
+  it('вызывает onSelect при клике на карточку', async () => {
+    const mockOnSelect = vi.fn();
+    const mockResponse = {
+      sprites: {
+        front_default: 'https://example.com/sprite.png',
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    } as Response);
+
+    renderWithProvider({
+      url: 'https://pokeapi.co/api/v2/pokemon/1/',
+      name: 'bulbasaur',
+      onSelect: mockOnSelect,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('bulbasaur')).toBeInTheDocument();
+    });
+
+    const card = screen.getByText('bulbasaur').closest('.pokemon-card');
+    if (card) {
+      fireEvent.click(card);
+    }
+
+    expect(mockOnSelect).toHaveBeenCalledWith('1');
+  });
+
+  it('не вызывает onSelect когда onSelect не предоставлен', async () => {
+    const mockResponse = {
+      sprites: {
+        front_default: 'https://example.com/sprite.png',
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    } as Response);
+
+    renderWithProvider({
+      url: 'https://pokeapi.co/api/v2/pokemon/1/',
+      name: 'bulbasaur',
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('bulbasaur')).toBeInTheDocument();
+    });
+
+    const card = screen.getByText('bulbasaur').closest('.pokemon-card');
+    if (card) {
+      fireEvent.click(card);
+    }
+
+    expect(screen.getByText('bulbasaur')).toBeInTheDocument();
+  });
+
+  it('обрабатывает URL без ID покемона', async () => {
+    const mockResponse = {
+      sprites: {
+        front_default: 'https://example.com/sprite.png',
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    } as Response);
+
+    const mockOnSelect = vi.fn();
+
+    renderWithProvider({
+      url: 'https://pokeapi.co/api/v2/pokemon/',
+      name: 'bulbasaur',
+      onSelect: mockOnSelect,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('bulbasaur')).toBeInTheDocument();
+    });
+
+    const card = screen.getByText('bulbasaur').closest('.pokemon-card');
+    if (card) {
+      fireEvent.click(card);
+    }
+
+    expect(mockOnSelect).toHaveBeenCalledWith('pokemon');
+  });
+
+  it('обрабатывает пустой URL', async () => {
+    const mockResponse = {
+      sprites: {
+        front_default: 'https://example.com/sprite.png',
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    } as Response);
+
+    const mockOnSelect = vi.fn();
+
+    renderWithProvider({
+      url: '',
+      name: 'bulbasaur',
+      onSelect: mockOnSelect,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('bulbasaur')).toBeInTheDocument();
+    });
+
+    const card = screen.getByText('bulbasaur').closest('.pokemon-card');
+    if (card) {
+      fireEvent.click(card);
+    }
+
+    expect(mockOnSelect).toHaveBeenCalledWith('');
+  });
+
+  it('перезагружает спрайт при изменении URL', async () => {
+    const mockResponse1 = {
+      sprites: {
+        front_default: 'https://example.com/sprite1.png',
+      },
+    };
+
+    const mockResponse2 = {
+      sprites: {
+        front_default: 'https://example.com/sprite2.png',
+      },
+    };
+
+    mockFetch
+      .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ sprites: {} }),
+        json: async () => mockResponse1,
       } as Response)
-    );
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse2,
+      } as Response);
 
-    render(<PokemonCard name="pikachu" url={url} />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Loading image...')).toBeInTheDocument();
+    const { rerender } = renderWithProvider({
+      url: 'https://pokeapi.co/api/v2/pokemon/1/',
+      name: 'bulbasaur',
     });
-  });
-
-  it('calls onSelect when card is clicked', async () => {
-    const mockOnSelect = vi.fn();
-    render(<PokemonCard name="pikachu" url={url} onSelect={mockOnSelect} />);
-
-    const card = screen.getByText('pikachu').closest('.card');
-    if (card) {
-      fireEvent.click(card);
-    }
-
-    expect(mockOnSelect).toHaveBeenCalledWith('25');
-  });
-
-  it('does not call onSelect when onSelect is not provided', async () => {
-    render(<PokemonCard name="pikachu" url={url} />);
-
-    const card = screen.getByText('pikachu').closest('.card');
-    if (card) {
-      fireEvent.click(card);
-    }
-
-    expect(card).toBeInTheDocument();
-  });
-
-  it('handles URL without pokemon ID', async () => {
-    const mockOnSelect = vi.fn();
-    render(
-      <PokemonCard
-        name="pikachu"
-        url="https://invalid-url"
-        onSelect={mockOnSelect}
-      />
-    );
-
-    const card = screen.getByText('pikachu').closest('.card');
-    if (card) {
-      fireEvent.click(card);
-    }
-
-    expect(mockOnSelect).toHaveBeenCalledWith('invalid-url');
-  });
-
-  it('handles empty URL', async () => {
-    const mockOnSelect = vi.fn();
-    render(<PokemonCard name="pikachu" url="" onSelect={mockOnSelect} />);
-
-    const card = screen.getByText('pikachu').closest('.card');
-    if (card) {
-      fireEvent.click(card);
-    }
-
-    expect(mockOnSelect).not.toHaveBeenCalled();
-  });
-
-  it('reloads sprite when URL changes', async () => {
-    const { rerender } = render(<PokemonCard name="pikachu" url={url} />);
 
     await waitFor(() => {
-      expect(screen.getByRole('img')).toBeInTheDocument();
+      const sprite = screen.getByAltText('bulbasaur');
+      expect(sprite).toHaveAttribute('src', 'https://example.com/sprite1.png');
     });
 
     rerender(
-      <PokemonCard name="charizard" url="https://pokeapi.co/api/v2/pokemon/6" />
+      <Provider store={createTestStore()}>
+        <PokemonCard
+          url="https://pokeapi.co/api/v2/pokemon/2/"
+          name="ivysaur"
+        />
+      </Provider>
     );
 
-    expect(screen.getByText('Loading image...')).toBeInTheDocument();
+    await waitFor(() => {
+      const sprite = screen.getByAltText('ivysaur');
+      expect(sprite).toHaveAttribute('src', 'https://example.com/sprite2.png');
+    });
   });
 });

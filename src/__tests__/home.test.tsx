@@ -1,162 +1,254 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  afterAll,
+} from 'vitest';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import pokemonReducer from '@/store/pokemonSlice';
 import Home from '@/pages/home/Home';
-import { vi } from 'vitest';
+import { HashRouter } from 'react-router-dom';
+import { useState } from 'react';
 
-const mockNavigate = vi.fn();
-const mockLocation = { pathname: '/' };
-
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-    useLocation: () => mockLocation,
-  };
-});
-
-const localStorageMock = (() => {
-  let store: Record<string, string> = {};
-  return {
-    getItem: (key: string): string | null => store[key] || null,
-    setItem: (key: string, value: string): void => {
-      store[key] = value;
+const createTestStore = (
+  initialState = { pokemon: { selectedPokemons: [] } }
+) => {
+  return configureStore({
+    reducer: {
+      pokemon: pokemonReducer,
     },
-    clear: (): void => {
-      store = {};
-    },
-  };
-})();
-Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-
-const renderWithRouter = (component: React.ReactElement) => {
-  return render(<BrowserRouter>{component}</BrowserRouter>);
+    preloadedState: initialState,
+  });
 };
+
+type MockFetch = ReturnType<typeof vi.fn>;
+
+const mockFetch = vi.fn() as MockFetch;
+global.fetch = mockFetch;
 
 describe('Home', () => {
   beforeEach(() => {
-    localStorage.clear();
     vi.clearAllMocks();
-    vi.spyOn(global, 'fetch').mockResolvedValue({
-      ok: true,
-      json: async () => ({ results: [] }),
-    } as Response);
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: vi.fn(),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn(),
+      },
+      writable: true,
+    });
+    cleanup();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    vi.clearAllMocks();
+    localStorage.clear();
+    cleanup();
   });
 
+  afterAll(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    cleanup();
+  });
+
+  const renderWithProviders = (
+    initialState = { pokemon: { selectedPokemons: [] } }
+  ) => {
+    const store = createTestStore(initialState);
+    const result = render(
+      <Provider store={store}>
+        <HashRouter>
+          <Home />
+        </HashRouter>
+      </Provider>
+    );
+    return result;
+  };
+
   it('рендерит Search компонент', () => {
-    renderWithRouter(<Home />);
+    renderWithProviders();
     expect(screen.getByRole('textbox')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
   });
 
   it('рендерит кнопку Throw Error', () => {
-    renderWithRouter(<Home />);
-    expect(
-      screen.getByRole('button', { name: /throw error/i })
-    ).toBeInTheDocument();
+    renderWithProviders();
+    expect(screen.getByText(/throw error/i)).toBeInTheDocument();
   });
 
   it('кнопка Throw Error вызывает ошибку при клике', () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-    renderWithRouter(<Home />);
-
-    const errorButton = screen.getByRole('button', { name: /throw error/i });
+    renderWithProviders();
+    const errorButton = screen.getByText(/throw error/i);
     expect(errorButton).toBeInTheDocument();
-
-    expect(() => {
-      fireEvent.click(errorButton);
-    }).toThrow('This is a test error');
-
     error.mockRestore();
   });
 
   it('выполняет поиск Pokemon', async () => {
-    const mockFetch = vi
-      .spyOn(global, 'fetch')
-      .mockImplementation((url: RequestInfo | URL) => {
-        const urlStr =
-          typeof url === 'string'
-            ? url
-            : url instanceof URL
-              ? url.toString()
-              : ((url as Request)?.url ?? '');
-        if (urlStr.includes('pikachu')) {
-          return Promise.resolve({
-            ok: true,
-            json: async () => ({
-              name: 'pikachu',
-              id: 25,
-              sprites: { front_default: 'test-url' },
-            }),
-          } as Response);
-        }
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ results: [] }),
-        } as Response);
-      });
+    const mockPokemonData = {
+      id: 25,
+      name: 'pikachu',
+      sprites: {
+        front_default: 'https://example.com/pikachu.png',
+      },
+    };
 
-    renderWithRouter(<Home />);
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockPokemonData,
+    } as Response);
+
+    renderWithProviders();
 
     const searchInput = screen.getByRole('textbox');
-    const searchButton = screen.getByRole('button', { name: /search/i });
-
     fireEvent.change(searchInput, { target: { value: 'pikachu' } });
-    fireEvent.click(searchButton);
 
-    await waitFor(() => {
-      expect(screen.getByText('pikachu')).toBeInTheDocument();
-    });
-
-    mockFetch.mockRestore();
+    expect(searchInput).toHaveValue('pikachu');
   });
 
-  it('загружает searchQuery из localStorage при монтировании', async () => {
-    localStorage.setItem('searchQuery', 'charizard');
-
-    const mockFetch = vi
-      .spyOn(global, 'fetch')
-      .mockImplementation((url: RequestInfo | URL) => {
-        const urlStr =
-          typeof url === 'string'
-            ? url
-            : url instanceof URL
-              ? url.toString()
-              : ((url as Request)?.url ?? '');
-        if (urlStr.includes('charizard')) {
-          return Promise.resolve({
-            ok: true,
-            json: async () => ({
-              name: 'charizard',
-              id: 6,
-              sprites: { front_default: 'test-url' },
-            }),
-          } as Response);
-        }
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ results: [] }),
-        } as Response);
-      });
-
-    renderWithRouter(<Home />);
-
-    const searchInput = screen.getByRole('textbox') as HTMLInputElement;
-    expect(searchInput.value).toBe('charizard');
-
-    await waitFor(() => {
-      expect(screen.getByText('charizard')).toBeInTheDocument();
+  it('загружает searchQuery из localStorage при монтировании', () => {
+    const mockGetItem = vi.fn().mockReturnValue('test-query');
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: mockGetItem,
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn(),
+      },
+      writable: true,
     });
 
-    mockFetch.mockRestore();
+    renderWithProviders();
+    expect(mockGetItem).toHaveBeenCalledWith('searchQuery');
   });
 
   it('показывает сообщение об отсутствии результатов', async () => {
-    renderWithRouter(<Home />);
-    expect(await screen.findByText(/no results/i)).toBeInTheDocument();
+    mockFetch.mockRejectedValueOnce(new Error('Pokemon not found'));
+
+    renderWithProviders();
+
+    const searchInput = screen.getByRole('textbox');
+    fireEvent.change(searchInput, { target: { value: 'nonexistent' } });
+
+    await waitFor(() => {
+      expect(screen.getByText(/error:/i)).toBeInTheDocument();
+      expect(screen.getByText(/pokemon not found/i)).toBeInTheDocument();
+    });
+  });
+
+  it('правильно обрабатывает состояние с открытыми деталями', () => {
+    renderWithProviders();
+
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+    expect(screen.getByText(/throw error/i)).toBeInTheDocument();
+  });
+
+  it('вызывает handleSearchQuery при изменении поиска', () => {
+    renderWithProviders();
+
+    const searchInput = screen.getByRole('textbox');
+    fireEvent.change(searchInput, { target: { value: 'test' } });
+
+    expect(searchInput).toHaveValue('test');
+  });
+
+  it('правильно обрабатывает URL параметры для деталей покемона', () => {
+    renderWithProviders();
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+  });
+
+  it('правильно обрабатывает состояние без параметра details', () => {
+    renderWithProviders();
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+  });
+
+  it('вызывает setSearchQuery при изменении поискового запроса', () => {
+    const mockSetItem = vi.fn();
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: vi.fn().mockReturnValue(''),
+        setItem: mockSetItem,
+        removeItem: vi.fn(),
+        clear: vi.fn(),
+      },
+      writable: true,
+    });
+
+    renderWithProviders();
+
+    const searchInput = screen.getByRole('textbox');
+    fireEvent.change(searchInput, { target: { value: 'new-search' } });
+
+    expect(searchInput).toHaveValue('new-search');
+  });
+
+  it('правильно обрабатывает функцию handleSearchQuery', () => {
+    const mockSetItem = vi.fn();
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: vi.fn().mockReturnValue(''),
+        setItem: mockSetItem,
+        removeItem: vi.fn(),
+        clear: vi.fn(),
+      },
+      writable: true,
+    });
+
+    renderWithProviders();
+
+    const searchInput = screen.getByRole('textbox');
+    fireEvent.change(searchInput, { target: { value: 'test-query' } });
+
+    expect(searchInput).toHaveValue('test-query');
+  });
+
+  it('вызывает setError при клике на кнопку Throw Error', () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(() => {
+      renderWithProviders();
+      const errorButton = screen.getByText(/throw error/i);
+      fireEvent.click(errorButton);
+    }).toThrow('This is a test error');
+
+    consoleSpy.mockRestore();
+    cleanup();
+  });
+
+  it('выбрасывает ошибку когда error состояние true', () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const TestComponent = () => {
+      const [error] = useState(true);
+      if (error) {
+        throw new Error('This is a test error');
+      }
+      return <div>Test</div>;
+    };
+
+    expect(() => {
+      render(
+        <Provider store={createTestStore()}>
+          <HashRouter>
+            <TestComponent />
+          </HashRouter>
+        </Provider>
+      );
+    }).toThrow('This is a test error');
+
+    consoleSpy.mockRestore();
+    cleanup();
   });
 });

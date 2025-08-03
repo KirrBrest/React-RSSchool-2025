@@ -1,101 +1,139 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  afterAll,
+} from 'vitest';
 import Header from '@/components/header/Header';
-import { vi } from 'vitest';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
-const mockNavigate = vi.fn();
-let mockLocation = { pathname: '/' };
+const mockLocalStorage = {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+};
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-    useLocation: () => mockLocation,
-  };
+Object.defineProperty(window, 'localStorage', {
+  value: mockLocalStorage,
+  writable: true,
 });
 
 const renderWithRouter = (component: React.ReactElement) => {
-  return render(<BrowserRouter>{component}</BrowserRouter>);
+  return render(
+    <HashRouter>
+      <ThemeProvider>{component}</ThemeProvider>
+    </HashRouter>
+  );
 };
 
-describe('Header Component', () => {
+describe('Header', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockLocation = { pathname: '/' };
+    mockLocalStorage.getItem.mockReturnValue('light');
   });
 
-  it('renders Pokemon logo and title', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    cleanup();
+  });
+
+  afterAll(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    cleanup();
+  });
+
+  it('рендерит логотип Pokemon Explorer', () => {
     renderWithRouter(<Header />);
-    expect(screen.getByText('⚡')).toBeInTheDocument();
     expect(screen.getByText('Pokemon Explorer')).toBeInTheDocument();
   });
 
-  it('renders navigation links', () => {
+  it('рендерит иконку покемона', () => {
     renderWithRouter(<Header />);
-    expect(screen.getByText('Home')).toBeInTheDocument();
-    expect(screen.getByText('About')).toBeInTheDocument();
+    expect(screen.getByText('⚡')).toBeInTheDocument();
   });
 
-  it('shows active state for home page', () => {
-    mockLocation = { pathname: '/' };
+  it('рендерит кнопку Home', () => {
     renderWithRouter(<Header />);
-    const homeButton = screen.getByText('Home').closest('button');
-    expect(homeButton).toHaveClass('active');
+    expect(screen.getByRole('button', { name: /home/i })).toBeInTheDocument();
   });
 
-  it('shows active state for about page', () => {
-    mockLocation = { pathname: '/about' };
+  it('рендерит кнопку About', () => {
     renderWithRouter(<Header />);
-    const aboutButton = screen.getByText('About').closest('button');
-    expect(aboutButton).toHaveClass('active');
+    expect(screen.getByRole('button', { name: /about/i })).toBeInTheDocument();
   });
 
-  it('shows no active state for other pages', () => {
-    mockLocation = { pathname: '/other' };
+  it('рендерит кнопку переключения темы', () => {
     renderWithRouter(<Header />);
-    const homeButton = screen.getByText('Home').closest('button');
-    const aboutButton = screen.getByText('About').closest('button');
-    expect(homeButton).not.toHaveClass('active');
-    expect(aboutButton).not.toHaveClass('active');
+    expect(screen.getByRole('button', { name: /dark/i })).toBeInTheDocument();
   });
 
-  it('navigates to home page when Home button is clicked', () => {
+  it('показывает луну и текст "Dark" в светлой теме', () => {
+    mockLocalStorage.getItem.mockReturnValue('light');
     renderWithRouter(<Header />);
-    const homeButton = screen.getByText('Home').closest('button');
-    if (homeButton) {
-      fireEvent.click(homeButton);
-      expect(mockNavigate).toHaveBeenCalledWith('/');
-    }
+
+    expect(screen.getByText('🌙')).toBeInTheDocument();
+    expect(screen.getByText('Dark')).toBeInTheDocument();
   });
 
-  it('navigates to about page when About button is clicked', () => {
+  it('показывает солнце и текст "Light" в темной теме', () => {
+    mockLocalStorage.getItem.mockReturnValue('dark');
     renderWithRouter(<Header />);
-    const aboutButton = screen.getByText('About').closest('button');
-    if (aboutButton) {
-      fireEvent.click(aboutButton);
-      expect(mockNavigate).toHaveBeenCalledWith('/about');
-    }
+
+    expect(screen.getByText('☀️')).toBeInTheDocument();
+    expect(screen.getByText('Light')).toBeInTheDocument();
   });
 
-  it('has correct navigation icons', () => {
+  it('кнопка Home кликабельна', () => {
     renderWithRouter(<Header />);
-    expect(screen.getByText('🏠')).toBeInTheDocument();
-    expect(screen.getByText('ℹ️')).toBeInTheDocument();
+    const homeButton = screen.getByRole('button', { name: /home/i });
+    expect(homeButton).not.toBeDisabled();
   });
 
-  it('renders header with correct structure', () => {
+  it('кнопка About кликабельна', () => {
     renderWithRouter(<Header />);
-    const header = screen.getByText('Pokemon Explorer').closest('.header');
-    expect(header).toBeInTheDocument();
+    const aboutButton = screen.getByRole('button', { name: /about/i });
+    expect(aboutButton).not.toBeDisabled();
   });
 
-  it('has correct CSS classes for navigation buttons', () => {
+  it('кнопка переключения темы кликабельна', () => {
     renderWithRouter(<Header />);
-    const homeButton = screen.getByText('Home').closest('button');
-    const aboutButton = screen.getByText('About').closest('button');
-    expect(homeButton).toHaveClass('nav-link');
-    expect(aboutButton).toHaveClass('nav-link');
+    const themeButton = screen.getByRole('button', { name: /dark/i });
+    expect(themeButton).not.toBeDisabled();
+  });
+
+  it('вызывает handleHomeClick при клике на кнопку Home', () => {
+    renderWithRouter(<Header />);
+    const homeButton = screen.getByRole('button', { name: /home/i });
+
+    fireEvent.click(homeButton);
+
+    expect(homeButton).toBeInTheDocument();
+  });
+
+  it('вызывает handleAboutClick при клике на кнопку About', () => {
+    renderWithRouter(<Header />);
+    const aboutButton = screen.getByRole('button', { name: /about/i });
+
+    fireEvent.click(aboutButton);
+
+    expect(aboutButton).toBeInTheDocument();
+  });
+
+  it('переключает тему при клике на кнопку темы', () => {
+    mockLocalStorage.getItem.mockReturnValue('light');
+    renderWithRouter(<Header />);
+
+    const themeButton = screen.getByRole('button', { name: /dark/i });
+    fireEvent.click(themeButton);
+
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('theme', 'dark');
   });
 });

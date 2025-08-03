@@ -1,7 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import Page404 from '@/pages/page404/Page404';
-import { vi } from 'vitest';
+import { HashRouter } from 'react-router-dom';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach, afterAll } from 'vitest';
+import Page404 from '../pages/page404/Page404';
 
 const mockNavigate = vi.fn();
 
@@ -14,7 +14,7 @@ vi.mock('react-router-dom', async () => {
 });
 
 const renderWithRouter = (component: React.ReactElement) => {
-  return render(<BrowserRouter>{component}</BrowserRouter>);
+  return render(<HashRouter>{component}</HashRouter>);
 };
 
 describe('Page404', () => {
@@ -22,49 +22,49 @@ describe('Page404', () => {
     vi.clearAllMocks();
   });
 
+  afterEach(() => {
+    vi.clearAllMocks();
+    cleanup(); // Очистка DOM
+  });
+
+  afterAll(() => {
+    vi.clearAllMocks();
+    cleanup(); // Очистка DOM
+  });
+
   it('рендерит заголовок 404', () => {
     renderWithRouter(<Page404 />);
     expect(screen.getByText('404')).toBeInTheDocument();
   });
 
-  it('рендерит подзаголовок ошибки', () => {
+  it('рендерит сообщение о том, что страница не найдена', () => {
     renderWithRouter(<Page404 />);
-    expect(screen.getByText('Oops! Page not found')).toBeInTheDocument();
+    expect(screen.getByText(/oops! page not found/i)).toBeInTheDocument();
   });
 
-  it('рендерит текст описания', () => {
-    renderWithRouter(<Page404 />);
-    expect(
-      screen.getByText('It seems you are lost in the space of the Internet...')
-    ).toBeInTheDocument();
-  });
-
-  it('рендерит кнопку Back', () => {
+  it('рендерит кнопку возврата на главную', () => {
     renderWithRouter(<Page404 />);
     expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument();
   });
 
-  it('рендерит космонавта', () => {
+  it('вызывает navigate при клике на кнопку Back', () => {
+    renderWithRouter(<Page404 />);
+    const backButton = screen.getByRole('button', { name: /back/i });
+
+    fireEvent.click(backButton);
+
+    expect(mockNavigate).toHaveBeenCalledWith('/');
+  });
+
+  it('рендерит астронавта', () => {
     renderWithRouter(<Page404 />);
     expect(screen.getByText('👨‍🚀')).toBeInTheDocument();
   });
 
-  it('навигация на главную страницу при клике на кнопку Back', () => {
+  it('рендерит текст о том, что пользователь заблудился', () => {
     renderWithRouter(<Page404 />);
-    const backButton = screen.getByRole('button', { name: /back/i });
-    fireEvent.click(backButton);
-    expect(mockNavigate).toHaveBeenCalledWith('/');
-  });
-
-  it('имеет правильную структуру контейнера', () => {
-    renderWithRouter(<Page404 />);
-    const container = screen.getByText('404').closest('.page404__container');
-    expect(container).toBeInTheDocument();
-  });
-
-  it('имеет правильную структуру контента', () => {
-    renderWithRouter(<Page404 />);
-    const content = screen.getByText('404').closest('.page404__content');
-    expect(content).toBeInTheDocument();
+    expect(
+      screen.getByText(/it seems you are lost in the space of the internet/i)
+    ).toBeInTheDocument();
   });
 });

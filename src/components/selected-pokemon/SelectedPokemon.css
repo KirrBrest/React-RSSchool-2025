@@ -1,0 +1,226 @@
+.selected-pokemon-flyout {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-secondary);
+  backdrop-filter: blur(10px);
+  color: var(--text-primary);
+  box-shadow: 0 8px 32px var(--shadow-color);
+  z-index: 1000;
+  animation: slideUp 0.3s ease-out;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  border: 1px solid var(--border-color);
+}
+
+.flyout-content {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.flyout-header {
+  flex: 1;
+}
+
+.selected-count {
+  font-size: 14px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px var(--shadow-color);
+}
+
+.flyout-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.flyout-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.flyout-button.unselect-all {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.flyout-button.unselect-all:hover {
+  background: var(--bg-secondary);
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+}
+
+.flyout-button.download {
+  background: var(--success-color);
+  color: var(--text-primary);
+  border: 1px solid var(--success-color);
+}
+
+.flyout-button.download:hover {
+  background: var(--success-color);
+  opacity: 0.8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.flyout-button:active {
+  transform: translateY(0);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateX(-50%) translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .selected-pokemon-flyout {
+    bottom: 10px;
+    width: 95%;
+    max-width: 350px;
+  }
+
+  .flyout-content {
+    padding: 10px 12px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .flyout-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .flyout-button {
+    flex: 1;
+    max-width: 120px;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+}
+
+.selected-pokemon-container {
+  margin: 20px;
+  padding: 20px;
+  background: var(--accent-color);
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.selected-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.selected-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+}
+
+.clear-all-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.clear-all-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.selected-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.selected-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pokemon-name {
+  font-weight: 600;
+  text-transform: capitalize;
+  color: var(--text-primary);
+}
+
+.pokemon-id {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  color: #e5e7eb;
+}
+
+.no-selection {
+  text-align: center;
+  font-style: italic;
+  opacity: 0.8;
+  color: #e5e7eb;
+}
+
+@media (max-width: 768px) {
+  .selected-pokemon-container {
+    margin: 10px;
+    padding: 15px;
+  }
+
+  .selected-header h3 {
+    font-size: 1rem;
+  }
+
+  .clear-all-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .selected-list {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .selected-item {
+    padding: 10px;
+  }
+
+  .pokemon-name {
+    font-size: 0.9rem;
+  }
+
+  .pokemon-id {
+    font-size: 0.8rem;
+  }
+}

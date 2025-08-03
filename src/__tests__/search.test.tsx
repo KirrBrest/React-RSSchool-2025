@@ -1,7 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import Search from '@/components/search/Search';
-import { vi } from 'vitest';
+import { vi, afterEach, afterAll } from 'vitest';
 
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
@@ -25,31 +24,43 @@ describe('Search Component', () => {
     onSearchMock.mockClear();
   });
 
-  it('renders search input and button', () => {
+  afterEach(() => {
+    localStorage.clear();
+    onSearchMock.mockClear();
+    cleanup();
+  });
+
+  afterAll(() => {
+    localStorage.clear();
+    onSearchMock.mockClear();
+    cleanup();
+  });
+
+  it('отображает поле поиска и кнопку', () => {
     render(<Search onSearch={onSearchMock} />);
     expect(screen.getByRole('textbox')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
   });
 
-  it('displays saved search query from localStorage on mount', () => {
+  it('отображает сохраненный поисковый запрос из localStorage при загрузке', () => {
     localStorage.setItem('searchQuery', 'pikachu');
     render(<Search onSearch={onSearchMock} />);
     expect(screen.getByRole('textbox')).toHaveValue('pikachu');
   });
 
-  it('shows empty input if no saved term exists', () => {
+  it('показывает пустое поле если нет сохраненного запроса', () => {
     render(<Search onSearch={onSearchMock} />);
     expect(screen.getByRole('textbox')).toHaveValue('');
   });
 
-  it('updates input value when user types', () => {
+  it('обновляет значение поля при вводе пользователя', () => {
     render(<Search onSearch={onSearchMock} />);
     const input = screen.getByRole('textbox');
     fireEvent.change(input, { target: { value: 'charizard' } });
     expect(input).toHaveValue('charizard');
   });
 
-  it('saves search query to localStorage and triggers callback on search', () => {
+  it('сохраняет поисковый запрос в localStorage и вызывает callback при поиске', () => {
     render(<Search onSearch={onSearchMock} />);
     const input = screen.getByRole('textbox');
     const button = screen.getByRole('button', { name: /search/i });
@@ -61,7 +72,7 @@ describe('Search Component', () => {
     expect(onSearchMock).toHaveBeenCalledWith('bulbasaur');
   });
 
-  it('trims spaces from search query before saving', () => {
+  it('убирает пробелы из поискового запроса перед сохранением', () => {
     render(<Search onSearch={onSearchMock} />);
     const input = screen.getByRole('textbox');
     const button = screen.getByRole('button', { name: /search/i });
@@ -73,7 +84,7 @@ describe('Search Component', () => {
     expect(onSearchMock).toHaveBeenCalledWith('charmander');
   });
 
-  it('shows error message if search query contains spaces', () => {
+  it('показывает сообщение об ошибке если поисковый запрос содержит пробелы', () => {
     render(<Search onSearch={onSearchMock} />);
     const input = screen.getByRole('textbox');
     const button = screen.getByRole('button', { name: /search/i });

@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import { vi, afterEach, afterAll } from 'vitest';
+import { cleanup } from '@testing-library/react';
 
 global.fetch = vi.fn((input: RequestInfo | URL): Promise<Response> => {
   const url = typeof input === 'string' ? input : input.toString();
@@ -40,4 +41,14 @@ global.fetch = vi.fn((input: RequestInfo | URL): Promise<Response> => {
   } else {
     return Promise.reject(new Error('Failed to fetch'));
   }
+});
+
+afterEach(() => {
+  vi.clearAllMocks();
+  cleanup();
+});
+
+afterAll(() => {
+  vi.clearAllMocks();
+  cleanup();
 });

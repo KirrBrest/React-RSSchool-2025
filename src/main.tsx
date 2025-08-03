@@ -1,19 +1,25 @@
-import { HashRouter } from 'react-router-dom';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { HashRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
+import App from './App';
 import './index.css';
-import App from '@/App.tsx';
-import ErrorBoundary from '@/components/errors/ErrorBoundary';
 
-const rootElement = document.getElementById('root');
+const container = document.getElementById('root');
 
-if (rootElement) {
-  createRoot(rootElement).render(
-    <HashRouter>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
-    </HashRouter>
-  );
-} else {
-  console.error('Element with id "root" not found');
+if (!container) {
+  throw new Error('Failed to find the root element');
 }
+
+const root = createRoot(container);
+
+root.render(
+  <StrictMode>
+    <Provider store={store}>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </Provider>
+  </StrictMode>
+);

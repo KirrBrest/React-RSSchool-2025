@@ -1,95 +1,43 @@
-.searchresult-container {
-  display: flex;
+.pokemon-list-container {
   width: 100%;
   height: 100%;
   transition: all 0.3s ease;
-}
-
-.cards-section {
-  flex: 1;
-  transition: all 0.3s ease;
-  overflow-y: auto;
-}
-
-.searchresult-container.has-details .cards-section {
-  flex: 0 0 66.666%;
-  max-width: 66.666%;
-}
-
-.details-section {
-  flex: 0 0 33.333%;
-  max-width: 33.333%;
-  height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-left: 3px solid #4ecdc4;
-  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
-  overflow-y: auto;
-  animation: slideIn 0.3s ease-out;
-  position: relative;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-primary);
 }
 
 .cards-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px 12px;
-  padding: 12px 0;
-  max-width: 1280px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, auto) auto;
+  gap: 10px;
+  padding: 16px;
+  max-width: 700px;
+  width: 100%;
   margin: 0 auto;
   transition: all 0.3s ease;
+  flex: 1;
 }
 
 .cards-container > * {
-  flex: 1 1 calc(25% - 12px);
-  max-width: calc(25% - 12px);
-  min-width: 110px;
+  width: 100%;
   box-sizing: border-box;
 }
 
-@media (max-width: 1100px) {
-  .cards-container > * {
-    flex-basis: calc(50% - 12px);
-    max-width: calc(50% - 12px);
-  }
-}
-
-@media (max-width: 700px) {
-  .cards-container > * {
-    flex-basis: 100%;
-    max-width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .cards-container {
-    gap: 8px 6px;
-    padding: 8px 0;
-  }
-
-  .cards-container > * {
-    min-width: 90px;
-  }
-}
-
 .pagination {
+  grid-column: 1 / -1;
+  grid-row: 5;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 4px;
-  margin: 16px 0 0 0;
+  margin: 20px 0;
   flex-wrap: nowrap;
   overflow-x: visible;
   min-height: 24px;
+  padding: 0 16px;
 }
 
 .pagination-inner {
@@ -105,17 +53,17 @@
   height: 3px;
 }
 .pagination::-webkit-scrollbar-thumb {
-  background: #4ecdc4;
+  background: var(--accent-color);
   border-radius: 2px;
 }
 .pagination::-webkit-scrollbar-track {
-  background: #e0e0e0;
+  background: var(--bg-tertiary);
 }
 
 .pagination button {
-  background: #fff;
-  border: 1px solid #4ecdc4;
-  color: #333;
+  background: var(--bg-primary);
+  border: 1px solid var(--accent-color);
+  color: var(--text-primary);
   font-size: 1.1rem;
   font-weight: 500;
   border-radius: 4px;
@@ -132,16 +80,16 @@
 
 .pagination button:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(76, 205, 196, 0.2);
+  box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 .pagination button.active {
-  background: linear-gradient(90deg, #4ecdc4, #45b7d1);
-  color: #fff;
+  background: linear-gradient(90deg, var(--accent-color), var(--accent-hover));
+  color: var(--text-primary);
   font-weight: bold;
   font-size: 1.2rem;
-  border: 2px solid #45b7d1;
-  box-shadow: 0 1px 4px rgba(76, 205, 196, 0.15);
+  border: 2px solid var(--accent-hover);
+  box-shadow: 0 1px 4px var(--shadow-color);
 }
 
 .pagination button:disabled {
@@ -153,19 +101,30 @@
   font-size: 1.3rem;
   background: none;
   border: none;
-  color: #4ecdc4;
+  color: var(--accent-color);
   padding: 0 4px;
   min-width: 14px;
 }
 
 .pagination-ellipsis {
-  color: #aaa;
+  color: var(--text-muted);
   font-size: 1.1rem;
   padding: 0 2px;
   user-select: none;
 }
 
 @media (max-width: 900px) {
+  .cards-container {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(6, auto) auto;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .pagination {
+    grid-row: 7;
+  }
+
   .pagination button,
   .pagination button.active {
     font-size: 1rem;
@@ -178,10 +137,24 @@
   }
 }
 
+@media (max-width: 600px) {
+  .cards-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(12, auto) auto;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .pagination {
+    grid-row: 13;
+  }
+}
+
 @media (max-width: 480px) {
   .pagination {
-    margin: 12px 0 0 0;
+    margin: 16px 0;
     gap: 2px;
+    padding: 0 12px;
   }
 
   .pagination-inner {
@@ -201,12 +174,13 @@
 }
 
 .cards-container .pokemon-card {
-  min-height: 100px;
+  min-height: 120px;
   font-size: 1.1rem;
-  padding: 10px 5px;
+  padding: 12px 8px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(76, 205, 196, 0.08);
-  background: #fff;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   transition:
     transform 0.2s,
     box-shadow 0.2s;
@@ -216,76 +190,32 @@
 
 .cards-container .pokemon-card:hover {
   transform: translateY(-3px) scale(1.04);
-  box-shadow: 0 4px 16px rgba(76, 205, 196, 0.18);
+  box-shadow: 0 4px 16px var(--shadow-color);
 }
 
 .cards-container .pokemon-card:active {
   transform: translateY(-1px) scale(1.02);
 }
 
-.cards-container > div:not(.pagination) {
+.loading,
+.error,
+.no-results {
   width: 100%;
   text-align: center;
   padding: 20px 10px;
   font-size: 1.2rem;
-  color: #666;
+  color: #000000;
 }
 
-.cards-container > div:not(.pagination):empty::before {
-  content: 'No results found';
-  display: block;
-  color: #999;
+.loading {
+  color: var(--accent-color);
+}
+
+.error {
+  color: var(--error-color);
+}
+
+.no-results {
+  color: #000000;
   font-style: italic;
-}
-
-@media (max-width: 1024px) {
-  .searchresult-container.has-details .cards-section {
-    flex: 0 0 60%;
-    max-width: 60%;
-  }
-
-  .details-section {
-    flex: 0 0 40%;
-    max-width: 40%;
-  }
-}
-
-@media (max-width: 768px) {
-  .searchresult-container {
-    flex-direction: column;
-  }
-
-  .searchresult-container.has-details .cards-section {
-    flex: 0 0 100%;
-    max-width: 100%;
-    display: none;
-  }
-
-  .details-section {
-    flex: 0 0 100%;
-    max-width: 100%;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1000;
-    animation: slideUp 0.3s ease-out;
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-    }
-    to {
-      transform: translateY(0);
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .details-section {
-    animation: slideUp 0.3s ease-out;
-  }
 }

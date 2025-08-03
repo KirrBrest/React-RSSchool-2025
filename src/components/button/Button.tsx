@@ -1,14 +1,5 @@
-import React from 'react';
+import type { ButtonProps } from '@/types/interfaces';
 import './Button.css';
-
-interface ButtonProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-  className?: string;
-  type?: 'button' | 'submit' | 'reset';
-  disabled?: boolean;
-  variant?: 'primary' | 'secondary' | 'error';
-}
 
 const Button = ({
   children,

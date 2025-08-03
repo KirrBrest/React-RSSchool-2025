@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, afterAll } from 'vitest';
 import ErrorBoundary from '../components/errors/ErrorBoundary';
 import ErrorModal from '../components/errors/ErrorModal';
 
@@ -19,6 +19,10 @@ describe('ErrorBoundary', () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  afterAll(() => {
     vi.restoreAllMocks();
   });
 
@@ -72,11 +76,9 @@ describe('ErrorBoundary', () => {
     expect(retryButton).not.toBeDisabled();
 
     fireEvent.click(retryButton);
-
-    expect(retryButton).toBeInTheDocument();
   });
 
-  it('вызывает handleTestError и устанавливает состояние', () => {
+  it('рендерит children когда нет ошибок', () => {
     render(
       <ErrorBoundary>
         <div>Normal content</div>

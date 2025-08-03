@@ -18,7 +18,7 @@ function About() {
     <div className="about-container">
       <div className="about-header">
         <a
-          href="https://rs.school/courses/javascript"
+          href="https://rs.school/courses/reactjs"
           target="_blank"
           rel="noreferrer"
         >

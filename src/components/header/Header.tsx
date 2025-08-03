@@ -1,10 +1,12 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTheme } from '@/contexts/ThemeContext';
 import './Header.css';
 
 const Header: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const handleHomeClick = () => {
     navigate('/');
@@ -36,6 +38,14 @@ const Header: React.FC = () => {
           >
             <span className="nav-icon">ℹ️</span>
             About
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="nav-link theme-toggle"
+            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+          >
+            <span className="nav-icon">{theme === 'light' ? '🌙' : '☀️'}</span>
+            {theme === 'light' ? 'Dark' : 'Light'}
           </button>
         </nav>
       </div>
