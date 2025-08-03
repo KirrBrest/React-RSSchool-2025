@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet, useSearchParams } from 'react-router-dom';
 import Search from '@/components/search/Search';
 import Searchresult from '@/components/searchresult/Searchresult';
+import SelectedPokemon from '@/components/selected-pokemon/SelectedPokemon';
 import ErrorBoundary from '@/components/errors/ErrorBoundary';
 import useLocalStorage from '@/utils/useLocalStorage';
 import Button from '@/components/button/Button';
@@ -33,18 +34,17 @@ const Home = () => {
         <div className="home-content">
           <Search onSearch={handleSearchQuery} />
           <div className="main-content">
-            <div
-              className={`pokemon-list-section ${
-                isPokemonDetailsOpen ? 'with-details' : ''
-              }`}
-            >
-              <Searchresult searchQuery={searchQuery} />
+            <div className="left-panel">
+              <div
+                className={`pokemon-list-section ${
+                  isPokemonDetailsOpen ? 'with-details' : ''
+                }`}
+              >
+                <Searchresult searchQuery={searchQuery} />
+              </div>
+              <SelectedPokemon />
             </div>
-            <div
-              className={`pokemon-details-section ${
-                !isPokemonDetailsOpen ? 'hidden' : ''
-              }`}
-            >
+            <div className="pokemon-details-section">
               <Outlet />
             </div>
           </div>

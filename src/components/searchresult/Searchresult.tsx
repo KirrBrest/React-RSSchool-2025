@@ -25,7 +25,7 @@ const Searchresult = ({ searchQuery }: MainProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const rawQuery = searchQuery.trim().toLowerCase();
+      const rawQuery = (searchQuery || '').trim().toLowerCase();
       const query = processSearchQuery(rawQuery);
 
       setLoading(true);
@@ -83,7 +83,6 @@ const Searchresult = ({ searchQuery }: MainProps) => {
   const handlePageChange = (newPage: number) => {
     const currentParams = new URLSearchParams(searchParams);
     currentParams.set('page', String(newPage));
-    // Сохраняем details при смене страницы
     setSearchParams(currentParams);
   };
 
