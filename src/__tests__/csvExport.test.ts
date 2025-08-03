@@ -1,35 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { downloadPokemonCSV } from '@/utils/csvExport';
+import { createPokemonCSV } from '@/utils/csvExport';
 import type { Pokemon } from '@/types/interfaces';
 
 describe('csvExport', () => {
   beforeEach(() => {
-    const mockLink = {
-      download: 'test.csv',
-      setAttribute: vi.fn(),
-      style: { visibility: 'hidden' },
-      click: vi.fn(),
-    };
-
-    const mockCreateElement = vi.fn(() => mockLink);
-    const mockAppendChild = vi.fn();
-    const mockRemoveChild = vi.fn();
     const mockCreateObjectURL = vi.fn(() => 'blob:test-url');
-
-    Object.defineProperty(document, 'createElement', {
-      value: mockCreateElement,
-      writable: true,
-    });
-
-    Object.defineProperty(document.body, 'appendChild', {
-      value: mockAppendChild,
-      writable: true,
-    });
-
-    Object.defineProperty(document.body, 'removeChild', {
-      value: mockRemoveChild,
-      writable: true,
-    });
 
     Object.defineProperty(URL, 'createObjectURL', {
       value: mockCreateObjectURL,
@@ -40,23 +15,8 @@ describe('csvExport', () => {
   });
 
   it('не выполняет скачивание когда список пустой', () => {
-    const mockLink = {
-      download: undefined,
-      setAttribute: vi.fn(),
-      style: { visibility: 'hidden' },
-      click: vi.fn(),
-    };
-
-    const mockCreateElement = vi.fn(() => mockLink);
-
-    Object.defineProperty(document, 'createElement', {
-      value: mockCreateElement,
-      writable: true,
-    });
-
-    downloadPokemonCSV([]);
-
-    expect(mockCreateElement).not.toHaveBeenCalled();
+    const result = createPokemonCSV([]);
+    expect(result).toBeNull();
   });
 
   it('создает правильный CSV контент', () => {
@@ -76,8 +36,10 @@ describe('csvExport', () => {
     const mockBlob = vi.fn();
     global.Blob = mockBlob;
 
-    downloadPokemonCSV(pokemons);
+    const result = createPokemonCSV(pokemons);
 
+    expect(result).not.toBeNull();
+    expect(result?.filename).toBe('2_items.csv');
     expect(mockBlob).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.stringContaining('ID,Name,URL,Details URL'),
@@ -104,8 +66,9 @@ describe('csvExport', () => {
     const mockBlob = vi.fn();
     global.Blob = mockBlob;
 
-    downloadPokemonCSV(pokemons);
+    const result = createPokemonCSV(pokemons);
 
-    expect(document.createElement).toHaveBeenCalledWith('a');
+    expect(result?.filename).toBe('1_items.csv');
+    expect(result?.url).toBe('blob:test-url');
   });
 });

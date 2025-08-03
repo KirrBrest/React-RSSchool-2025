@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import PokemonDetailsRoute from '@/components/pokemon-details/PokemonDetailsRoute';
 
 vi.mock('@/components/pokemon-details/PokemonDetails', () => ({
@@ -26,57 +26,49 @@ describe('PokemonDetailsRoute', () => {
       new URLSearchParams('?details=25'),
       vi.fn(),
     ]);
-
     render(
-      <BrowserRouter>
+      <HashRouter>
         <PokemonDetailsRoute />
-      </BrowserRouter>
+      </HashRouter>
     );
-
     expect(screen.getByTestId('pokemon-details')).toBeInTheDocument();
     expect(screen.getByText('Pokemon Details for 25')).toBeInTheDocument();
   });
 
-  it('возвращает null когда detailsId отсутствует', () => {
+  it('не рендерит PokemonDetails когда detailsId отсутствует', () => {
     mockUseSearchParams.mockReturnValue([new URLSearchParams(''), vi.fn()]);
-
-    const { container } = render(
-      <BrowserRouter>
+    render(
+      <HashRouter>
         <PokemonDetailsRoute />
-      </BrowserRouter>
+      </HashRouter>
     );
-
-    expect(container.firstChild).toBeNull();
+    expect(screen.queryByTestId('pokemon-details')).not.toBeInTheDocument();
   });
 
-  it('возвращает null когда detailsId равен null', () => {
-    mockUseSearchParams.mockReturnValue([
-      new URLSearchParams('?other=value'),
-      vi.fn(),
-    ]);
-
-    const { container } = render(
-      <BrowserRouter>
-        <PokemonDetailsRoute />
-      </BrowserRouter>
-    );
-
-    expect(container.firstChild).toBeNull();
-  });
-
-  it('передает правильный pokemonId в PokemonDetails', () => {
+  it('правильно передает pokemonId в PokemonDetails', () => {
     mockUseSearchParams.mockReturnValue([
       new URLSearchParams('?details=150'),
       vi.fn(),
     ]);
-
     render(
-      <BrowserRouter>
+      <HashRouter>
         <PokemonDetailsRoute />
-      </BrowserRouter>
+      </HashRouter>
     );
+    const detailsElement = screen.getByTestId('pokemon-details');
+    expect(detailsElement).toHaveAttribute('data-pokemon-id', '150');
+  });
 
-    const pokemonDetails = screen.getByTestId('pokemon-details');
-    expect(pokemonDetails).toHaveAttribute('data-pokemon-id', '150');
+  it('обрабатывает null значение detailsId', () => {
+    mockUseSearchParams.mockReturnValue([
+      new URLSearchParams('?details='),
+      vi.fn(),
+    ]);
+    render(
+      <HashRouter>
+        <PokemonDetailsRoute />
+      </HashRouter>
+    );
+    expect(screen.queryByTestId('pokemon-details')).not.toBeInTheDocument();
   });
 });

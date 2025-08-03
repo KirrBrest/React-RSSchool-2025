@@ -39,6 +39,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       hasError: false,
       errorMessage: '',
       errorType: '',
+      errorDetails: undefined,
       showErrorModal: false,
     });
   };

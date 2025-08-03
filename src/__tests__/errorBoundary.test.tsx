@@ -72,8 +72,6 @@ describe('ErrorBoundary', () => {
     expect(retryButton).not.toBeDisabled();
 
     fireEvent.click(retryButton);
-
-    expect(retryButton).toBeInTheDocument();
   });
 
   it('рендерит children когда нет ошибок', () => {

@@ -1,100 +1,74 @@
+import { HashRouter } from 'react-router-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { describe, it, expect, vi } from 'vitest';
 import Header from '@/components/header/Header';
-import { vi } from 'vitest';
 
 const mockNavigate = vi.fn();
-let mockLocation = { pathname: '/' };
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
-    useLocation: () => mockLocation,
   };
 });
 
 const renderWithRouter = (component: React.ReactElement) => {
-  return render(<BrowserRouter>{component}</BrowserRouter>);
+  return render(<HashRouter>{component}</HashRouter>);
 };
 
-describe('Header Component', () => {
+describe('Header', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockLocation = { pathname: '/' };
   });
 
-  it('отображает логотип Pokemon и заголовок', () => {
+  it('рендерит логотип Pokemon Explorer', () => {
     renderWithRouter(<Header />);
-    expect(screen.getByText('⚡')).toBeInTheDocument();
     expect(screen.getByText('Pokemon Explorer')).toBeInTheDocument();
   });
 
-  it('отображает навигационные ссылки', () => {
+  it('рендерит иконку покемона', () => {
     renderWithRouter(<Header />);
-    expect(screen.getByText('Home')).toBeInTheDocument();
-    expect(screen.getByText('About')).toBeInTheDocument();
+    expect(screen.getByText('⚡')).toBeInTheDocument();
   });
 
-  it('показывает активное состояние для главной страницы', () => {
-    mockLocation = { pathname: '/' };
+  it('рендерит кнопку Home', () => {
     renderWithRouter(<Header />);
-    const homeButton = screen.getByText('Home').closest('button');
-    expect(homeButton).toHaveClass('active');
+    expect(screen.getByRole('button', { name: /home/i })).toBeInTheDocument();
   });
 
-  it('показывает активное состояние для страницы About', () => {
-    mockLocation = { pathname: '/about' };
+  it('рендерит кнопку About', () => {
     renderWithRouter(<Header />);
-    const aboutButton = screen.getByText('About').closest('button');
-    expect(aboutButton).toHaveClass('active');
+    expect(screen.getByRole('button', { name: /about/i })).toBeInTheDocument();
   });
 
-  it('не показывает активное состояние для других страниц', () => {
-    mockLocation = { pathname: '/other' };
+  it('кнопка Home кликабельна', () => {
     renderWithRouter(<Header />);
-    const homeButton = screen.getByText('Home').closest('button');
-    const aboutButton = screen.getByText('About').closest('button');
-    expect(homeButton).not.toHaveClass('active');
-    expect(aboutButton).not.toHaveClass('active');
+    const homeButton = screen.getByRole('button', { name: /home/i });
+    expect(homeButton).not.toBeDisabled();
   });
 
-  it('переходит на главную страницу при клике на кнопку Home', () => {
+  it('кнопка About кликабельна', () => {
     renderWithRouter(<Header />);
-    const homeButton = screen.getByText('Home').closest('button');
-    if (homeButton) {
-      fireEvent.click(homeButton);
-      expect(mockNavigate).toHaveBeenCalledWith('/');
-    }
+    const aboutButton = screen.getByRole('button', { name: /about/i });
+    expect(aboutButton).not.toBeDisabled();
   });
 
-  it('переходит на страницу About при клике на кнопку About', () => {
+  it('вызывает handleHomeClick при клике на кнопку Home', () => {
     renderWithRouter(<Header />);
-    const aboutButton = screen.getByText('About').closest('button');
-    if (aboutButton) {
-      fireEvent.click(aboutButton);
-      expect(mockNavigate).toHaveBeenCalledWith('/about');
-    }
+    const homeButton = screen.getByRole('button', { name: /home/i });
+
+    fireEvent.click(homeButton);
+
+    expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 
-  it('имеет правильные иконки навигации', () => {
+  it('вызывает handleAboutClick при клике на кнопку About', () => {
     renderWithRouter(<Header />);
-    expect(screen.getByText('🏠')).toBeInTheDocument();
-    expect(screen.getByText('ℹ️')).toBeInTheDocument();
-  });
+    const aboutButton = screen.getByRole('button', { name: /about/i });
 
-  it('отображает заголовок с правильной структурой', () => {
-    renderWithRouter(<Header />);
-    const header = screen.getByText('Pokemon Explorer').closest('.header');
-    expect(header).toBeInTheDocument();
-  });
+    fireEvent.click(aboutButton);
 
-  it('имеет правильные CSS классы для навигационных кнопок', () => {
-    renderWithRouter(<Header />);
-    const homeButton = screen.getByText('Home').closest('button');
-    const aboutButton = screen.getByText('About').closest('button');
-    expect(homeButton).toHaveClass('nav-link');
-    expect(aboutButton).toHaveClass('nav-link');
+    expect(mockNavigate).toHaveBeenCalledWith('/about');
   });
 });

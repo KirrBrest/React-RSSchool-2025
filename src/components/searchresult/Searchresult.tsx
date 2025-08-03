@@ -75,6 +75,7 @@ const Searchresult = ({ searchQuery }: MainProps) => {
 
   const handlePokemonSelect = (pokemonId: string) => {
     const currentParams = new URLSearchParams(searchParams);
+    currentParams.set('page', String(page));
     currentParams.set('details', pokemonId);
     setSearchParams(currentParams);
   };
@@ -83,6 +84,10 @@ const Searchresult = ({ searchQuery }: MainProps) => {
   const handlePageChange = (newPage: number) => {
     const currentParams = new URLSearchParams(searchParams);
     currentParams.set('page', String(newPage));
+    const details = searchParams.get('details');
+    if (details) {
+      currentParams.set('details', details);
+    }
     setSearchParams(currentParams);
   };
 

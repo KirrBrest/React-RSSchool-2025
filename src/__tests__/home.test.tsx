@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import pokemonReducer from '@/store/pokemonSlice';
 import Home from '@/pages/home/Home';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import { useState } from 'react';
 
 const createTestStore = (
@@ -42,9 +42,9 @@ describe('Home', () => {
     const store = createTestStore(initialState);
     return render(
       <Provider store={store}>
-        <BrowserRouter>
+        <HashRouter>
           <Home />
-        </BrowserRouter>
+        </HashRouter>
       </Provider>
     );
   };
@@ -208,9 +208,9 @@ describe('Home', () => {
     expect(() => {
       render(
         <Provider store={createTestStore()}>
-          <BrowserRouter>
+          <HashRouter>
             <TestComponent />
-          </BrowserRouter>
+          </HashRouter>
         </Provider>
       );
     }).toThrow('This is a test error');
