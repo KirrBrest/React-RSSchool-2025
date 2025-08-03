@@ -177,8 +177,11 @@ describe('Пагинация', () => {
     render(<Searchresult searchQuery="" />);
 
     await waitFor(() => {
+      const quantityOfElements = 1281;
+      const quantityOnPage = 12;
+      const quantityOfPages = Math.ceil(quantityOfElements / quantityOnPage);
       expect(screen.getByText('1')).toBeInTheDocument();
-      expect(screen.getByText('81')).toBeInTheDocument(); // Math.ceil(1281/16)
+      expect(screen.getByText(String(quantityOfPages))).toBeInTheDocument();
       expect(screen.getByLabelText('Previous page')).toBeInTheDocument();
       expect(screen.getByLabelText('Next page')).toBeInTheDocument();
     });
@@ -376,7 +379,7 @@ describe('Пагинация', () => {
     render(<Searchresult searchQuery="" />);
 
     await waitFor(() => {
-      const lastPageButton = screen.getByText('81');
+      const lastPageButton = screen.getByText('107');
       fireEvent.click(lastPageButton);
       expect(mockSetSearchParams).toHaveBeenCalledWith(
         expect.any(URLSearchParams)
@@ -424,7 +427,7 @@ describe('Пагинация', () => {
     render(<Searchresult searchQuery="" />);
 
     await waitFor(() => {
-      const pageButton = screen.getByText('81');
+      const pageButton = screen.getByText('107');
       fireEvent.click(pageButton);
       expect(mockSetSearchParams).toHaveBeenCalledWith(
         expect.any(URLSearchParams)
@@ -586,7 +589,7 @@ describe('Обработка URL параметров', () => {
     render(<Searchresult searchQuery="" />);
 
     await waitFor(() => {
-      expect(getPokemonList).toHaveBeenCalledWith(16, 32);
+      expect(getPokemonList).toHaveBeenCalledWith(12, 24);
     });
   });
 
@@ -609,7 +612,7 @@ describe('Обработка URL параметров', () => {
     render(<Searchresult searchQuery="" />);
 
     await waitFor(() => {
-      expect(getPokemonList).toHaveBeenCalledWith(16, 0);
+      expect(getPokemonList).toHaveBeenCalledWith(12, 0);
     });
   });
 });

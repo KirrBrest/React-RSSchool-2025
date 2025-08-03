@@ -1,17 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import type { Pokemon, PokemonSliceState } from '@/types/interfaces';
 
-interface Pokemon {
-  id: string;
-  name: string;
-  url: string;
-}
-
-interface PokemonState {
-  selectedPokemons: Pokemon[];
-}
-
-const initialState: PokemonState = {
+const initialState: PokemonSliceState = {
   selectedPokemons: [],
 };
 

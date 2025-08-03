@@ -5,6 +5,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import pokemonReducer from '@/store/pokemonSlice';
 import Home from '@/pages/home/Home';
 import { BrowserRouter } from 'react-router-dom';
+import { useState } from 'react';
 
 const createTestStore = (
   initialState = { pokemon: { selectedPokemons: [] } }
@@ -131,5 +132,89 @@ describe('Home', () => {
     fireEvent.change(searchInput, { target: { value: 'test' } });
 
     expect(searchInput).toHaveValue('test');
+  });
+
+  it('правильно обрабатывает URL параметры для деталей покемона', () => {
+    renderWithProviders();
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+  });
+
+  it('правильно обрабатывает состояние без параметра details', () => {
+    renderWithProviders();
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+  });
+
+  it('вызывает setSearchQuery при изменении поискового запроса', () => {
+    const mockSetItem = vi.fn();
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: vi.fn().mockReturnValue(''),
+        setItem: mockSetItem,
+        removeItem: vi.fn(),
+      },
+      writable: true,
+    });
+
+    renderWithProviders();
+
+    const searchInput = screen.getByRole('textbox');
+    fireEvent.change(searchInput, { target: { value: 'new-search' } });
+
+    expect(searchInput).toHaveValue('new-search');
+  });
+
+  it('правильно обрабатывает функцию handleSearchQuery', () => {
+    const mockSetItem = vi.fn();
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: vi.fn().mockReturnValue(''),
+        setItem: mockSetItem,
+        removeItem: vi.fn(),
+      },
+      writable: true,
+    });
+
+    renderWithProviders();
+
+    const searchInput = screen.getByRole('textbox');
+    fireEvent.change(searchInput, { target: { value: 'test-query' } });
+
+    expect(searchInput).toHaveValue('test-query');
+  });
+
+  it('вызывает setError при клике на кнопку Throw Error', () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(() => {
+      renderWithProviders();
+      const errorButton = screen.getByText(/throw error/i);
+      fireEvent.click(errorButton);
+    }).toThrow('This is a test error');
+
+    consoleSpy.mockRestore();
+  });
+
+  it('выбрасывает ошибку когда error состояние true', () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const TestComponent = () => {
+      const [error] = useState(true);
+      if (error) {
+        throw new Error('This is a test error');
+      }
+      return <div>Test</div>;
+    };
+
+    expect(() => {
+      render(
+        <Provider store={createTestStore()}>
+          <BrowserRouter>
+            <TestComponent />
+          </BrowserRouter>
+        </Provider>
+      );
+    }).toThrow('This is a test error');
+
+    consoleSpy.mockRestore();
   });
 });

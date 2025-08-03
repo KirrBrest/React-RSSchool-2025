@@ -6,7 +6,7 @@ import './Searchresult.css';
 import processSearchQuery from '@/utils/validation';
 import { getPokemonList } from '@/api/pokemonApi';
 
-const PAGE_SIZE = 16;
+const PAGE_SIZE = 12;
 
 const Searchresult = ({ searchQuery }: MainProps) => {
   const [results, setResults] = useState<Array<{ name: string; url: string }>>(

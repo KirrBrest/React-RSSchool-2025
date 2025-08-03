@@ -2,61 +2,41 @@
   width: 100%;
   height: 100%;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .cards-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px 12px;
-  padding: 12px 0;
-  max-width: 1280px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, auto) auto;
+  gap: 10px;
+  padding: 16px;
+  max-width: 700px;
+  width: 100%;
   margin: 0 auto;
   transition: all 0.3s ease;
+  flex: 1;
 }
 
 .cards-container > * {
-  flex: 1 1 calc(25% - 12px);
-  max-width: calc(25% - 12px);
-  min-width: 110px;
+  width: 100%;
   box-sizing: border-box;
 }
 
-@media (max-width: 1100px) {
-  .cards-container > * {
-    flex-basis: calc(50% - 12px);
-    max-width: calc(50% - 12px);
-  }
-}
-
-@media (max-width: 700px) {
-  .cards-container > * {
-    flex-basis: 100%;
-    max-width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .cards-container {
-    gap: 8px 6px;
-    padding: 8px 0;
-  }
-
-  .cards-container > * {
-    min-width: 90px;
-  }
-}
-
 .pagination {
+  grid-column: 1 / -1;
+  grid-row: 5;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 4px;
-  margin: 16px 0 0 0;
+  margin: 20px 0;
   flex-wrap: nowrap;
   overflow-x: visible;
   min-height: 24px;
+  padding: 0 16px;
 }
 
 .pagination-inner {
@@ -133,6 +113,17 @@
 }
 
 @media (max-width: 900px) {
+  .cards-container {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(6, auto) auto;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .pagination {
+    grid-row: 7;
+  }
+
   .pagination button,
   .pagination button.active {
     font-size: 1rem;
@@ -145,10 +136,24 @@
   }
 }
 
+@media (max-width: 600px) {
+  .cards-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(12, auto) auto;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .pagination {
+    grid-row: 13;
+  }
+}
+
 @media (max-width: 480px) {
   .pagination {
-    margin: 12px 0 0 0;
+    margin: 16px 0;
     gap: 2px;
+    padding: 0 12px;
   }
 
   .pagination-inner {
@@ -168,9 +173,9 @@
 }
 
 .cards-container .pokemon-card {
-  min-height: 100px;
+  min-height: 120px;
   font-size: 1.1rem;
-  padding: 10px 5px;
+  padding: 12px 8px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(76, 205, 196, 0.08);
   background: #fff;

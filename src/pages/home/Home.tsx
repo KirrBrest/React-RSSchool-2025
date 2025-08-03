@@ -3,7 +3,6 @@ import { Outlet, useSearchParams } from 'react-router-dom';
 import Search from '@/components/search/Search';
 import Searchresult from '@/components/searchresult/Searchresult';
 import SelectedPokemon from '@/components/selected-pokemon/SelectedPokemon';
-import ErrorBoundary from '@/components/errors/ErrorBoundary';
 import useLocalStorage from '@/utils/useLocalStorage';
 import Button from '@/components/button/Button';
 import './Home.css';
@@ -29,31 +28,27 @@ const Home = () => {
   }
 
   return (
-    <ErrorBoundary>
-      <div className="home-container">
-        <div className="home-content">
-          <Search onSearch={handleSearchQuery} />
-          <div className="main-content">
-            <div className="left-panel">
-              <div
-                className={`pokemon-list-section ${
-                  isPokemonDetailsOpen ? 'with-details' : ''
-                }`}
-              >
-                <Searchresult searchQuery={searchQuery} />
-              </div>
-              <SelectedPokemon />
-            </div>
-            <div className="pokemon-details-section">
-              <Outlet />
-            </div>
+    <div className="home-container">
+      <div className="home-content">
+        <Search onSearch={handleSearchQuery} />
+        <div className="main-content">
+          <div
+            className={`pokemon-list-section ${
+              isPokemonDetailsOpen ? 'with-details' : ''
+            }`}
+          >
+            <Searchresult searchQuery={searchQuery} />
           </div>
-          <Button onClick={throwError} variant="error">
-            Throw Error
-          </Button>
+          <div className="pokemon-details-section">
+            <Outlet />
+          </div>
         </div>
+        <Button onClick={throwError} variant="error">
+          Throw Error
+        </Button>
       </div>
-    </ErrorBoundary>
+      <SelectedPokemon />
+    </div>
   );
 };
 

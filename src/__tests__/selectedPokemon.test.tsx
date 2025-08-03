@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -17,21 +17,24 @@ const createTestStore = (
   });
 };
 
+vi.mock('@/utils/csvExport', () => ({
+  downloadPokemonCSV: vi.fn(),
+}));
+
 describe('SelectedPokemon', () => {
-  it('отображает сообщение когда нет выбранных покемонов', () => {
+  it('не отображается когда нет выбранных покемонов', () => {
     const store = createTestStore();
 
-    render(
+    const { container } = render(
       <Provider store={store}>
         <SelectedPokemon />
       </Provider>
     );
 
-    expect(screen.getByText('Выбранные покемоны')).toBeInTheDocument();
-    expect(screen.getByText('Нет выбранных покемонов')).toBeInTheDocument();
+    expect(container.firstChild).toBeNull();
   });
 
-  it('отображает список выбранных покемонов', () => {
+  it('отображает количество выбранных элементов', () => {
     const initialState = {
       pokemon: {
         selectedPokemons: [
@@ -57,14 +60,10 @@ describe('SelectedPokemon', () => {
       </Provider>
     );
 
-    expect(screen.getByText('Выбранные покемоны (2)')).toBeInTheDocument();
-    expect(screen.getByText('bulbasaur')).toBeInTheDocument();
-    expect(screen.getByText('ivysaur')).toBeInTheDocument();
-    expect(screen.getByText('#1')).toBeInTheDocument();
-    expect(screen.getByText('#2')).toBeInTheDocument();
+    expect(screen.getByText('2 items are selected')).toBeInTheDocument();
   });
 
-  it('очищает всех покемонов при нажатии кнопки "Очистить все"', () => {
+  it('отображает правильный текст для одного элемента', () => {
     const initialState = {
       pokemon: {
         selectedPokemons: [
@@ -85,15 +84,23 @@ describe('SelectedPokemon', () => {
       </Provider>
     );
 
-    const clearButton = screen.getByText('Очистить все');
-    fireEvent.click(clearButton);
-
-    const state = store.getState();
-    expect(state.pokemon.selectedPokemons).toHaveLength(0);
+    expect(screen.getByText('1 item is selected')).toBeInTheDocument();
   });
 
-  it('отображает кнопку "Очистить все" только когда есть выбранные покемоны', () => {
-    const store = createTestStore();
+  it('очищает всех покемонов при нажатии кнопки "Unselect all"', () => {
+    const initialState = {
+      pokemon: {
+        selectedPokemons: [
+          {
+            id: '1',
+            name: 'bulbasaur',
+            url: 'https://pokeapi.co/api/v2/pokemon/1/',
+          },
+        ],
+      },
+    };
+
+    const store = createTestStore(initialState);
 
     render(
       <Provider store={store}>
@@ -101,6 +108,67 @@ describe('SelectedPokemon', () => {
       </Provider>
     );
 
-    expect(screen.queryByText('Очистить все')).not.toBeInTheDocument();
+    const unselectButton = screen.getByText('Unselect all');
+    fireEvent.click(unselectButton);
+
+    const state = store.getState();
+    expect(state.pokemon.selectedPokemons).toHaveLength(0);
+  });
+
+  it('вызывает функцию скачивания при нажатии кнопки "Download"', async () => {
+    const { downloadPokemonCSV } = await import('@/utils/csvExport');
+    const mockDownload = vi.mocked(downloadPokemonCSV);
+
+    const initialState = {
+      pokemon: {
+        selectedPokemons: [
+          {
+            id: '1',
+            name: 'bulbasaur',
+            url: 'https://pokeapi.co/api/v2/pokemon/1/',
+          },
+        ],
+      },
+    };
+
+    const store = createTestStore(initialState);
+
+    render(
+      <Provider store={store}>
+        <SelectedPokemon />
+      </Provider>
+    );
+
+    const downloadButton = screen.getByText('Download');
+    fireEvent.click(downloadButton);
+
+    expect(mockDownload).toHaveBeenCalledWith(
+      initialState.pokemon.selectedPokemons
+    );
+  });
+
+  it('отображает кнопки "Unselect all" и "Download"', () => {
+    const initialState = {
+      pokemon: {
+        selectedPokemons: [
+          {
+            id: '1',
+            name: 'bulbasaur',
+            url: 'https://pokeapi.co/api/v2/pokemon/1/',
+          },
+        ],
+      },
+    };
+
+    const store = createTestStore(initialState);
+
+    render(
+      <Provider store={store}>
+        <SelectedPokemon />
+      </Provider>
+    );
+
+    expect(screen.getByText('Unselect all')).toBeInTheDocument();
+    expect(screen.getByText('Download')).toBeInTheDocument();
   });
 });

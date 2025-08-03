@@ -1,41 +1,52 @@
+import React from 'react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { clearSelectedPokemons } from '@/store/pokemonSlice';
+import { downloadPokemonCSV } from '@/utils/csvExport';
 import './SelectedPokemon.css';
 
-const SelectedPokemon = () => {
+const SelectedPokemon: React.FC = () => {
   const selectedPokemons = useAppSelector(
     (state) => state.pokemon.selectedPokemons
   );
   const dispatch = useAppDispatch();
 
-  const handleClearAll = () => {
+  const handleClearAll = (): void => {
     dispatch(clearSelectedPokemons());
   };
 
+  const handleDownload = (): void => {
+    downloadPokemonCSV(selectedPokemons);
+  };
+
   if (selectedPokemons.length === 0) {
-    return (
-      <div className="selected-pokemon-container">
-        <h3>Выбранные покемоны</h3>
-        <p className="no-selection">Нет выбранных покемонов</p>
-      </div>
-    );
+    return null;
   }
 
   return (
-    <div className="selected-pokemon-container">
-      <div className="selected-header">
-        <h3>Выбранные покемоны ({selectedPokemons.length})</h3>
-        <button onClick={handleClearAll} className="clear-all-btn">
-          Очистить все
-        </button>
-      </div>
-      <div className="selected-list">
-        {selectedPokemons.map((pokemon) => (
-          <div key={pokemon.id} className="selected-item">
-            <span className="pokemon-name">{pokemon.name}</span>
-            <span className="pokemon-id">#{pokemon.id}</span>
-          </div>
-        ))}
+    <div className="selected-pokemon-flyout">
+      <div className="flyout-content">
+        <div className="flyout-header">
+          <span className="selected-count">
+            {selectedPokemons.length}{' '}
+            {selectedPokemons.length === 1 ? 'item is' : 'items are'} selected
+          </span>
+        </div>
+        <div className="flyout-actions">
+          <button
+            className="flyout-button unselect-all"
+            onClick={handleClearAll}
+            type="button"
+          >
+            Unselect all
+          </button>
+          <button
+            className="flyout-button download"
+            onClick={handleDownload}
+            type="button"
+          >
+            Download
+          </button>
+        </div>
       </div>
     </div>
   );

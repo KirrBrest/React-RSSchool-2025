@@ -55,6 +55,10 @@ export interface PokemonCardState {
   sprite: string | null;
 }
 
+export interface PokemonSliceState {
+  selectedPokemons: Pokemon[];
+}
+
 export interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
@@ -104,4 +108,10 @@ export interface PokemonData {
 export interface PokemonDetailsProps {
   pokemonId?: string;
   onClose?: () => void;
+}
+
+export interface Pokemon {
+  id: string;
+  name: string;
+  url: string;
 }
