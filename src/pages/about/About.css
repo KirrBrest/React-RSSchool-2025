@@ -3,7 +3,8 @@
   margin: 0 auto;
   padding: 2rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f7fa;
+  background-color: var(--bg-primary);
+  color: #000000;
   margin-top: 62px;
 }
 
@@ -23,13 +24,13 @@
 }
 
 .about-header h1 {
-  color: #2c3e50;
+  color: #000000;
   font-size: 2.5rem;
   margin-bottom: 1rem;
 }
 
 .team-description {
-  color: #34495e;
+  color: #000000;
   font-size: 1.1rem;
   line-height: 1.6;
   max-width: 800px;
@@ -45,19 +46,20 @@
 }
 
 .team-member-card {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 10px;
   padding: 1.5rem;
   width: 300px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px var(--shadow-color);
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
+  border: 1px solid var(--border-color);
 }
 
 .team-member-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 20px var(--shadow-color);
 }
 
 .member-photo {
@@ -67,24 +69,24 @@
   object-fit: cover;
   margin: 0 auto 1rem;
   display: block;
-  border: 4px solid #3498db;
+  border: 4px solid var(--accent-color);
 }
 
 .team-member-card h2 {
-  color: #2c3e50;
+  color: #000000;
   text-align: center;
   margin-bottom: 0.5rem;
 }
 
 .team-member-card h3 {
-  color: #7f8c8d;
+  color: #666666;
   text-align: center;
   margin-bottom: 1rem;
   font-weight: 500;
 }
 
 .member-bio {
-  color: #34495e;
+  color: #000000;
   line-height: 1.5;
   margin-bottom: 1.5rem;
 }
@@ -92,8 +94,8 @@
 .github-link {
   display: block;
   text-align: center;
-  background-color: #3498db;
-  color: white;
+  background-color: var(--accent-color);
+  color: var(--text-primary);
   padding: 0.5rem 1rem;
   border-radius: 5px;
   text-decoration: none;
@@ -102,7 +104,7 @@
 }
 
 .github-link:hover {
-  background-color: #2980b9;
+  background-color: var(--accent-hover);
 }
 
 @media (max-width: 768px) {

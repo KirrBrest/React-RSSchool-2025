@@ -1,5 +1,5 @@
 .pokemon-card {
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   padding: 16px;
   margin: 0 20px;
@@ -7,8 +7,9 @@
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--bg-primary);
+  color: #000000;
+  box-shadow: 0 2px 4px var(--shadow-color);
   min-height: 120px;
   display: flex;
   flex-direction: column;
@@ -19,18 +20,22 @@
 
 .pokemon-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-color: #4ecdc4;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  border-color: var(--accent-color);
 }
 
 .pokemon-card.selected {
-  border-color: #4ecdc4;
-  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-  color: white;
+  border-color: var(--accent-color);
+  background: linear-gradient(
+    135deg,
+    var(--accent-color) 0%,
+    var(--accent-hover) 100%
+  );
+  color: var(--text-primary);
 }
 
 .pokemon-card.selected:hover {
-  box-shadow: 0 6px 12px rgba(78, 205, 196, 0.3);
+  box-shadow: 0 6px 12px var(--shadow-color);
 }
 
 .checkbox-container {
@@ -44,7 +49,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #4ecdc4;
+  accent-color: var(--accent-color);
 }
 
 .pokemon-info {
@@ -60,7 +65,7 @@
   height: 64px;
   object-fit: contain;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
   padding: 4px;
 }
 
@@ -70,12 +75,12 @@
   font-weight: 600;
   text-transform: capitalize;
   word-break: break-word;
-  color: #333;
+  color: #000000;
 }
 
 .pokemon-card.selected .pokemon-name {
-  color: #ffd700;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  color: #000000;
+  text-shadow: 0 1px 3px var(--shadow-color);
   font-weight: 700;
 }
 
@@ -90,8 +95,8 @@
 .loading-spinner {
   width: 24px;
   height: 24px;
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #4ecdc4;
+  border: 2px solid var(--bg-tertiary);
+  border-top: 2px solid var(--accent-color);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 8px;
@@ -107,9 +112,9 @@
 }
 
 .pokemon-card.error {
-  border-color: #ff6b6b;
-  background: #fff5f5;
-  color: #d63031;
+  border-color: var(--error-color);
+  background: var(--bg-secondary);
+  color: var(--error-color);
 }
 
 .pokemon-card.error p {

@@ -10,6 +10,9 @@
   align-items: center;
   justify-content: center;
   min-height: 36px;
+  background-color: var(--bg-secondary);
+  color: #000000;
+  border: 1px solid var(--border-color);
 }
 
 .button:disabled {
@@ -18,34 +21,35 @@
 }
 
 .button-primary {
-  background-color: #007bff;
+  background-color: var(--accent-color);
   color: white;
 }
 
 .button-primary:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: var(--accent-hover);
 }
 
 .button-secondary {
-  background-color: #6c757d;
-  color: white;
+  background-color: var(--bg-tertiary);
+  color: #000000;
 }
 
 .button-secondary:hover:not(:disabled) {
-  background-color: #545b62;
+  background-color: var(--bg-secondary);
 }
 
 .button-error {
-  background-color: #dc3545;
+  background-color: var(--error-color);
   color: white;
 }
 
 .button-error:hover:not(:disabled) {
-  background-color: #c82333;
+  background-color: var(--error-color);
+  opacity: 0.8;
 }
 
 .header-query-button {
-  background-color: #007bff;
+  background-color: var(--accent-color);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -55,11 +59,11 @@
 }
 
 .header-query-button:hover {
-  background-color: #0056b3;
+  background-color: var(--accent-hover);
 }
 
 .error-button {
-  background-color: #dc3545;
+  background-color: var(--error-color);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -69,5 +73,6 @@
 }
 
 .error-button:hover {
-  background-color: #c82333;
+  background-color: var(--error-color);
+  opacity: 0.8;
 }

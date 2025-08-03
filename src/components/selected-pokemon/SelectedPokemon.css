@@ -3,15 +3,16 @@
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(102, 126, 234, 0.9);
+  background: var(--bg-secondary);
   backdrop-filter: blur(10px);
-  color: white;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  color: var(--text-primary);
+  box-shadow: 0 8px 32px var(--shadow-color);
   z-index: 1000;
   animation: slideUp 0.3s ease-out;
   border-radius: 12px;
   max-width: 400px;
   width: 90%;
+  border: 1px solid var(--border-color);
 }
 
 .flyout-content {
@@ -29,7 +30,7 @@
 .selected-count {
   font-size: 14px;
   font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 2px var(--shadow-color);
 }
 
 .flyout-actions {
@@ -51,27 +52,28 @@
 }
 
 .flyout-button.unselect-all {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
 .flyout-button.unselect-all:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: var(--bg-secondary);
+  border-color: var(--accent-color);
   transform: translateY(-1px);
 }
 
 .flyout-button.download {
-  background: #4caf50;
-  color: white;
-  border: 1px solid #45a049;
+  background: var(--success-color);
+  color: var(--text-primary);
+  border: 1px solid var(--success-color);
 }
 
 .flyout-button.download:hover {
-  background: #45a049;
+  background: var(--success-color);
+  opacity: 0.8;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .flyout-button:active {
@@ -118,10 +120,10 @@
 .selected-pokemon-container {
   margin: 20px;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--accent-color);
   border-radius: 12px;
   color: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--shadow-color);
 }
 
 .selected-header {
@@ -135,6 +137,7 @@
   margin: 0;
   font-size: 1.2rem;
   font-weight: 600;
+  color: white;
 }
 
 .clear-all-btn {
@@ -167,22 +170,26 @@
   justify-content: space-between;
   align-items: center;
   backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .pokemon-name {
   font-weight: 600;
   text-transform: capitalize;
+  color: var(--text-primary);
 }
 
 .pokemon-id {
   font-size: 0.9rem;
   opacity: 0.8;
+  color: #e5e7eb;
 }
 
 .no-selection {
   text-align: center;
   font-style: italic;
   opacity: 0.8;
+  color: #e5e7eb;
 }
 
 @media (max-width: 768px) {

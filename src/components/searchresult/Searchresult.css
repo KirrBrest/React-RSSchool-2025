@@ -4,6 +4,7 @@
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
+  background-color: var(--bg-primary);
 }
 
 .cards-container {
@@ -52,17 +53,17 @@
   height: 3px;
 }
 .pagination::-webkit-scrollbar-thumb {
-  background: #4ecdc4;
+  background: var(--accent-color);
   border-radius: 2px;
 }
 .pagination::-webkit-scrollbar-track {
-  background: #e0e0e0;
+  background: var(--bg-tertiary);
 }
 
 .pagination button {
-  background: #fff;
-  border: 1px solid #4ecdc4;
-  color: #333;
+  background: var(--bg-primary);
+  border: 1px solid var(--accent-color);
+  color: var(--text-primary);
   font-size: 1.1rem;
   font-weight: 500;
   border-radius: 4px;
@@ -79,16 +80,16 @@
 
 .pagination button:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(76, 205, 196, 0.2);
+  box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 .pagination button.active {
-  background: linear-gradient(90deg, #4ecdc4, #45b7d1);
-  color: #fff;
+  background: linear-gradient(90deg, var(--accent-color), var(--accent-hover));
+  color: var(--text-primary);
   font-weight: bold;
   font-size: 1.2rem;
-  border: 2px solid #45b7d1;
-  box-shadow: 0 1px 4px rgba(76, 205, 196, 0.15);
+  border: 2px solid var(--accent-hover);
+  box-shadow: 0 1px 4px var(--shadow-color);
 }
 
 .pagination button:disabled {
@@ -100,13 +101,13 @@
   font-size: 1.3rem;
   background: none;
   border: none;
-  color: #4ecdc4;
+  color: var(--accent-color);
   padding: 0 4px;
   min-width: 14px;
 }
 
 .pagination-ellipsis {
-  color: #aaa;
+  color: var(--text-muted);
   font-size: 1.1rem;
   padding: 0 2px;
   user-select: none;
@@ -177,8 +178,9 @@
   font-size: 1.1rem;
   padding: 12px 8px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(76, 205, 196, 0.08);
-  background: #fff;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   transition:
     transform 0.2s,
     box-shadow 0.2s;
@@ -188,7 +190,7 @@
 
 .cards-container .pokemon-card:hover {
   transform: translateY(-3px) scale(1.04);
-  box-shadow: 0 4px 16px rgba(76, 205, 196, 0.18);
+  box-shadow: 0 4px 16px var(--shadow-color);
 }
 
 .cards-container .pokemon-card:active {
@@ -202,18 +204,18 @@
   text-align: center;
   padding: 20px 10px;
   font-size: 1.2rem;
-  color: #666;
+  color: #000000;
 }
 
 .loading {
-  color: #4ecdc4;
+  color: var(--accent-color);
 }
 
 .error {
-  color: #e74c3c;
+  color: var(--error-color);
 }
 
 .no-results {
-  color: #999;
+  color: #000000;
   font-style: italic;
 }

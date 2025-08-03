@@ -6,10 +6,11 @@ import Page404 from '@/pages/page404/Page404';
 import Header from '@/components/header/Header';
 import PokemonDetailsRoute from '@/components/pokemon-details/PokemonDetailsRoute';
 import ErrorBoundary from './components/errors/ErrorBoundary';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 const App = () => {
   return (
-    <>
+    <ThemeProvider>
       <ErrorBoundary>
         <Header />
         <Routes>
@@ -20,7 +21,7 @@ const App = () => {
           <Route path="*" element={<Page404 />} />
         </Routes>
       </ErrorBoundary>
-    </>
+    </ThemeProvider>
   );
 };
 
