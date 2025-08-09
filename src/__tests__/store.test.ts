@@ -11,7 +11,7 @@ describe('store', () => {
   });
 
   it('должен экспортировать правильные типы', () => {
-    const mockState: RootState = {
+    const mockState: Partial<RootState> = {
       pokemon: {
         selectedPokemons: [],
       },

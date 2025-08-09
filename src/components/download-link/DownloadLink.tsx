@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { createPokemonUrl } from '@/api';
 import type { Pokemon } from '@/types/interfaces';
 
 interface DownloadLinkProps {
@@ -25,7 +26,7 @@ const DownloadLink: React.FC<DownloadLinkProps> = ({
           pokemon.id,
           pokemon.name,
           pokemon.url,
-          `https://pokeapi.co/api/v2/pokemon/${pokemon.id}/`,
+          createPokemonUrl(pokemon.id),
         ].join(',')
       ),
     ].join('\n');

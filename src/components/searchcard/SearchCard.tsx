@@ -1,14 +1,10 @@
-import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectPokemon, unselectPokemon } from '@/store/pokemonSlice';
+import { useGetPokemonByUrlQuery } from '@/api';
 import type { PokemonCardProps } from '@/types/interfaces';
 import './SearchCard.css';
 
 const PokemonCard = ({ url, name, onSelect }: PokemonCardProps) => {
-  const [sprite, setSprite] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const dispatch = useAppDispatch();
   const selectedPokemons = useAppSelector(
     (state) => state.pokemon.selectedPokemons
@@ -16,30 +12,16 @@ const PokemonCard = ({ url, name, onSelect }: PokemonCardProps) => {
 
   const pokemonId = url.split('/').filter(Boolean).pop() || '';
 
+  // Используем RTK Query для получения данных покемона по URL
+  const {
+    data: pokemonData,
+    error,
+    isLoading: loading,
+  } = useGetPokemonByUrlQuery(url);
+
   const isSelected = selectedPokemons.some(
     (pokemon) => pokemon.id === pokemonId
   );
-
-  useEffect(() => {
-    const fetchSprite = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setSprite(data.sprites.front_default);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Network error');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSprite();
-  }, [url]);
 
   const handleCardClick = () => {
     if (onSelect) {
@@ -67,9 +49,15 @@ const PokemonCard = ({ url, name, onSelect }: PokemonCardProps) => {
   }
 
   if (error) {
+    const errorMessage =
+      'data' in error && error.data
+        ? String(error.data)
+        : 'message' in error
+          ? error.message
+          : 'Network error';
     return (
       <div className="pokemon-card error">
-        <p>Error: {error}</p>
+        <p>Error: {errorMessage}</p>
       </div>
     );
   }
@@ -90,7 +78,7 @@ const PokemonCard = ({ url, name, onSelect }: PokemonCardProps) => {
       </div>
       <div className="pokemon-info">
         <img
-          src={sprite || '/placeholder-sprite.png'}
+          src={pokemonData?.sprites?.front_default || '/placeholder-sprite.png'}
           alt={name}
           className="pokemon-sprite"
         />

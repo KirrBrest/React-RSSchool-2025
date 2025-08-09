@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useGetPokemonQuery } from '@/api';
 import './PokemonDetails.css';
-import type { PokemonDetailsProps, PokemonData } from '@/types/interfaces';
+import type { PokemonDetailsProps } from '@/types/interfaces';
 
 const PokemonDetails: React.FC<PokemonDetailsProps> = (props) => {
   const navigate = useNavigate();
@@ -20,41 +20,14 @@ const PokemonDetails: React.FC<PokemonDetailsProps> = (props) => {
 
   const onClose = props.onClose || handleClose;
 
-  const [pokemon, setPokemon] = useState<PokemonData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchPokemonDetails = async () => {
-      if (!pokemonId) return;
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(
-          `https://pokeapi.co/api/v2/pokemon/${pokemonId}`
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch Pokemon details');
-        }
-
-        const data = await response.json();
-        setPokemon(data);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('Unknown error occurred');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPokemonDetails();
-  }, [pokemonId]);
+  // Используем RTK Query для получения данных покемона
+  const {
+    data: pokemon,
+    error,
+    isLoading: loading,
+  } = useGetPokemonQuery(pokemonId || '', {
+    skip: !pokemonId,
+  });
 
   const handleCloseClick = () => {
     onClose();
@@ -74,12 +47,18 @@ const PokemonDetails: React.FC<PokemonDetailsProps> = (props) => {
   }
 
   if (error) {
+    const errorMessage =
+      'data' in error && error.data
+        ? String(error.data)
+        : 'message' in error
+          ? error.message
+          : 'Failed to fetch Pokemon details';
     return (
       <div className="pokemon-details-panel">
         <div className="pokemon-details-content">
           <div className="pokemon-details-error">
             <h3>Error</h3>
-            <p>{error}</p>
+            <p>{errorMessage}</p>
             <button className="close-button" onClick={handleCloseClick}>
               Close
             </button>

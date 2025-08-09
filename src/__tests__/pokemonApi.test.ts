@@ -1,5 +1,5 @@
 import { vi, afterEach, afterAll } from 'vitest';
-import { getPokemonList } from '@/api/pokemonApi';
+import { getPokemonList } from '@/api';
 
 global.fetch = vi.fn();
 

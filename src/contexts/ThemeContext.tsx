@@ -1,6 +1,7 @@
 import type { Theme, ThemeContextType } from '@/types/interfaces';
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
+import { useDocumentAttribute } from '@/hooks/useDocumentAttribute';
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
@@ -20,9 +21,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     localStorage.setItem('theme', newTheme);
   };
 
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
+  useDocumentAttribute('data-theme', theme);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

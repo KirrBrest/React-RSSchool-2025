@@ -4,17 +4,15 @@ import { useSearchParams } from 'react-router-dom';
 import PokemonCard from '@/components/searchcard/SearchCard';
 import './Searchresult.css';
 import processSearchQuery from '@/utils/validation';
-import { getPokemonList } from '@/api/pokemonApi';
+import {
+  useGetPokemonListQuery,
+  useLazySearchPokemonQuery,
+  createPokemonUrl,
+} from '@/api';
 
 const PAGE_SIZE = 12;
 
 const Searchresult = ({ searchQuery }: MainProps) => {
-  const [results, setResults] = useState<Array<{ name: string; url: string }>>(
-    []
-  );
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [count, setCount] = useState(0);
   const [searchMode, setSearchMode] = useState(false);
   const [searchResult, setSearchResult] = useState<
     Array<{ name: string; url: string }>
@@ -23,55 +21,44 @@ const Searchresult = ({ searchQuery }: MainProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page')) || 1;
 
+  // RTK Query hooks
+  const offset = (page - 1) * PAGE_SIZE;
+  const {
+    data: pokemonListData,
+    error: listError,
+    isLoading: isListLoading,
+  } = useGetPokemonListQuery(
+    { limit: PAGE_SIZE, offset },
+    { skip: searchMode }
+  );
+
+  const [searchPokemon, { error: searchError, isLoading: isSearchLoading }] =
+    useLazySearchPokemonQuery();
+
+  // Обработка поискового запроса
   useEffect(() => {
-    const fetchData = async () => {
-      const rawQuery = (searchQuery || '').trim().toLowerCase();
-      const query = processSearchQuery(rawQuery);
+    const rawQuery = (searchQuery || '').trim().toLowerCase();
+    const query = processSearchQuery(rawQuery);
 
-      setLoading(true);
-      setError(null);
-
-      if (query) {
-        setSearchMode(true);
-        try {
-          const res = await fetch(
-            `https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(query)}`
-          );
-          if (!res.ok) throw new Error('Pokemon not found');
-          const data = await res.json();
-          const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${data.id}/`;
-          setSearchResult([{ name: data.name, url: pokemonUrl }]);
-          setLoading(false);
-        } catch (err: unknown) {
-          if (err instanceof Error) {
-            setError(err.message);
+    if (query) {
+      setSearchMode(true);
+      searchPokemon(query)
+        .then((result) => {
+          if (result.data) {
+            const pokemonUrl = createPokemonUrl(result.data.id);
+            setSearchResult([{ name: result.data.name, url: pokemonUrl }]);
           } else {
-            setError('Unknown error');
+            setSearchResult([]);
           }
+        })
+        .catch(() => {
           setSearchResult([]);
-          setLoading(false);
-        }
-      } else {
-        setSearchMode(false);
-        try {
-          const offset = (page - 1) * PAGE_SIZE;
-          const data = await getPokemonList(PAGE_SIZE, offset);
-          setResults(data.results);
-          setCount(data.count);
-          setLoading(false);
-        } catch (err: unknown) {
-          if (err instanceof Error) {
-            setError(err.message);
-          } else {
-            setError('Unknown error');
-          }
-          setResults([]);
-          setLoading(false);
-        }
-      }
-    };
-    fetchData();
-  }, [searchQuery, page]);
+        });
+    } else {
+      setSearchMode(false);
+      setSearchResult([]);
+    }
+  }, [searchQuery, searchPokemon]);
 
   const handlePokemonSelect = (pokemonId: string) => {
     const currentParams = new URLSearchParams(searchParams);
@@ -80,7 +67,7 @@ const Searchresult = ({ searchQuery }: MainProps) => {
     setSearchParams(currentParams);
   };
 
-  const totalPages = Math.ceil(count / PAGE_SIZE);
+  const totalPages = Math.ceil((pokemonListData?.count || 0) / PAGE_SIZE);
   const handlePageChange = (newPage: number) => {
     const currentParams = new URLSearchParams(searchParams);
     currentParams.set('page', String(newPage));
@@ -176,8 +163,20 @@ const Searchresult = ({ searchQuery }: MainProps) => {
     );
   };
 
+  // Определяем состояние загрузки и ошибок
+  const loading = isListLoading || isSearchLoading;
+  const error = listError || searchError;
+
   if (loading) return <div className="loading">Loading...</div>;
-  if (error) return <div className="error">Error: {error}</div>;
+  if (error) {
+    const errorMessage =
+      'data' in error && error.data
+        ? String(error.data)
+        : 'message' in error
+          ? error.message
+          : 'Unknown error';
+    return <div className="error">Error: {errorMessage}</div>;
+  }
 
   return (
     <>
@@ -196,11 +195,12 @@ const Searchresult = ({ searchQuery }: MainProps) => {
                 />
               ))
             )
-          ) : results.length === 0 ? (
+          ) : !pokemonListData?.results ||
+            pokemonListData.results.length === 0 ? (
             <div className="no-results">No results</div>
           ) : (
             <>
-              {results.map((item, index) => (
+              {pokemonListData.results.map((item, index) => (
                 <PokemonCard
                   key={index}
                   url={item.url}

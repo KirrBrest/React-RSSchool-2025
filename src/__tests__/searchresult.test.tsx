@@ -15,7 +15,7 @@ vi.mock('react-router-dom', () => ({
   useNavigate: vi.fn(),
 }));
 
-vi.mock('@/api/pokemonApi', () => ({
+vi.mock('@/api', () => ({
   getPokemonList: vi.fn(),
 }));
 
@@ -100,7 +100,7 @@ describe('Поиск по имени Покемона', () => {
   });
 
   it('обрабатывает ошибки API при загрузке списка', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockRejectedValueOnce('Network error');
 
     render(<Searchresult searchQuery="" />);
@@ -111,7 +111,7 @@ describe('Поиск по имени Покемона', () => {
   });
 
   it('обрабатывает запросы с пробелами', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=16&limit=16',
@@ -131,7 +131,7 @@ describe('Поиск по имени Покемона', () => {
 
 describe('Отображение списка Покемонов', () => {
   it('отображает список Покемонов при пустом запросе', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=16&limit=16',
@@ -151,7 +151,7 @@ describe('Отображение списка Покемонов', () => {
   });
 
   it('отображает ошибку при неудачной загрузке списка', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockRejectedValueOnce(new Error('API Error'));
 
     render(<Searchresult searchQuery="" />);
@@ -162,7 +162,7 @@ describe('Отображение списка Покемонов', () => {
   });
 
   it('отображает "Нет результатов" при пустом списке', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 0,
       next: null,
@@ -180,7 +180,7 @@ describe('Отображение списка Покемонов', () => {
 
 describe('Пагинация', () => {
   it('отображает пагинацию при наличии результатов', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=16&limit=16',
@@ -204,7 +204,7 @@ describe('Пагинация', () => {
   });
 
   it('не отображает пагинацию при одной странице', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 10,
       next: null,
@@ -229,7 +229,7 @@ describe('Пагинация', () => {
       mockSetSearchParams,
     ]);
 
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=80&limit=16',
@@ -256,7 +256,7 @@ describe('Пагинация', () => {
       mockSetSearchParams,
     ]);
 
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=1200&limit=16',
@@ -283,7 +283,7 @@ describe('Пагинация', () => {
       mockSetSearchParams,
     ]);
 
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 48,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=32&limit=16',
@@ -309,7 +309,7 @@ describe('Пагинация', () => {
       mockSetSearchParams,
     ]);
 
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=16&limit=16',
@@ -333,7 +333,7 @@ describe('Пагинация', () => {
   });
 
   it('обрабатывает клик по кнопке следующей страницы', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=16&limit=16',
@@ -360,7 +360,7 @@ describe('Пагинация', () => {
       mockSetSearchParams,
     ]);
 
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=32&limit=16',
@@ -382,7 +382,7 @@ describe('Пагинация', () => {
   });
 
   it('обрабатывает клик по кнопке последней страницы', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=16&limit=16',
@@ -404,7 +404,7 @@ describe('Пагинация', () => {
   });
 
   it('отображает кнопки пагинации с правильными классами', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=16&limit=16',
@@ -430,7 +430,7 @@ describe('Пагинация', () => {
   });
 
   it('обрабатывает клик по номеру страницы', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=16&limit=16',
@@ -452,7 +452,7 @@ describe('Пагинация', () => {
   });
 
   it('отображает многоточие при большом количестве страниц', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=16&limit=16',
@@ -470,7 +470,7 @@ describe('Пагинация', () => {
   });
 
   it('отображает активную страницу с правильным классом', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=16&limit=16',
@@ -489,7 +489,7 @@ describe('Пагинация', () => {
   });
 
   it('не отображает пагинацию при одной странице', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 10,
       next: null,
@@ -507,7 +507,7 @@ describe('Пагинация', () => {
   });
 
   it('отображает состояние загрузки', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockImplementation(() => new Promise(() => {}));
 
     render(<Searchresult searchQuery="" />);
@@ -516,7 +516,7 @@ describe('Пагинация', () => {
   });
 
   it('отображает ошибку при неудачном запросе', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockRejectedValueOnce(new Error('Network error'));
 
     render(<Searchresult searchQuery="" />);
@@ -527,7 +527,7 @@ describe('Пагинация', () => {
   });
 
   it('обрабатывает выбор покемона и открытие деталей', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=16&limit=16',
@@ -546,7 +546,7 @@ describe('Пагинация', () => {
   });
 
   it('отображает "No results" при пустом результате поиска', async () => {
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 0,
       next: null,
@@ -592,7 +592,7 @@ describe('Обработка URL параметров', () => {
       mockSetSearchParams,
     ]);
 
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=48&limit=16',
@@ -615,7 +615,7 @@ describe('Обработка URL параметров', () => {
       mockSetSearchParams,
     ]);
 
-    const { getPokemonList } = await import('@/api/pokemonApi');
+    const { getPokemonList } = await import('@/api');
     vi.mocked(getPokemonList).mockResolvedValueOnce({
       count: 1281,
       next: 'https://pokeapi.co/api/v2/pokemon?offset=16&limit=16',
