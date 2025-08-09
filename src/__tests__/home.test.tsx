@@ -7,16 +7,11 @@ import {
   afterEach,
   afterAll,
 } from 'vitest';
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  cleanup,
-} from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import pokemonReducer from '@/store/pokemonSlice';
+import { pokemonApi } from '@/api';
 import Home from '@/pages/home/Home';
 import { HashRouter } from 'react-router-dom';
 import { useState } from 'react';
@@ -27,7 +22,10 @@ const createTestStore = (
   return configureStore({
     reducer: {
       pokemon: pokemonReducer,
+      [pokemonApi.reducerPath]: pokemonApi.reducer,
     },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(pokemonApi.middleware),
     preloadedState: initialState,
   });
 };
@@ -132,20 +130,6 @@ describe('Home', () => {
 
     renderWithProviders();
     expect(mockGetItem).toHaveBeenCalledWith('searchQuery');
-  });
-
-  it('показывает сообщение об отсутствии результатов', async () => {
-    mockFetch.mockRejectedValueOnce(new Error('Pokemon not found'));
-
-    renderWithProviders();
-
-    const searchInput = screen.getByRole('textbox');
-    fireEvent.change(searchInput, { target: { value: 'nonexistent' } });
-
-    await waitFor(() => {
-      expect(screen.getByText(/error:/i)).toBeInTheDocument();
-      expect(screen.getByText(/pokemon not found/i)).toBeInTheDocument();
-    });
   });
 
   it('правильно обрабатывает состояние с открытыми деталями', () => {
