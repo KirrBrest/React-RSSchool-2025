@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, useSearchParams } from 'react-router-dom';
 import Search from '@/components/search/Search';
 import Searchresult from '@/components/searchresult/Searchresult';
@@ -19,6 +19,21 @@ const Home = () => {
     setSearchQuery(query);
   };
 
+  const handleClearSearch = () => {
+    setSearchQuery('');
+  };
+
+  useEffect(() => {
+    const handleClearSearchEvent = () => {
+      setSearchQuery('');
+    };
+
+    window.addEventListener('clearSearch', handleClearSearchEvent);
+    return () => {
+      window.removeEventListener('clearSearch', handleClearSearchEvent);
+    };
+  }, [setSearchQuery]);
+
   const throwError = () => {
     setError(true);
   };
@@ -37,7 +52,10 @@ const Home = () => {
               isPokemonDetailsOpen ? 'with-details' : ''
             }`}
           >
-            <Searchresult searchQuery={searchQuery} />
+            <Searchresult
+              searchQuery={searchQuery}
+              onClearSearch={handleClearSearch}
+            />
           </div>
           <div className="pokemon-details-section">
             <Outlet />

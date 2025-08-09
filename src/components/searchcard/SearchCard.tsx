@@ -12,7 +12,6 @@ const PokemonCard = ({ url, name, onSelect }: PokemonCardProps) => {
 
   const pokemonId = url.split('/').filter(Boolean).pop() || '';
 
-  // Используем RTK Query для получения данных покемона по URL
   const {
     data: pokemonData,
     error,
@@ -43,7 +42,7 @@ const PokemonCard = ({ url, name, onSelect }: PokemonCardProps) => {
     return (
       <div className="pokemon-card loading">
         <div className="loading-spinner"></div>
-        <p>Loading...</p>
+        <p>Loading {name}...</p>
       </div>
     );
   }

@@ -9,6 +9,10 @@ const Header: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
 
   const handleHomeClick = () => {
+    localStorage.removeItem('searchQuery');
+
+    window.dispatchEvent(new CustomEvent('clearSearch'));
+
     navigate('/');
   };
 
