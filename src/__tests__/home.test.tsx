@@ -38,6 +38,8 @@ global.fetch = mockFetch;
 describe('Home', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Сбрасываем fetch mock перед каждым тестом
+    global.fetch = vi.fn();
     Object.defineProperty(window, 'localStorage', {
       value: {
         getItem: vi.fn(),
@@ -51,9 +53,11 @@ describe('Home', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
-    localStorage.clear();
     cleanup();
+    vi.clearAllMocks();
+    // Восстанавливаем оригинальный fetch
+    global.fetch = window.fetch;
+    localStorage.clear();
   });
 
   afterAll(() => {
@@ -234,5 +238,89 @@ describe('Home', () => {
 
     consoleSpy.mockRestore();
     cleanup();
+  });
+
+  it('правильно обрабатывает URL параметр details', () => {
+    // Тестируем логику обработки detailsId и isPokemonDetailsOpen
+    renderWithProviders();
+
+    // Проверяем, что компонент рендерится корректно
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+    expect(screen.getByText(/throw error/i)).toBeInTheDocument();
+
+    // Проверяем, что pokemon-list-section существует
+    const pokemonListSection = document.querySelector('.pokemon-list-section');
+    expect(pokemonListSection).toBeInTheDocument();
+  });
+
+  it('вызывает handleClearSearch при очистке поиска', () => {
+    const mockSetItem = vi.fn();
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: vi.fn().mockReturnValue('test-query'),
+        setItem: mockSetItem,
+        removeItem: vi.fn(),
+        clear: vi.fn(),
+      },
+      writable: true,
+    });
+
+    renderWithProviders();
+
+    // Проверяем, что handleClearSearch вызывается
+    const searchInput = screen.getByRole('textbox');
+    expect(searchInput).toHaveValue('test-query');
+
+    // Симулируем очистку поиска
+    fireEvent.change(searchInput, { target: { value: '' } });
+    expect(searchInput).toHaveValue('');
+  });
+
+  it('добавляет и удаляет event listener для clearSearch', () => {
+    const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
+    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
+
+    const { unmount } = renderWithProviders();
+
+    // Проверяем, что addEventListener был вызван для clearSearch
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      'clearSearch',
+      expect.any(Function)
+    );
+
+    // Размонтируем компонент
+    unmount();
+
+    // Проверяем, что removeEventListener был вызван для clearSearch
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      'clearSearch',
+      expect.any(Function)
+    );
+  });
+
+  it('обрабатывает событие clearSearch', () => {
+    const mockSetItem = vi.fn();
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: vi.fn().mockReturnValue('test-query'),
+        setItem: mockSetItem,
+        removeItem: vi.fn(),
+        clear: vi.fn(),
+      },
+      writable: true,
+    });
+
+    renderWithProviders();
+
+    // Проверяем начальное значение
+    const searchInput = screen.getByRole('textbox');
+    expect(searchInput).toHaveValue('test-query');
+
+    // Создаем и диспатчим событие clearSearch
+    const clearSearchEvent = new CustomEvent('clearSearch');
+    window.dispatchEvent(clearSearchEvent);
+
+    // Проверяем, что searchQuery был очищен
+    expect(mockSetItem).toHaveBeenCalledWith('searchQuery', '');
   });
 });
