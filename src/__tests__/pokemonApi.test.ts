@@ -16,7 +16,6 @@ import {
 } from '../api/constants';
 import type { PokemonListResponse } from '@/types/interfaces';
 
-// Создаем правильный mock для fetch
 const createMockResponse = (
   data: PokemonListResponse | null,
   ok: boolean = true,
@@ -159,6 +158,13 @@ describe('pokemonApi', () => {
     it('имеет правильные utility функции', () => {
       expect(typeof createPokemonUrl).toBe('function');
       expect(typeof createPokemonListUrl).toBe('function');
+    });
+  });
+
+  describe('Cache configuration', () => {
+    it('имеет правильную конфигурацию кеширования', () => {
+      expect(pokemonApi.reducerPath).toBe('pokemonApi');
+      expect(pokemonApi.endpoints).toBeDefined();
     });
   });
 

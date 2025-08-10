@@ -8,11 +8,11 @@ import {
 
 export { createPokemonUrl, createPokemonListUrl };
 
-const cacheMinutesData: number = 60;
-const refreshMinutes: number = 30;
-const cacheMinutesPokemons: number = 300;
-const cacheMinutesPokemonData: number = 600;
-const cacheMinutesUnusedData: number = 120;
+const cacheSecondsData: number = 60;
+const refreshSeconds: number = 30;
+const cacheSecondsPokemons: number = 300;
+const cacheSecondsPokemonData: number = 600;
+const cacheSecondsUnusedData: number = 120;
 export const pokemonApi = createApi({
   reducerPath: 'pokemonApi',
   baseQuery: fetchBaseQuery({
@@ -20,8 +20,8 @@ export const pokemonApi = createApi({
   }),
   tagTypes: ['Pokemon', 'PokemonList', 'Search'],
 
-  keepUnusedDataFor: cacheMinutesData,
-  refetchOnMountOrArgChange: refreshMinutes,
+  keepUnusedDataFor: cacheSecondsData,
+  refetchOnMountOrArgChange: refreshSeconds,
   refetchOnFocus: true,
   refetchOnReconnect: true,
   endpoints: (builder) => ({
@@ -39,7 +39,7 @@ export const pokemonApi = createApi({
           id: name,
         })) || []),
       ],
-      keepUnusedDataFor: cacheMinutesPokemons,
+      keepUnusedDataFor: cacheSecondsPokemons,
     }),
     getPokemon: builder.query<PokemonData, string | number>({
       query: (id) => `${API_CONFIG.ENDPOINTS.POKEMON}/${id}`,
@@ -47,7 +47,7 @@ export const pokemonApi = createApi({
         { type: 'Pokemon', id },
         { type: 'Pokemon', id: 'LIST' },
       ],
-      keepUnusedDataFor: cacheMinutesPokemonData,
+      keepUnusedDataFor: cacheSecondsPokemonData,
     }),
     searchPokemon: builder.query<PokemonData, string>({
       query: (name) =>
@@ -57,7 +57,7 @@ export const pokemonApi = createApi({
         { type: 'Search', id: name.toLowerCase() },
         { type: 'Pokemon', id: 'LIST' },
       ],
-      keepUnusedDataFor: cacheMinutesUnusedData,
+      keepUnusedDataFor: cacheSecondsUnusedData,
     }),
     getPokemonByUrl: builder.query<PokemonData, string>({
       query: (url) => {
@@ -71,7 +71,7 @@ export const pokemonApi = createApi({
           { type: 'Pokemon', id: 'LIST' },
         ];
       },
-      keepUnusedDataFor: cacheMinutesPokemonData,
+      keepUnusedDataFor: cacheSecondsPokemonData,
     }),
   }),
 });
