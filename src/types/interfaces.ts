@@ -7,6 +7,7 @@ export interface AppState {
 
 export interface MainProps {
   searchQuery: string;
+  onClearSearch?: () => void;
 }
 
 export interface MainState {

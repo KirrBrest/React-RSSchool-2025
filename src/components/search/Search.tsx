@@ -13,6 +13,15 @@ const Search = ({ onSearch }: SearchProps) => {
   };
 
   const handleSearch = () => {
+    const trimmedInput = input.trim();
+
+    if (trimmedInput === '') {
+      setErrorMsg('');
+      onSearch('');
+      localStorage.removeItem('searchQuery');
+      return;
+    }
+
     const processed = processSearchQuery(input);
     if (processed === null) {
       setErrorMsg('The field must not contain spaces');
@@ -28,15 +37,46 @@ const Search = ({ onSearch }: SearchProps) => {
     setInput(savedQuery);
   }, []);
 
+  useEffect(() => {
+    const handleClearSearch = () => {
+      setInput('');
+      setErrorMsg('');
+    };
+
+    window.addEventListener('clearSearch', handleClearSearch);
+    return () => {
+      window.removeEventListener('clearSearch', handleClearSearch);
+    };
+  }, []);
+
+  const handleClear = () => {
+    setInput('');
+    setErrorMsg('');
+    onSearch('');
+    localStorage.removeItem('searchQuery');
+  };
+
   return (
     <div className="header">
-      <input
-        name="search"
-        className="header-query-text"
-        type="text"
-        value={input}
-        onChange={handleChange}
-      />
+      <div className="search-input-container">
+        <input
+          name="search"
+          className="header-query-text"
+          type="text"
+          value={input}
+          onChange={handleChange}
+          placeholder="Search Pokemon... (full name)"
+        />
+        {input && (
+          <button
+            className="clear-button"
+            onClick={handleClear}
+            title="Clear search"
+          >
+            ×
+          </button>
+        )}
+      </div>
       <Button className="header-query-button" onClick={handleSearch}>
         Search
       </Button>

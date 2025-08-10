@@ -3,6 +3,7 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import pokemonReducer from '@/store/pokemonSlice';
+import { pokemonApi } from '@/api';
 import SelectedPokemon from '@/components/selected-pokemon/SelectedPokemon';
 import type { RootState } from '@/store/store';
 
@@ -12,8 +13,11 @@ const createTestStore = (
   return configureStore({
     reducer: {
       pokemon: pokemonReducer,
+      [pokemonApi.reducerPath]: pokemonApi.reducer,
     },
     preloadedState: initialState as RootState,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(pokemonApi.middleware),
   });
 };
 

@@ -24,12 +24,12 @@ describe('Page404', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-    cleanup(); // Очистка DOM
+    cleanup();
   });
 
   afterAll(() => {
     vi.clearAllMocks();
-    cleanup(); // Очистка DOM
+    cleanup();
   });
 
   it('рендерит заголовок 404', () => {

@@ -16,6 +16,7 @@
   background-color: var(--bg-secondary);
   color: #000000;
   border: 1px solid var(--border-color);
+  padding-right: 32px; /* Оставляем место для кнопки очистки */
 }
 
 .header-query-text::placeholder {
@@ -38,4 +39,37 @@
   background-color: var(--accent-hover);
   transform: translateY(-2px);
   box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.search-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.clear-button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.clear-button:hover {
+  background-color: #f0f0f0;
+  color: #333;
 }

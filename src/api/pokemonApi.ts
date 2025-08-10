@@ -1,12 +1,100 @@
-import type { PokemonListResponse } from '@/types/interfaces';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import type { PokemonListResponse, PokemonData } from '@/types/interfaces';
+import {
+  API_CONFIG,
+  createPokemonUrl,
+  createPokemonListUrl,
+} from './constants';
+
+export { createPokemonUrl, createPokemonListUrl };
+
+const cacheSecondsData: number = 60;
+const refreshSeconds: number = 30;
+const cacheSecondsPokemons: number = 300;
+const cacheSecondsPokemonData: number = 600;
+const cacheSecondsUnusedData: number = 120;
+export const pokemonApi = createApi({
+  reducerPath: 'pokemonApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: API_CONFIG.BASE_URL,
+  }),
+  tagTypes: ['Pokemon', 'PokemonList', 'Search'],
+
+  keepUnusedDataFor: cacheSecondsData,
+  refetchOnMountOrArgChange: refreshSeconds,
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
+  endpoints: (builder) => ({
+    getPokemonList: builder.query<
+      PokemonListResponse,
+      { limit: number; offset: number }
+    >({
+      query: ({ limit, offset }) =>
+        `${API_CONFIG.ENDPOINTS.POKEMON}?limit=${limit}&offset=${offset}`,
+      providesTags: (result, _error, { limit, offset }) => [
+        'PokemonList',
+        { type: 'PokemonList', id: `${limit}-${offset}` },
+        ...(result?.results?.map(({ name }) => ({
+          type: 'Pokemon' as const,
+          id: name,
+        })) || []),
+      ],
+      keepUnusedDataFor: cacheSecondsPokemons,
+    }),
+    getPokemon: builder.query<PokemonData, string | number>({
+      query: (id) => `${API_CONFIG.ENDPOINTS.POKEMON}/${id}`,
+      providesTags: (_result, _error, id) => [
+        { type: 'Pokemon', id },
+        { type: 'Pokemon', id: 'LIST' },
+      ],
+      keepUnusedDataFor: cacheSecondsPokemonData,
+    }),
+    searchPokemon: builder.query<PokemonData, string>({
+      query: (name) =>
+        `${API_CONFIG.ENDPOINTS.POKEMON}/${encodeURIComponent(name.toLowerCase())}`,
+      providesTags: (_result, _error, name) => [
+        { type: 'Pokemon', id: name.toLowerCase() },
+        { type: 'Search', id: name.toLowerCase() },
+        { type: 'Pokemon', id: 'LIST' },
+      ],
+      keepUnusedDataFor: cacheSecondsUnusedData,
+    }),
+    getPokemonByUrl: builder.query<PokemonData, string>({
+      query: (url) => {
+        const id = url.split('/').filter(Boolean).pop();
+        return `${API_CONFIG.ENDPOINTS.POKEMON}/${id}`;
+      },
+      providesTags: (_result, _error, url) => {
+        const id = url.split('/').filter(Boolean).pop();
+        return [
+          { type: 'Pokemon', id },
+          { type: 'Pokemon', id: 'LIST' },
+        ];
+      },
+      keepUnusedDataFor: cacheSecondsPokemonData,
+    }),
+  }),
+});
+
+export const {
+  useGetPokemonListQuery,
+  useGetPokemonQuery,
+  useSearchPokemonQuery,
+  useLazyGetPokemonQuery,
+  useLazySearchPokemonQuery,
+  useGetPokemonByUrlQuery,
+  useLazyGetPokemonByUrlQuery,
+  util,
+} = pokemonApi;
+
+export const { invalidateTags, resetApiState, updateQueryData } =
+  pokemonApi.util;
 
 export const getPokemonList = async (
   limit: number,
   offset: number
 ): Promise<PokemonListResponse> => {
-  const response = await fetch(
-    `https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`
-  );
+  const response = await fetch(createPokemonListUrl(limit, offset));
   if (!response.ok) {
     throw new Error('Failed to fetch Pokemon list');
   }

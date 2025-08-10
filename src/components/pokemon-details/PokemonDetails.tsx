@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useGetPokemonQuery } from '@/api';
 import './PokemonDetails.css';
-import type { PokemonDetailsProps, PokemonData } from '@/types/interfaces';
+import type { PokemonDetailsProps } from '@/types/interfaces';
 
 const PokemonDetails: React.FC<PokemonDetailsProps> = (props) => {
   const navigate = useNavigate();
@@ -20,41 +20,19 @@ const PokemonDetails: React.FC<PokemonDetailsProps> = (props) => {
 
   const onClose = props.onClose || handleClose;
 
-  const [pokemon, setPokemon] = useState<PokemonData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: pokemon,
+    error,
+    isLoading: loading,
+    isFetching,
+    refetch,
+  } = useGetPokemonQuery(pokemonId || '', {
+    skip: !pokemonId,
+  });
 
-  useEffect(() => {
-    const fetchPokemonDetails = async () => {
-      if (!pokemonId) return;
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(
-          `https://pokeapi.co/api/v2/pokemon/${pokemonId}`
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch Pokemon details');
-        }
-
-        const data = await response.json();
-        setPokemon(data);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('Unknown error occurred');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPokemonDetails();
-  }, [pokemonId]);
+  const handleRefresh = () => {
+    refetch();
+  };
 
   const handleCloseClick = () => {
     onClose();
@@ -74,15 +52,53 @@ const PokemonDetails: React.FC<PokemonDetailsProps> = (props) => {
   }
 
   if (error) {
+    let errorMessage = 'Failed to fetch Pokemon details';
+
+    if ('status' in error) {
+      if (error.status === 'FETCH_ERROR') {
+        errorMessage = 'Network error. Please check your connection.';
+      } else if (error.status === 404) {
+        errorMessage = `Pokemon "${pokemonId}" not found`;
+      } else if (typeof error.status === 'number' && error.status >= 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else if (error.data) {
+        errorMessage =
+          typeof error.data === 'string'
+            ? error.data
+            : JSON.stringify(error.data);
+      }
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+
     return (
       <div className="pokemon-details-panel">
         <div className="pokemon-details-content">
+          <button
+            onClick={handleCloseClick}
+            className="close-button"
+            aria-label="Close"
+          >
+            ×
+          </button>
           <div className="pokemon-details-error">
-            <h3>Error</h3>
-            <p>{error}</p>
-            <button className="close-button" onClick={handleCloseClick}>
-              Close
-            </button>
+            <h3>🚨 Error</h3>
+            <p>{errorMessage}</p>
+            <div className="error-actions">
+              <button
+                className="button button-primary"
+                onClick={handleRefresh}
+                disabled={isFetching}
+              >
+                {isFetching ? 'Retrying...' : 'Try Again'}
+              </button>
+              <button
+                className="button button-secondary"
+                onClick={handleCloseClick}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -117,10 +133,27 @@ const PokemonDetails: React.FC<PokemonDetailsProps> = (props) => {
         </button>
 
         <div className="pokemon-header">
-          <h2>
-            {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
-          </h2>
-          <p>#{pokemon.id.toString().padStart(3, '0')}</p>
+          <div className="pokemon-title">
+            <h2>
+              {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
+            </h2>
+            <p>#{pokemon.id.toString().padStart(3, '0')}</p>
+          </div>
+          <div className="pokemon-actions">
+            <button
+              onClick={handleRefresh}
+              className="button button-secondary refresh-button"
+              disabled={isFetching}
+              title="Refresh Pokemon data"
+            >
+              {isFetching ? '🔄' : '🔄'}
+            </button>
+            {isFetching && (
+              <div className="refresh-indicator">
+                <span>Updating...</span>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="pokemon-images">
