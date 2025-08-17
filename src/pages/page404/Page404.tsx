@@ -1,8 +1,10 @@
-import { useNavigate } from 'react-router-dom';
+'use client';
+
+import { useRouter } from 'next/navigation';
 import './Page404.css';
 
 const Page404: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   return (
     <div className="page404__container">
       <div className="page404__content">
@@ -13,7 +15,7 @@ const Page404: React.FC = () => {
         </p>
         <button
           className="page404__content_button"
-          onClick={() => navigate('/')}
+          onClick={() => router.push('/')}
         >
           Back
         </button>

@@ -1,9 +1,11 @@
-import { useSearchParams } from 'react-router-dom';
+'use client';
+
+import { useSearchParams } from 'next/navigation';
 import PokemonDetails from './PokemonDetails';
 
 const PokemonDetailsRoute = () => {
-  const [searchParams] = useSearchParams();
-  const detailsId = searchParams.get('details');
+  const searchParams = useSearchParams();
+  const detailsId = searchParams?.get('details');
 
   if (!detailsId) {
     return null;

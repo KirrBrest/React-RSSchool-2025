@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Search from '@/components/search/Search';
 import Searchresult from '@/components/searchresult/Searchresult';
 import SelectedPokemon from '@/components/selected-pokemon/SelectedPokemon';
+import PokemonDetailsRoute from '@/components/pokemon-details/PokemonDetailsRoute';
 import useLocalStorage from '@/utils/useLocalStorage';
 import Button from '@/components/button/Button';
 import './Home.css';
@@ -17,7 +18,7 @@ const Home = () => {
   const [error, setError] = useState(false);
   const searchParams = useSearchParams();
 
-  const detailsId = searchParams.get('details');
+  const detailsId = searchParams?.get('details');
   const isPokemonDetailsOpen = detailsId;
 
   const handleSearchQuery = (query: string) => {
@@ -66,9 +67,15 @@ const Home = () => {
               onClearSearch={handleClearSearch}
             />
           </div>
-          <div className="pokemon-details-section"></div>
+          <div className="pokemon-details-section">
+            <PokemonDetailsRoute />
+          </div>
         </div>
-        <Button onClick={throwError} variant="error">
+        <Button
+          onClick={throwError}
+          variant="error"
+          className="throw-error-button"
+        >
           Throw Error
         </Button>
       </div>

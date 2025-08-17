@@ -1,3 +1,6 @@
+'use client';
+
+import Image from 'next/image';
 import './About.css';
 import logo from './assets/logo/logo.jpg';
 import kirill from './assets/photos/kirill.png';
@@ -22,7 +25,13 @@ function About() {
           target="_blank"
           rel="noreferrer"
         >
-          <img src={logo} alt="RS School Logo" className="rs-logo" />
+          <Image
+            src={logo}
+            alt="RS School Logo"
+            className="rs-logo"
+            width={200}
+            height={100}
+          />
         </a>
         <h1>About me</h1>
       </div>
@@ -30,10 +39,12 @@ function About() {
       <div className="team-members">
         {teamMembers.map((member) => (
           <div key={member.id} className="team-member-card">
-            <img
+            <Image
               src={member.photo}
               alt={member.name}
               className="member-photo"
+              width={200}
+              height={200}
             />
             <h2>{member.name}</h2>
             <h3>{member.role}</h3>

@@ -1,21 +1,23 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+'use client';
+
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useGetPokemonQuery } from '@/api';
 import './PokemonDetails.css';
 import type { PokemonDetailsProps } from '@/types/interfaces';
 
 const PokemonDetails: React.FC<PokemonDetailsProps> = (props) => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const pokemonId = props.pokemonId;
 
   const handleClose = () => {
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.delete('details');
-    const currentPath = searchParams.toString()
-      ? `/?${searchParams.toString()}`
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.delete('details');
+    const currentPath = newSearchParams.toString()
+      ? `/?${newSearchParams.toString()}`
       : '/';
-    navigate(currentPath);
+    router.push(currentPath);
   };
 
   const onClose = props.onClose || handleClose;

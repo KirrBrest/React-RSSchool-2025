@@ -1,13 +1,13 @@
 'use client';
 
 import Header from '@/components/header/Header';
-import PokemonDetailsRoute from '@/components/pokemon-details/PokemonDetailsRoute';
+import Home from '@/pages/home/Home';
 
 export default function HomePage() {
   return (
     <>
       <Header />
-      <PokemonDetailsRoute />
+      <Home />
     </>
   );
 }

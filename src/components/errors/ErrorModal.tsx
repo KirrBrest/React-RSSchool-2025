@@ -1,5 +1,6 @@
 import type { ErrorModalProps } from '@/types/interfaces';
 import Button from '@/components/button/Button';
+import './Error.css';
 
 const ErrorModal = ({ message, details, onRetry }: ErrorModalProps) => {
   return (
@@ -9,7 +10,12 @@ const ErrorModal = ({ message, details, onRetry }: ErrorModalProps) => {
         <p>
           <strong>Message:</strong> {message}
         </p>
-        {details && <pre className="error-details">{details}</pre>}
+        {process.env.NODE_ENV === 'development' && details && (
+          <details className="error-details">
+            <summary>Technical Details (Development Only)</summary>
+            <pre>{details}</pre>
+          </details>
+        )}
         <Button className="error-button" onClick={onRetry} variant="error">
           Try again
         </Button>

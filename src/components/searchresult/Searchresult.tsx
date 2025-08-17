@@ -1,6 +1,8 @@
+'use client';
+
 import type { MainProps } from '@/types/interfaces';
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useRouter } from 'next/navigation';
 import PokemonCard from '@/components/searchcard/SearchCard';
 import './Searchresult.css';
 import processSearchQuery from '@/utils/validation';
@@ -18,8 +20,9 @@ const Searchresult = ({ searchQuery, onClearSearch }: MainProps) => {
   const [searchMode, setSearchMode] = useState(false);
   const [currentSearchQuery, setCurrentSearchQuery] = useState('');
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const page = Number(searchParams.get('page')) || 1;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const page = Number(searchParams?.get('page')) || 1;
 
   const offset = (page - 1) * PAGE_SIZE;
   const {
@@ -58,21 +61,21 @@ const Searchresult = ({ searchQuery, onClearSearch }: MainProps) => {
   }, [searchQuery, searchPokemon]);
 
   const handlePokemonSelect = (pokemonId: string) => {
-    const currentParams = new URLSearchParams(searchParams);
+    const currentParams = new URLSearchParams(searchParams?.toString() || '');
     currentParams.set('page', String(page));
     currentParams.set('details', pokemonId);
-    setSearchParams(currentParams);
+    router.push(`/?${currentParams.toString()}`);
   };
 
   const totalPages = Math.ceil((pokemonListData?.count || 0) / PAGE_SIZE);
   const handlePageChange = (newPage: number) => {
-    const currentParams = new URLSearchParams(searchParams);
+    const currentParams = new URLSearchParams(searchParams?.toString() || '');
     currentParams.set('page', String(newPage));
-    const details = searchParams.get('details');
+    const details = searchParams?.get('details');
     if (details) {
       currentParams.set('details', details);
     }
-    setSearchParams(currentParams);
+    router.push(`/?${currentParams.toString()}`);
   };
 
   const handleRefresh = () => {
