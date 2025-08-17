@@ -58,7 +58,7 @@ const Search = ({ onSearch }: SearchProps) => {
   };
 
   return (
-    <div className="header">
+    <div className="search-header">
       <div className="search-input-container">
         <input
           name="search"
