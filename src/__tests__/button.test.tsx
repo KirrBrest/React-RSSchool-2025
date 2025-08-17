@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import { vi, afterEach, afterAll } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { vi, beforeEach } from 'vitest';
 import Button from '@/components/button/Button';
 
 describe('Button', () => {
@@ -7,16 +7,6 @@ describe('Button', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-    cleanup();
-  });
-
-  afterAll(() => {
-    vi.clearAllMocks();
-    cleanup();
   });
 
   it('рендерит кнопку с текстом', () => {

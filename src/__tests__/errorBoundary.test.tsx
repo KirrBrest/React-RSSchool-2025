@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { vi, afterAll } from 'vitest';
+import { vi, beforeEach } from 'vitest';
 import ErrorBoundary from '../components/errors/ErrorBoundary';
 import ErrorModal from '../components/errors/ErrorModal';
 
@@ -16,14 +16,6 @@ const ThrowErrorWithStack = () => {
 describe('ErrorBoundary', () => {
   beforeEach(() => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  afterAll(() => {
-    vi.restoreAllMocks();
   });
 
   it('рендерит children когда нет ошибок', () => {

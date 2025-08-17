@@ -1,13 +1,5 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import {
-  describe,
-  it,
-  expect,
-  vi,
-  beforeEach,
-  afterEach,
-  afterAll,
-} from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import DownloadLink from '@/components/download-link/DownloadLink';
 import type { Pokemon } from '@/types/interfaces';
 
@@ -30,16 +22,6 @@ describe('DownloadLink', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCreateObjectURL.mockReturnValue('blob:test-url');
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-    cleanup();
-  });
-
-  afterAll(() => {
-    vi.clearAllMocks();
-    cleanup();
   });
 
   const mockPokemons: Pokemon[] = [

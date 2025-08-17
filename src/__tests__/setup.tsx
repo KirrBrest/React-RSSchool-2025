@@ -4,6 +4,22 @@ import { vi, afterEach, afterAll } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import React from 'react';
 
+global.React = React;
+
+Object.defineProperty(window, 'localStorage', {
+  value: {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    clear: vi.fn(),
+  },
+  writable: true,
+});
+
+Object.defineProperty(window, 'window', {
+  value: window,
+  writable: true,
+});
+
 const mockRouter = {
   push: vi.fn(),
   replace: vi.fn(),
