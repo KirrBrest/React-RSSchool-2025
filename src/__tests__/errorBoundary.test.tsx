@@ -50,6 +50,7 @@ describe('ErrorBoundary', () => {
     );
 
     expect(screen.getByText('Error with stack trace')).toBeInTheDocument();
+    expect(screen.getByText('Technical Details')).toBeInTheDocument();
     expect(
       screen.getByText(/Error: Error with stack trace/)
     ).toBeInTheDocument();
@@ -137,6 +138,7 @@ describe('ErrorModal', () => {
 
   it('рендерит детали ошибки когда они есть', () => {
     render(<ErrorModal {...defaultProps} />);
+    expect(screen.getByText('Technical Details')).toBeInTheDocument();
     expect(screen.getByText('Error details')).toBeInTheDocument();
   });
 
@@ -147,6 +149,7 @@ describe('ErrorModal', () => {
     };
 
     render(<ErrorModal {...propsWithoutDetails} />);
+    expect(screen.queryByText('Technical Details')).not.toBeInTheDocument();
     expect(screen.queryByText('Error details')).not.toBeInTheDocument();
   });
 
@@ -165,6 +168,9 @@ describe('ErrorModal', () => {
 
     expect(
       screen.getByText('ERROR').closest('.error-modal')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Technical Details').closest('summary')
     ).toBeInTheDocument();
     expect(
       screen.getByText('Error details').closest('.error-details')

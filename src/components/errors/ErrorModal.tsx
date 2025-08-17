@@ -10,9 +10,9 @@ const ErrorModal = ({ message, details, onRetry }: ErrorModalProps) => {
         <p>
           <strong>Message:</strong> {message}
         </p>
-        {process.env.NODE_ENV === 'development' && details && (
+        {details && (
           <details className="error-details">
-            <summary>Technical Details (Development Only)</summary>
+            <summary>Technical Details</summary>
             <pre>{details}</pre>
           </details>
         )}
