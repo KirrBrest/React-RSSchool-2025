@@ -1,7 +1,8 @@
+'use client';
+
 import type { Theme, ThemeContextType } from '@/types/interfaces';
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { useDocumentAttribute } from '@/hooks/useDocumentAttribute';
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
@@ -10,22 +11,32 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    return savedTheme || 'light';
-  });
+  const [theme, setTheme] = useState<Theme>('light');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme') as Theme;
+      setTheme(savedTheme || 'light');
+      setMounted(true);
+    }
+  }, []);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', newTheme);
+    }
   };
 
-  useDocumentAttribute('data-theme', theme);
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
+      <div data-theme={theme}>{children}</div>
     </ThemeContext.Provider>
   );
 };

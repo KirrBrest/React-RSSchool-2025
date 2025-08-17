@@ -16,7 +16,18 @@ vi.mock('@/components/searchcard/SearchCard', () => ({
     onSelect: (id: string) => void;
     isSelected?: boolean;
   }) => (
-    <div data-testid={`search-card-${name}`} onClick={() => onSelect(name)}>
+    <div
+      data-testid={`search-card-${name}`}
+      onClick={() => onSelect(name)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect(name);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+    >
       {name} - {isSelected ? 'Selected' : 'Not Selected'}
     </div>
   ),

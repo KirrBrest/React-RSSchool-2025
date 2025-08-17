@@ -1,28 +1,14 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from 'vitest/config';
+import { resolve } from 'path';
+import { fileURLToPath, URL } from 'node:url';
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 export default defineConfig({
-  base: './',
-  plugins: [react()],
-  server: {
-    port: 3000,
-    open: true,
-  },
-  build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
-    sourcemap: true,
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/__tests__/setup.ts',
+    setupFiles: ['./src/__tests__/setup.tsx'],
     clearMocks: true,
     restoreMocks: true,
     coverage: {
@@ -37,6 +23,7 @@ export default defineConfig({
         'src/setupTests.{js,ts}',
         'src/**/*.d.ts',
         'src/types/interfaces.ts',
+        'src/app/**/*',
       ],
       thresholds: {
         global: {
@@ -46,6 +33,11 @@ export default defineConfig({
           lines: 50,
         },
       },
+    },
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src'),
     },
   },
 });

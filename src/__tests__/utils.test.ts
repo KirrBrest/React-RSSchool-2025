@@ -1,6 +1,7 @@
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import processSearchQuery from '@/utils/validation';
 import useLocalStorage from '@/utils/useLocalStorage';
+import { vi } from 'vitest';
 import { afterEach, afterAll } from 'vitest';
 
 describe('validation utils', () => {
@@ -54,19 +55,31 @@ describe('useLocalStorage hook', () => {
     localStorage.clear();
   });
 
-  it('возвращает начальное значение если localStorage пуст', () => {
+  it('возвращает начальное значение если localStorage пуст', async () => {
     const { result } = renderHook(() => useLocalStorage('testKey', 'default'));
     expect(result.current[0]).toBe('default');
+
+    await waitFor(() => {
+      expect(result.current[2]).toBe(true);
+    });
   });
 
-  it('загружает значение из localStorage', () => {
+  it('загружает значение из localStorage', async () => {
     localStorage.setItem('testKey', JSON.stringify('saved value'));
     const { result } = renderHook(() => useLocalStorage('testKey', 'default'));
-    expect(result.current[0]).toBe('saved value');
+
+    await waitFor(() => {
+      expect(result.current[0]).toBe('saved value');
+      expect(result.current[2]).toBe(true);
+    });
   });
 
-  it('обновляет значение в localStorage при изменении', () => {
+  it('обновляет значение в localStorage при изменении', async () => {
     const { result } = renderHook(() => useLocalStorage('testKey', 'default'));
+
+    await waitFor(() => {
+      expect(result.current[2]).toBe(true);
+    });
 
     act(() => {
       result.current[1]('new value');
@@ -76,9 +89,13 @@ describe('useLocalStorage hook', () => {
     expect(localStorage.getItem('testKey')).toBe('new value');
   });
 
-  it('обрабатывает объекты', () => {
+  it('обрабатывает объекты', async () => {
     const testObject = { name: 'pikachu', id: 25 };
     const { result } = renderHook(() => useLocalStorage('testKey', testObject));
+
+    await waitFor(() => {
+      expect(result.current[2]).toBe(true);
+    });
 
     act(() => {
       result.current[1]({ name: 'charizard', id: 6 });

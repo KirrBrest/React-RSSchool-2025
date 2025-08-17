@@ -1,5 +1,7 @@
+'use client';
+
 import { useState, useEffect } from 'react';
-import { Outlet, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'next/navigation';
 import Search from '@/components/search/Search';
 import Searchresult from '@/components/searchresult/Searchresult';
 import SelectedPokemon from '@/components/selected-pokemon/SelectedPokemon';
@@ -8,9 +10,12 @@ import Button from '@/components/button/Button';
 import './Home.css';
 
 const Home = () => {
-  const [searchQuery, setSearchQuery] = useLocalStorage('searchQuery', '');
+  const [searchQuery, setSearchQuery, mounted] = useLocalStorage(
+    'searchQuery',
+    ''
+  );
   const [error, setError] = useState(false);
-  const [searchParams] = useSearchParams();
+  const searchParams = useSearchParams();
 
   const detailsId = searchParams.get('details');
   const isPokemonDetailsOpen = detailsId;
@@ -38,6 +43,10 @@ const Home = () => {
     setError(true);
   };
 
+  if (!mounted) {
+    return <div>Loading...</div>;
+  }
+
   if (error) {
     throw new Error('This is a test error');
   }
@@ -57,9 +66,7 @@ const Home = () => {
               onClearSearch={handleClearSearch}
             />
           </div>
-          <div className="pokemon-details-section">
-            <Outlet />
-          </div>
+          <div className="pokemon-details-section"></div>
         </div>
         <Button onClick={throwError} variant="error">
           Throw Error

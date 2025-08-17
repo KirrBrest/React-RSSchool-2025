@@ -65,6 +65,14 @@ const PokemonCard = ({ url, name, onSelect }: PokemonCardProps) => {
     <div
       className={`pokemon-card ${isSelected ? 'selected' : ''}`}
       onClick={handleCardClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick();
+        }
+      }}
+      role="button"
+      tabIndex={0}
     >
       <div className="checkbox-container">
         <input

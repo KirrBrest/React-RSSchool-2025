@@ -1,58 +1,45 @@
-import js from "@eslint/js";
-import globals from "globals";
-import reactHooks from "eslint-plugin-react-hooks";
-import reactRefresh from "eslint-plugin-react-refresh";
-import react from "eslint-plugin-react";
-import tseslint from "typescript-eslint";
-import eslintPluginPrettier from "eslint-plugin-prettier/recommended";
-import reactCompiler from "eslint-plugin-react-compiler";
+import js from '@eslint/js';
+import nextPlugin from '@next/eslint-plugin-next';
+import reactPlugin from 'eslint-plugin-react';
+import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
+import prettierConfig from 'eslint-config-prettier';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
- { 
-    ignores: [
-      '**/dist/*',
-      '**/node_modules/*',
-      '**/*.config.js',
-      '**/*.d.ts',
-      '**/coverage/*',
-      '**/build/*',
-      '**/.next/*',
-      '**/.out/*',
-      '**/public/*'
-    ]
-   },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.strict,
-      eslintPluginPrettier,
-    ],
-    files: ["**/*.{ts,tsx}"],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
-    },
+    files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
-      react,
-      "react-hooks": reactHooks,
-      "react-refresh": reactRefresh,
-      "react-compiler": reactCompiler,
+      '@next/next': nextPlugin,
+      react: reactPlugin,
+      'react-hooks': reactHooksPlugin,
+      'jsx-a11y': jsxA11yPlugin,
     },
     rules: {
-      ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
-      "react-compiler/react-compiler": "error",
-      ...react.configs.recommended.rules,
-      ...react.configs["jsx-runtime"].rules,
-      "react/prop-types": "off",
+      ...nextPlugin.configs.recommended.rules,
+      ...reactPlugin.configs.recommended.rules,
+      ...reactHooksPlugin.configs.recommended.rules,
+      ...jsxA11yPlugin.configs.recommended.rules,
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
+      'no-undef': 'off',
+    },
+    languageOptions: {
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
     },
     settings: {
       react: {
-        version: "detect",
+        version: 'detect',
       },
     },
   },
+  prettierConfig,
 );

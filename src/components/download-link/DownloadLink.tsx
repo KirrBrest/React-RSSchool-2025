@@ -45,11 +45,15 @@ const DownloadLink: React.FC<DownloadLinkProps> = ({
 
   return (
     <>
+      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
       <a
         ref={linkRef}
         style={{ display: 'none' }}
         download={`${pokemons.length}_items.csv`}
-      />
+        aria-hidden="true"
+      >
+        Download link
+      </a>
       <button onClick={handleDownload} className={className}>
         {children}
       </button>

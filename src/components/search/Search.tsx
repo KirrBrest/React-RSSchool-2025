@@ -3,10 +3,12 @@ import React, { useState, useEffect } from 'react';
 import './Search.css';
 import processSearchQuery from '@/utils/validation';
 import Button from '@/components/button/Button';
+import useLocalStorage from '@/utils/useLocalStorage';
 
 const Search = ({ onSearch }: SearchProps) => {
   const [input, setInput] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [searchQuery, setSearchQuery] = useLocalStorage('searchQuery', '');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -18,7 +20,7 @@ const Search = ({ onSearch }: SearchProps) => {
     if (trimmedInput === '') {
       setErrorMsg('');
       onSearch('');
-      localStorage.removeItem('searchQuery');
+      setSearchQuery('');
       return;
     }
 
@@ -28,14 +30,13 @@ const Search = ({ onSearch }: SearchProps) => {
     } else {
       setErrorMsg('');
       onSearch(processed);
-      localStorage.setItem('searchQuery', processed);
+      setSearchQuery(processed);
     }
   };
 
   useEffect(() => {
-    const savedQuery = localStorage.getItem('searchQuery') || '';
-    setInput(savedQuery);
-  }, []);
+    setInput(searchQuery);
+  }, [searchQuery]);
 
   useEffect(() => {
     const handleClearSearch = () => {
@@ -53,7 +54,7 @@ const Search = ({ onSearch }: SearchProps) => {
     setInput('');
     setErrorMsg('');
     onSearch('');
-    localStorage.removeItem('searchQuery');
+    setSearchQuery('');
   };
 
   return (
