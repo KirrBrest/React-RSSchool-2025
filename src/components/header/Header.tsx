@@ -1,23 +1,18 @@
+'use client';
+
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import './Header.css';
 
 const Header: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
 
   const handleHomeClick = () => {
     localStorage.removeItem('searchQuery');
-
     window.dispatchEvent(new CustomEvent('clearSearch'));
-
-    navigate('/');
-  };
-
-  const handleAboutClick = () => {
-    navigate('/about');
   };
 
   return (
@@ -29,20 +24,21 @@ const Header: React.FC = () => {
         </div>
 
         <nav className="header-nav">
-          <button
+          <Link
+            href="/"
             onClick={handleHomeClick}
-            className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+            className={`nav-link ${pathname === '/' ? 'active' : ''}`}
           >
             <span className="nav-icon">🏠</span>
             Home
-          </button>
-          <button
-            onClick={handleAboutClick}
-            className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}
+          </Link>
+          <Link
+            href="/about"
+            className={`nav-link ${pathname === '/about' ? 'active' : ''}`}
           >
             <span className="nav-icon">ℹ️</span>
             About
-          </button>
+          </Link>
           <button
             onClick={toggleTheme}
             className="nav-link theme-toggle"

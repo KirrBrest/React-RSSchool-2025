@@ -1,25 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
 import Search from '@/components/search/Search';
 import Searchresult from '@/components/searchresult/Searchresult';
 import SelectedPokemon from '@/components/selected-pokemon/SelectedPokemon';
 import PokemonDetailsRoute from '@/components/pokemon-details/PokemonDetailsRoute';
 import useLocalStorage from '@/utils/useLocalStorage';
 import Button from '@/components/button/Button';
-import './Home.css';
+import {
+  UrlParamsProvider,
+  useUrlParams,
+} from '@/components/url-params/UrlParamsProvider';
+import '@/pages/home/Home.css';
 
-const Home = () => {
+const HomeContent = () => {
   const [searchQuery, setSearchQuery, mounted] = useLocalStorage(
     'searchQuery',
     ''
   );
   const [error, setError] = useState(false);
-  const searchParams = useSearchParams();
-
-  const detailsId = searchParams?.get('details');
-  const isPokemonDetailsOpen = detailsId;
+  const { isPokemonDetailsOpen } = useUrlParams();
 
   const handleSearchQuery = (query: string) => {
     setSearchQuery(query);
@@ -67,9 +67,11 @@ const Home = () => {
               onClearSearch={handleClearSearch}
             />
           </div>
-          <div className="pokemon-details-section">
-            <PokemonDetailsRoute />
-          </div>
+          {isPokemonDetailsOpen && (
+            <div className="pokemon-details-section">
+              <PokemonDetailsRoute />
+            </div>
+          )}
         </div>
         <Button
           onClick={throwError}
@@ -84,4 +86,12 @@ const Home = () => {
   );
 };
 
-export default Home;
+const HomeClient = () => {
+  return (
+    <UrlParamsProvider>
+      <HomeContent />
+    </UrlParamsProvider>
+  );
+};
+
+export default HomeClient;

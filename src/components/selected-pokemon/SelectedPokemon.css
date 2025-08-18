@@ -1,8 +1,7 @@
 .selected-pokemon-flyout {
   position: fixed;
   bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 20px;
   background: var(--bg-secondary);
   backdrop-filter: blur(10px);
   color: var(--text-primary);
@@ -82,11 +81,11 @@
 
 @keyframes slideUp {
   from {
-    transform: translateX(-50%) translateY(100%);
+    transform: translateY(100%);
     opacity: 0;
   }
   to {
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
     opacity: 1;
   }
 }
@@ -94,6 +93,7 @@
 @media (max-width: 768px) {
   .selected-pokemon-flyout {
     bottom: 10px;
+    left: 10px;
     width: 95%;
     max-width: 350px;
   }

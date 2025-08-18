@@ -1,6 +1,7 @@
+'use client';
+
 import type { MainProps } from '@/types/interfaces';
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import PokemonCard from '@/components/searchcard/SearchCard';
 import './Searchresult.css';
 import processSearchQuery from '@/utils/validation';
@@ -10,6 +11,7 @@ import {
   createPokemonUrl,
 } from '@/api';
 import { useAppDispatch } from '@/store/hooks';
+import { useUrlParams } from '@/components/url-params/UrlParamsProvider';
 
 const PAGE_SIZE = 12;
 
@@ -18,8 +20,7 @@ const Searchresult = ({ searchQuery, onClearSearch }: MainProps) => {
   const [searchMode, setSearchMode] = useState(false);
   const [currentSearchQuery, setCurrentSearchQuery] = useState('');
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const page = Number(searchParams.get('page')) || 1;
+  const { page, setPage, setDetailsId } = useUrlParams();
 
   const offset = (page - 1) * PAGE_SIZE;
   const {
@@ -58,21 +59,12 @@ const Searchresult = ({ searchQuery, onClearSearch }: MainProps) => {
   }, [searchQuery, searchPokemon]);
 
   const handlePokemonSelect = (pokemonId: string) => {
-    const currentParams = new URLSearchParams(searchParams);
-    currentParams.set('page', String(page));
-    currentParams.set('details', pokemonId);
-    setSearchParams(currentParams);
+    setDetailsId(pokemonId);
   };
 
   const totalPages = Math.ceil((pokemonListData?.count || 0) / PAGE_SIZE);
   const handlePageChange = (newPage: number) => {
-    const currentParams = new URLSearchParams(searchParams);
-    currentParams.set('page', String(newPage));
-    const details = searchParams.get('details');
-    if (details) {
-      currentParams.set('details', details);
-    }
-    setSearchParams(currentParams);
+    setPage(newPage);
   };
 
   const handleRefresh = () => {
@@ -293,17 +285,6 @@ const Searchresult = ({ searchQuery, onClearSearch }: MainProps) => {
             title="Clear all cache to see loading spinners"
           >
             🗑️ Clear Cache
-          </button>
-          <button
-            onClick={() => {
-              alert(
-                '💡 Tip: Open DevTools (F12) → Network tab → Enable "Slow 3G" to see loading spinners!'
-              );
-            }}
-            className="button button-info slow-connection-button"
-            title="Get instructions to simulate slow connection"
-          >
-            🐌 Show Spinners
           </button>
         </div>
         {isFetching && !isInitialLoading && (

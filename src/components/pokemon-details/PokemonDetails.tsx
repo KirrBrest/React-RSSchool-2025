@@ -1,21 +1,25 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+'use client';
+
+import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useGetPokemonQuery } from '@/api';
 import './PokemonDetails.css';
 import type { PokemonDetailsProps } from '@/types/interfaces';
 
 const PokemonDetails: React.FC<PokemonDetailsProps> = (props) => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const pokemonId = props.pokemonId;
 
   const handleClose = () => {
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.delete('details');
-    const currentPath = searchParams.toString()
-      ? `/?${searchParams.toString()}`
+    if (!searchParams) return;
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.delete('details');
+    const currentPath = newSearchParams.toString()
+      ? `/?${newSearchParams.toString()}`
       : '/';
-    navigate(currentPath);
+    router.push(currentPath);
   };
 
   const onClose = props.onClose || handleClose;
@@ -159,32 +163,40 @@ const PokemonDetails: React.FC<PokemonDetailsProps> = (props) => {
         <div className="pokemon-images">
           <div className="image-row">
             <div className="image-container">
-              <img
+              <Image
                 src={pokemon.sprites.front_default}
                 alt={`${pokemon.name} front`}
+                width={96}
+                height={96}
               />
               <span>Front</span>
             </div>
             <div className="image-container">
-              <img
+              <Image
                 src={pokemon.sprites.back_default}
                 alt={`${pokemon.name} back`}
+                width={96}
+                height={96}
               />
               <span>Back</span>
             </div>
           </div>
           <div className="image-row">
             <div className="image-container">
-              <img
+              <Image
                 src={pokemon.sprites.front_shiny}
                 alt={`${pokemon.name} front shiny`}
+                width={96}
+                height={96}
               />
               <span>Front Shiny</span>
             </div>
             <div className="image-container">
-              <img
+              <Image
                 src={pokemon.sprites.back_shiny}
                 alt={`${pokemon.name} back shiny`}
+                width={96}
+                height={96}
               />
               <span>Back Shiny</span>
             </div>
