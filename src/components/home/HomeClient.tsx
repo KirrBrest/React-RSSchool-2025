@@ -11,6 +11,7 @@ import {
   UrlParamsProvider,
   useUrlParams,
 } from '@/components/url-params/UrlParamsProvider';
+import '@/pages/home/Home.css';
 
 const HomeContent = () => {
   const [searchQuery, setSearchQuery, mounted] = useLocalStorage(

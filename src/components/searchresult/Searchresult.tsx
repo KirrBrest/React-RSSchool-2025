@@ -286,17 +286,6 @@ const Searchresult = ({ searchQuery, onClearSearch }: MainProps) => {
           >
             🗑️ Clear Cache
           </button>
-          <button
-            onClick={() => {
-              alert(
-                '💡 Tip: Open DevTools (F12) → Network tab → Enable "Slow 3G" to see loading spinners!'
-              );
-            }}
-            className="button button-info slow-connection-button"
-            title="Get instructions to simulate slow connection"
-          >
-            🐌 Show Spinners
-          </button>
         </div>
         {isFetching && !isInitialLoading && (
           <div className="background-loading">
