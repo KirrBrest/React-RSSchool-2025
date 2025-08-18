@@ -2,7 +2,6 @@
 
 import type { MainProps } from '@/types/interfaces';
 import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
 import PokemonCard from '@/components/searchcard/SearchCard';
 import './Searchresult.css';
 import processSearchQuery from '@/utils/validation';
@@ -12,6 +11,7 @@ import {
   createPokemonUrl,
 } from '@/api';
 import { useAppDispatch } from '@/store/hooks';
+import { useUrlParams } from '@/components/url-params/UrlParamsProvider';
 
 const PAGE_SIZE = 12;
 
@@ -20,9 +20,7 @@ const Searchresult = ({ searchQuery, onClearSearch }: MainProps) => {
   const [searchMode, setSearchMode] = useState(false);
   const [currentSearchQuery, setCurrentSearchQuery] = useState('');
 
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const page = Number(searchParams?.get('page')) || 1;
+  const { page, setPage, setDetailsId } = useUrlParams();
 
   const offset = (page - 1) * PAGE_SIZE;
   const {
@@ -61,21 +59,12 @@ const Searchresult = ({ searchQuery, onClearSearch }: MainProps) => {
   }, [searchQuery, searchPokemon]);
 
   const handlePokemonSelect = (pokemonId: string) => {
-    const currentParams = new URLSearchParams(searchParams?.toString() || '');
-    currentParams.set('page', String(page));
-    currentParams.set('details', pokemonId);
-    router.push(`/?${currentParams.toString()}`);
+    setDetailsId(pokemonId);
   };
 
   const totalPages = Math.ceil((pokemonListData?.count || 0) / PAGE_SIZE);
   const handlePageChange = (newPage: number) => {
-    const currentParams = new URLSearchParams(searchParams?.toString() || '');
-    currentParams.set('page', String(newPage));
-    const details = searchParams?.get('details');
-    if (details) {
-      currentParams.set('details', details);
-    }
-    router.push(`/?${currentParams.toString()}`);
+    setPage(newPage);
   };
 
   const handleRefresh = () => {

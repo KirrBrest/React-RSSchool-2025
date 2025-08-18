@@ -1,13 +1,14 @@
-'use client';
-
-import Header from '@/components/header/Header';
-import Home from '@/pages/home/Home';
+import { Suspense } from 'react';
+import HeaderClient from '@/components/header/HeaderClient';
+import HomeClient from '@/components/home/HomeClient';
 
 export default function HomePage() {
   return (
     <>
-      <Header />
-      <Home />
+      <HeaderClient />
+      <Suspense fallback={<div>Loading...</div>}>
+        <HomeClient />
+      </Suspense>
     </>
   );
 }

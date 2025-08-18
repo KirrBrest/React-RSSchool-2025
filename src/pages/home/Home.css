@@ -33,6 +33,12 @@
 
 .pokemon-list-section.with-details {
   min-height: 60%;
+  flex: 1;
+}
+
+.pokemon-list-section:not(.with-details) {
+  flex: 1;
+  width: 100%;
 }
 
 .pokemon-details-section {
@@ -45,18 +51,7 @@
   overflow-y: auto;
   animation: slideIn 0.3s ease-out;
   position: relative;
-}
-
-.pokemon-details-section:empty {
-  display: none;
-}
-
-.pokemon-details-section:not(:has(*)) {
-  display: none;
-}
-
-.pokemon-details-section.hidden {
-  display: none;
+  display: block;
 }
 
 @keyframes slideIn {

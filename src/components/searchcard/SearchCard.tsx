@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectPokemon, unselectPokemon } from '@/store/pokemonSlice';
 import { useGetPokemonByUrlQuery } from '@/api';
@@ -84,9 +85,11 @@ const PokemonCard = ({ url, name, onSelect }: PokemonCardProps) => {
         />
       </div>
       <div className="pokemon-info">
-        <img
+        <Image
           src={pokemonData?.sprites?.front_default || '/placeholder-sprite.png'}
           alt={name}
+          width={96}
+          height={96}
           className="pokemon-sprite"
         />
         <h3 className="pokemon-name">{name}</h3>

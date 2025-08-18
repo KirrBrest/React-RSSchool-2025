@@ -1,13 +1,14 @@
-'use client';
-
-import Header from '@/components/header/Header';
-import About from '@/pages/about/About';
+import { Suspense } from 'react';
+import HeaderClient from '@/components/header/HeaderClient';
+import AboutClient from '@/components/about/AboutClient';
 
 export default function AboutPage() {
   return (
     <>
-      <Header />
-      <About />
+      <HeaderClient />
+      <Suspense fallback={<div>Loading...</div>}>
+        <AboutClient />
+      </Suspense>
     </>
   );
 }

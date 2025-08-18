@@ -1,13 +1,5 @@
-'use client';
-
-import Header from '@/components/header/Header';
-import Page404 from '@/pages/page404/Page404';
+import NotFoundClient from '@/components/not-found/NotFoundClient';
 
 export default function NotFoundPage() {
-  return (
-    <>
-      <Header />
-      <Page404 />
-    </>
-  );
+  return <NotFoundClient />;
 }

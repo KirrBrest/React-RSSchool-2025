@@ -1,11 +1,10 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useUrlParams } from '@/components/url-params/UrlParamsProvider';
 import PokemonDetails from './PokemonDetails';
 
 const PokemonDetailsRoute = () => {
-  const searchParams = useSearchParams();
-  const detailsId = searchParams?.get('details');
+  const { detailsId } = useUrlParams();
 
   if (!detailsId) {
     return null;
