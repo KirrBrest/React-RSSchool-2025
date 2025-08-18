@@ -1,5 +1,10 @@
+import SharedLayout from '@/components/layout/SharedLayout';
 import NotFoundClient from '@/components/not-found/NotFoundClient';
 
 export default function NotFoundPage() {
-  return <NotFoundClient />;
+  return (
+    <SharedLayout>
+      <NotFoundClient />
+    </SharedLayout>
+  );
 }

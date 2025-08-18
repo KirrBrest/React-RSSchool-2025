@@ -1,14 +1,13 @@
 import { Suspense } from 'react';
-import HeaderClient from '@/components/header/HeaderClient';
+import SharedLayout from '@/components/layout/SharedLayout';
 import HomeClient from '@/components/home/HomeClient';
 
 export default function HomePage() {
   return (
-    <>
-      <HeaderClient />
+    <SharedLayout>
       <Suspense fallback={<div>Loading...</div>}>
         <HomeClient />
       </Suspense>
-    </>
+    </SharedLayout>
   );
 }
