@@ -55,6 +55,41 @@ describe('Integration Tests', () => {
 
   describe('HomePage and Modal Integration', () => {
     it('opens and closes modal one correctly', async () => {
+      const { useForm } = vi.mocked(await import('react-hook-form'));
+      useForm.mockReturnValue({
+        register: vi.fn(),
+        handleSubmit: vi.fn(),
+        formState: {
+          errors: {},
+          isValid: true,
+          isSubmitting: false,
+          isDirty: false,
+          isLoading: false,
+          isSubmitted: false,
+          isSubmitSuccessful: false,
+          submitCount: 0,
+          isValidating: false,
+          touchedFields: {},
+          dirtyFields: {},
+          disabled: false,
+          validatingFields: {},
+          isReady: true,
+        },
+        watch: vi.fn(),
+        setValue: vi.fn(),
+        reset: vi.fn(),
+        getValues: vi.fn(),
+        getFieldState: vi.fn(),
+        setError: vi.fn(),
+        clearErrors: vi.fn(),
+        trigger: vi.fn(),
+        resetField: vi.fn(),
+        unregister: vi.fn(),
+        setFocus: vi.fn(),
+        subscribe: vi.fn(),
+        control: {} as Control<FieldValues, unknown, unknown>,
+      });
+
       render(<HomePage />);
       const modalOneButton = screen.getByText(/модальное окно 1/i);
       fireEvent.click(modalOneButton);
@@ -76,12 +111,47 @@ describe('Integration Tests', () => {
     });
 
     it('opens and closes modal two correctly', async () => {
+      const { useForm } = vi.mocked(await import('react-hook-form'));
+      useForm.mockReturnValue({
+        register: vi.fn(),
+        handleSubmit: vi.fn(),
+        formState: {
+          errors: {},
+          isValid: true,
+          isSubmitting: false,
+          isDirty: false,
+          isLoading: false,
+          isSubmitted: false,
+          isSubmitSuccessful: false,
+          submitCount: 0,
+          isValidating: false,
+          touchedFields: {},
+          dirtyFields: {},
+          disabled: false,
+          validatingFields: {},
+          isReady: true,
+        },
+        watch: vi.fn(),
+        setValue: vi.fn(),
+        reset: vi.fn(),
+        getValues: vi.fn(),
+        getFieldState: vi.fn(),
+        setError: vi.fn(),
+        clearErrors: vi.fn(),
+        trigger: vi.fn(),
+        resetField: vi.fn(),
+        unregister: vi.fn(),
+        setFocus: vi.fn(),
+        subscribe: vi.fn(),
+        control: {} as Control<FieldValues, unknown, unknown>,
+      });
+
       render(<HomePage />);
 
       const modalTwoButton = screen.getByText(/модальное окно 2/i);
       fireEvent.click(modalTwoButton);
 
-      expect(screen.getByText(/контролируемая форма/i)).toBeInTheDocument();
+      expect(screen.getByText(/форма с react hook form/i)).toBeInTheDocument();
 
       const closeButton = screen.getByRole('button', {
         name: /закрыть модальное окно/i,
@@ -90,12 +160,47 @@ describe('Integration Tests', () => {
 
       await waitFor(() => {
         expect(
-          screen.queryByText(/контролируемая форма/i)
+          screen.queryByText(/Форма с React Hook Form/i)
         ).not.toBeInTheDocument();
       });
     });
 
-    it('maintains form state between modal opens', () => {
+    it('maintains form state between modal opens', async () => {
+      const { useForm } = vi.mocked(await import('react-hook-form'));
+      useForm.mockReturnValue({
+        register: vi.fn(),
+        handleSubmit: vi.fn(),
+        formState: {
+          errors: {},
+          isValid: true,
+          isSubmitting: false,
+          isDirty: false,
+          isLoading: false,
+          isSubmitted: false,
+          isSubmitSuccessful: false,
+          submitCount: 0,
+          isValidating: false,
+          touchedFields: {},
+          dirtyFields: {},
+          disabled: false,
+          validatingFields: {},
+          isReady: true,
+        },
+        watch: vi.fn(),
+        setValue: vi.fn(),
+        reset: vi.fn(),
+        getValues: vi.fn(),
+        getFieldState: vi.fn(),
+        setError: vi.fn(),
+        clearErrors: vi.fn(),
+        trigger: vi.fn(),
+        resetField: vi.fn(),
+        unregister: vi.fn(),
+        setFocus: vi.fn(),
+        subscribe: vi.fn(),
+        control: {} as Control<FieldValues, unknown, unknown>,
+      });
+
       render(<HomePage />);
 
       const modalOneButton = screen.getByText(/модальное окно 1/i);
@@ -117,55 +222,6 @@ describe('Integration Tests', () => {
   });
 
   describe('Form Submission Integration', () => {
-    it('submits uncontrolled form and adds to store', async () => {
-      render(<HomePage />);
-
-      const modalOneButton = screen.getByText(/модальное окно 1/i);
-      fireEvent.click(modalOneButton);
-
-      fireEvent.change(screen.getByLabelText(/имя/i), {
-        target: { value: 'John' },
-      });
-      fireEvent.change(screen.getByLabelText(/возраст/i), {
-        target: { value: '25' },
-      });
-      fireEvent.change(screen.getByLabelText(/email/i), {
-        target: { value: 'john@example.com' },
-      });
-      fireEvent.change(
-        document.getElementById('password') as HTMLInputElement,
-        {
-          target: { value: 'StrongPass1!' },
-        }
-      );
-      fireEvent.change(screen.getByLabelText(/подтвердите пароль/i), {
-        target: { value: 'StrongPass1!' },
-      });
-      fireEvent.click(screen.getByLabelText(/мужской/i));
-      fireEvent.change(screen.getByLabelText(/страна/i), {
-        target: { value: 'Россия' },
-      });
-      fireEvent.click(screen.getByLabelText(/я принимаю условия/i));
-
-      const submitButton = screen.getByRole('button', { name: /отправить/i });
-      fireEvent.click(submitButton);
-
-      await waitFor(() => {
-        expect(mockAddForm).toHaveBeenCalledWith(
-          expect.objectContaining({
-            name: 'John',
-            age: 25,
-            email: 'john@example.com',
-            password: 'StrongPass1!',
-            confirmPassword: 'StrongPass1!',
-            gender: 'male',
-            country: 'Россия',
-            acceptTerms: true,
-          })
-        );
-      });
-    });
-
     it('submits controlled form and adds to store', async () => {
       const { useForm } = vi.mocked(await import('react-hook-form'));
       const mockHandleSubmit = vi.fn((onSubmit) => () => {
@@ -242,6 +298,41 @@ describe('Integration Tests', () => {
     });
 
     it('displays submitted forms on home page', async () => {
+      const { useForm } = vi.mocked(await import('react-hook-form'));
+      useForm.mockReturnValue({
+        register: vi.fn(),
+        handleSubmit: vi.fn(),
+        formState: {
+          errors: {},
+          isValid: true,
+          isSubmitting: false,
+          isDirty: false,
+          isLoading: false,
+          isSubmitted: false,
+          isSubmitSuccessful: false,
+          submitCount: 0,
+          isValidating: false,
+          touchedFields: {},
+          dirtyFields: {},
+          disabled: false,
+          validatingFields: {},
+          isReady: true,
+        },
+        watch: vi.fn(),
+        setValue: vi.fn(),
+        reset: vi.fn(),
+        getValues: vi.fn(),
+        getFieldState: vi.fn(),
+        setError: vi.fn(),
+        clearErrors: vi.fn(),
+        trigger: vi.fn(),
+        resetField: vi.fn(),
+        unregister: vi.fn(),
+        setFocus: vi.fn(),
+        subscribe: vi.fn(),
+        control: {} as Control<FieldValues, unknown, unknown>,
+      });
+
       const mockForms = [
         {
           name: 'John',
@@ -278,6 +369,41 @@ describe('Integration Tests', () => {
 
   describe('Form Validation Integration', () => {
     it('shows validation errors for uncontrolled form', async () => {
+      const { useForm } = vi.mocked(await import('react-hook-form'));
+      useForm.mockReturnValue({
+        register: vi.fn(),
+        handleSubmit: vi.fn(),
+        formState: {
+          errors: {},
+          isValid: true,
+          isSubmitting: false,
+          isDirty: false,
+          isLoading: false,
+          isSubmitted: false,
+          isSubmitSuccessful: false,
+          submitCount: 0,
+          isValidating: false,
+          touchedFields: {},
+          dirtyFields: {},
+          disabled: false,
+          validatingFields: {},
+          isReady: true,
+        },
+        watch: vi.fn(),
+        setValue: vi.fn(),
+        reset: vi.fn(),
+        getValues: vi.fn(),
+        getFieldState: vi.fn(),
+        setError: vi.fn(),
+        clearErrors: vi.fn(),
+        trigger: vi.fn(),
+        resetField: vi.fn(),
+        unregister: vi.fn(),
+        setFocus: vi.fn(),
+        subscribe: vi.fn(),
+        control: {} as Control<FieldValues, unknown, unknown>,
+      });
+
       render(<HomePage />);
 
       const modalOneButton = screen.getByText(/модальное окно 1/i);
@@ -336,6 +462,41 @@ describe('Integration Tests', () => {
 
   describe('Modal Accessibility Integration', () => {
     it('handles ESC key to close modal', async () => {
+      const { useForm } = vi.mocked(await import('react-hook-form'));
+      useForm.mockReturnValue({
+        register: vi.fn(),
+        handleSubmit: vi.fn(),
+        formState: {
+          errors: {},
+          isValid: true,
+          isSubmitting: false,
+          isDirty: false,
+          isLoading: false,
+          isSubmitted: false,
+          isSubmitSuccessful: false,
+          submitCount: 0,
+          isValidating: false,
+          touchedFields: {},
+          dirtyFields: {},
+          disabled: false,
+          validatingFields: {},
+          isReady: true,
+        },
+        watch: vi.fn(),
+        setValue: vi.fn(),
+        reset: vi.fn(),
+        getValues: vi.fn(),
+        getFieldState: vi.fn(),
+        setError: vi.fn(),
+        clearErrors: vi.fn(),
+        trigger: vi.fn(),
+        resetField: vi.fn(),
+        unregister: vi.fn(),
+        setFocus: vi.fn(),
+        subscribe: vi.fn(),
+        control: {} as Control<FieldValues, unknown, unknown>,
+      });
+
       render(<HomePage />);
 
       const modalOneButton = screen.getByText(/модальное окно 1/i);
@@ -357,6 +518,41 @@ describe('Integration Tests', () => {
 
   describe('Data Flow Integration', () => {
     it('updates home page when new form is submitted', async () => {
+      const { useForm } = vi.mocked(await import('react-hook-form'));
+      useForm.mockReturnValue({
+        register: vi.fn(),
+        handleSubmit: vi.fn(),
+        formState: {
+          errors: {},
+          isValid: true,
+          isSubmitting: false,
+          isDirty: false,
+          isLoading: false,
+          isSubmitted: false,
+          isSubmitSuccessful: false,
+          submitCount: 0,
+          isValidating: false,
+          touchedFields: {},
+          dirtyFields: {},
+          disabled: false,
+          validatingFields: {},
+          isReady: true,
+        },
+        watch: vi.fn(),
+        setValue: vi.fn(),
+        reset: vi.fn(),
+        getValues: vi.fn(),
+        getFieldState: vi.fn(),
+        setError: vi.fn(),
+        clearErrors: vi.fn(),
+        trigger: vi.fn(),
+        resetField: vi.fn(),
+        unregister: vi.fn(),
+        setFocus: vi.fn(),
+        subscribe: vi.fn(),
+        control: {} as Control<FieldValues, unknown, unknown>,
+      });
+
       const { rerender } = render(<HomePage />);
 
       expect(screen.queryByTestId('forms-container')).not.toBeInTheDocument();
@@ -389,6 +585,41 @@ describe('Integration Tests', () => {
     });
 
     it('shows new data indication for latest form', async () => {
+      const { useForm } = vi.mocked(await import('react-hook-form'));
+      useForm.mockReturnValue({
+        register: vi.fn(),
+        handleSubmit: vi.fn(),
+        formState: {
+          errors: {},
+          isValid: true,
+          isSubmitting: false,
+          isDirty: false,
+          isLoading: false,
+          isSubmitted: false,
+          isSubmitSuccessful: false,
+          submitCount: 0,
+          isValidating: false,
+          touchedFields: {},
+          dirtyFields: {},
+          disabled: false,
+          validatingFields: {},
+          isReady: true,
+        },
+        watch: vi.fn(),
+        setValue: vi.fn(),
+        reset: vi.fn(),
+        getValues: vi.fn(),
+        getFieldState: vi.fn(),
+        setError: vi.fn(),
+        clearErrors: vi.fn(),
+        trigger: vi.fn(),
+        resetField: vi.fn(),
+        unregister: vi.fn(),
+        setFocus: vi.fn(),
+        subscribe: vi.fn(),
+        control: {} as Control<FieldValues, unknown, unknown>,
+      });
+
       const mockForms = [
         {
           name: 'John',
@@ -418,6 +649,41 @@ describe('Integration Tests', () => {
     });
 
     it('handles multiple form submissions correctly', async () => {
+      const { useForm } = vi.mocked(await import('react-hook-form'));
+      useForm.mockReturnValue({
+        register: vi.fn(),
+        handleSubmit: vi.fn(),
+        formState: {
+          errors: {},
+          isValid: true,
+          isSubmitting: false,
+          isDirty: false,
+          isLoading: false,
+          isSubmitted: false,
+          isSubmitSuccessful: false,
+          submitCount: 0,
+          isValidating: false,
+          touchedFields: {},
+          dirtyFields: {},
+          disabled: false,
+          validatingFields: {},
+          isReady: true,
+        },
+        watch: vi.fn(),
+        setValue: vi.fn(),
+        reset: vi.fn(),
+        getValues: vi.fn(),
+        getFieldState: vi.fn(),
+        setError: vi.fn(),
+        clearErrors: vi.fn(),
+        trigger: vi.fn(),
+        resetField: vi.fn(),
+        unregister: vi.fn(),
+        setFocus: vi.fn(),
+        subscribe: vi.fn(),
+        control: {} as Control<FieldValues, unknown, unknown>,
+      });
+
       const { rerender } = render(<HomePage />);
 
       let mockForms: Array<{

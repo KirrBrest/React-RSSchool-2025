@@ -174,7 +174,7 @@ export const ControlledForm = ({ onClose }: ControlledFormProps) => {
           className={errors.country ? 'error' : ''}
           {...register('country')}
         />
-        <datalist id="controlled-countries">
+        <datalist id="controlled-countries" data-testid="controlled-countries">
           {countries.map((country, index) => (
             <option key={index} value={country} />
           ))}

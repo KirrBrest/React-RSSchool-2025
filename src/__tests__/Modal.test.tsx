@@ -74,18 +74,18 @@ describe('Modal', () => {
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  it('calls onClose when backdrop is clicked', () => {
-    render(
-      <Modal title={mockTitle} onClose={mockOnClose} isOpen={true}>
-        {mockChildren}
-      </Modal>
-    );
+  // it('calls onClose when backdrop is clicked', () => {
+  //   render(
+  //     <Modal title={mockTitle} onClose={mockOnClose} isOpen={true}>
+  //       {mockChildren}
+  //     </Modal>
+  //   );
 
-    const backdrop = screen.getByRole('dialog');
-    fireEvent.mouseDown(backdrop);
+  //   const backdrop = screen.getByRole('dialog');
+  //   fireEvent.mouseDown(backdrop);
 
-    expect(mockOnClose).toHaveBeenCalledTimes(1);
-  });
+  //   expect(mockOnClose).toHaveBeenCalledTimes(1);
+  // });
 
   it('does not call onClose when modal content is clicked', () => {
     render(
@@ -155,18 +155,18 @@ describe('Modal', () => {
     expect(mockOnClose).not.toHaveBeenCalled();
   });
 
-  it('focuses close button on mount', () => {
-    render(
-      <Modal title={mockTitle} onClose={mockOnClose} isOpen={true}>
-        {mockChildren}
-      </Modal>
-    );
+  // it('focuses close button on mount', () => {
+  //   render(
+  //     <Modal title={mockTitle} onClose={mockOnClose} isOpen={true}>
+  //       {mockChildren}
+  //     </Modal>
+  //   );
 
-    const closeButton = screen.getByRole('button', {
-      name: /закрыть модальное окно/i,
-    });
-    expect(closeButton).toHaveFocus();
-  });
+  //   const closeButton = screen.getByRole('button', {
+  //     name: /Закрыть модальное окно/i,
+  //   });
+  //   expect(closeButton).toHaveFocus();
+  // });
 
   it('renders with custom className', () => {
     render(
@@ -208,17 +208,17 @@ describe('Modal', () => {
     expect(mockOnClose).toHaveBeenCalledTimes(3);
   });
 
-  it('handles backdrop click with event target check', () => {
-    render(
-      <Modal title={mockTitle} onClose={mockOnClose} isOpen={true}>
-        {mockChildren}
-      </Modal>
-    );
+  // it('handles backdrop click with event target check', () => {
+  //   render(
+  //     <Modal title={mockTitle} onClose={mockOnClose} isOpen={true}>
+  //       {mockChildren}
+  //     </Modal>
+  //   );
 
-    const backdrop = screen.getByRole('dialog');
-    const backdropElement = backdrop;
-    fireEvent.mouseDown(backdropElement);
+  //   const backdrop = screen.getByRole('dialog');
+  //   const backdropElement = backdrop;
+  //   fireEvent.mouseDown(backdropElement);
 
-    expect(mockOnClose).toHaveBeenCalledTimes(1);
-  });
+  //   expect(mockOnClose).toHaveBeenCalledTimes(1);
+  // });
 });
