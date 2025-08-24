@@ -31,7 +31,7 @@ export const UncontrolledForm = ({ onClose }: UncontrolledFormProps) => {
       gender: formData.get('gender') as 'male' | 'female' | 'other',
       acceptTerms: formData.get('acceptTerms') === 'on',
       country: formData.get('country') as string,
-      picture: { file: formData.get('picture') as File },
+      picture: { file: formData.get('picture') as File | null },
     };
 
     try {
@@ -113,6 +113,7 @@ export const UncontrolledForm = ({ onClose }: UncontrolledFormProps) => {
           id="name"
           name="name"
           placeholder="Введите имя"
+          autoComplete="given-name"
           className={errors.name ? 'error' : ''}
         />
         {errors.name && <div className="error-message">{errors.name}</div>}
@@ -127,6 +128,7 @@ export const UncontrolledForm = ({ onClose }: UncontrolledFormProps) => {
           min="1"
           max="120"
           placeholder="Введите возраст"
+          autoComplete="bday-year"
           className={errors.age ? 'error' : ''}
         />
         {errors.age && <div className="error-message">{errors.age}</div>}
@@ -139,6 +141,7 @@ export const UncontrolledForm = ({ onClose }: UncontrolledFormProps) => {
           id="email"
           name="email"
           placeholder="Введите email"
+          autoComplete="email"
           className={errors.email ? 'error' : ''}
         />
         {errors.email && <div className="error-message">{errors.email}</div>}
@@ -151,6 +154,7 @@ export const UncontrolledForm = ({ onClose }: UncontrolledFormProps) => {
           id="password"
           name="password"
           placeholder="Введите пароль"
+          autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className={errors.password ? 'error' : ''}
@@ -168,6 +172,7 @@ export const UncontrolledForm = ({ onClose }: UncontrolledFormProps) => {
           id="confirmPassword"
           name="confirmPassword"
           placeholder="Подтвердите пароль"
+          autoComplete="new-password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           className={errors.confirmPassword ? 'error' : ''}
@@ -205,6 +210,7 @@ export const UncontrolledForm = ({ onClose }: UncontrolledFormProps) => {
           name="country"
           list="countries"
           placeholder="Выберите страну"
+          autoComplete="on"
           className={errors.country ? 'error' : ''}
         />
         <datalist id="countries">
@@ -224,6 +230,7 @@ export const UncontrolledForm = ({ onClose }: UncontrolledFormProps) => {
           id="picture"
           name="picture"
           accept=".png,.jpeg,.jpg"
+          autoComplete="off"
           className={errors.picture ? 'error' : ''}
         />
         {errors.picture && (
@@ -233,8 +240,8 @@ export const UncontrolledForm = ({ onClose }: UncontrolledFormProps) => {
 
       <div className="form-group checkbox-group">
         <label className="checkbox-label">
-          <input type="checkbox" name="acceptTerms" />Я принимаю условия
-          использования *
+          <input type="checkbox" name="acceptTerms" autoComplete="off" />Я
+          принимаю условия использования *
         </label>
         {errors.acceptTerms && (
           <div className="error-message">{errors.acceptTerms}</div>

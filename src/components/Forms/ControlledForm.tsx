@@ -61,6 +61,7 @@ export const ControlledForm = ({ onClose }: ControlledFormProps) => {
           type="text"
           id="controlled-name"
           placeholder="Введите имя"
+          autoComplete="given-name"
           className={errors.name ? 'error' : ''}
           {...register('name')}
         />
@@ -77,6 +78,7 @@ export const ControlledForm = ({ onClose }: ControlledFormProps) => {
           min="1"
           max="120"
           placeholder="Введите возраст"
+          autoComplete="bday-year"
           className={errors.age ? 'error' : ''}
           {...register('age', { valueAsNumber: true })}
         />
@@ -91,6 +93,7 @@ export const ControlledForm = ({ onClose }: ControlledFormProps) => {
           type="email"
           id="controlled-email"
           placeholder="Введите email"
+          autoComplete="email"
           className={errors.email ? 'error' : ''}
           {...register('email')}
         />
@@ -105,6 +108,7 @@ export const ControlledForm = ({ onClose }: ControlledFormProps) => {
           type="password"
           id="controlled-password"
           placeholder="Введите пароль"
+          autoComplete="new-password"
           className={errors.password ? 'error' : ''}
           {...register('password')}
         />
@@ -120,6 +124,7 @@ export const ControlledForm = ({ onClose }: ControlledFormProps) => {
           type="password"
           id="controlled-confirmPassword"
           placeholder="Подтвердите пароль"
+          autoComplete="new-password"
           className={errors.confirmPassword ? 'error' : ''}
           {...register('confirmPassword')}
         />
@@ -165,6 +170,7 @@ export const ControlledForm = ({ onClose }: ControlledFormProps) => {
           id="controlled-country"
           list="controlled-countries"
           placeholder="Выберите страну"
+          autoComplete="on"
           className={errors.country ? 'error' : ''}
           {...register('country')}
         />
@@ -184,6 +190,7 @@ export const ControlledForm = ({ onClose }: ControlledFormProps) => {
           type="file"
           id="controlled-picture"
           accept=".png,.jpeg,.jpg"
+          autoComplete="off"
           className={errors.picture ? 'error' : ''}
           onChange={(e) => {
             const file = e.target.files?.[0];
@@ -199,8 +206,12 @@ export const ControlledForm = ({ onClose }: ControlledFormProps) => {
 
       <div className="form-group checkbox-group">
         <label className="checkbox-label">
-          <input type="checkbox" {...register('acceptTerms')} />Я принимаю
-          условия использования *
+          <input
+            type="checkbox"
+            {...register('acceptTerms')}
+            autoComplete="off"
+          />
+          Я принимаю условия использования *
         </label>
         {errors.acceptTerms && (
           <div className="error-message">{errors.acceptTerms.message}</div>

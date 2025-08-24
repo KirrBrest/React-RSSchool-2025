@@ -5,6 +5,10 @@ interface PasswordValidationProps {
 }
 
 export const PasswordValidation = ({ password }: PasswordValidationProps) => {
+  if (!password) {
+    password = '';
+  }
+
   const checks = [
     { label: 'Минимум 8 символов', test: password.length >= 8 },
     { label: '1 цифра', test: /[0-9]/.test(password) },

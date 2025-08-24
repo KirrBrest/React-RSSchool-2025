@@ -13,7 +13,7 @@ const passwordSchema = z
 
 const imageSchema = z
   .object({
-    file: z.instanceof(File).optional(),
+    file: z.instanceof(File).nullable().optional(),
     base64: z.string().optional(),
   })
   .refine(
