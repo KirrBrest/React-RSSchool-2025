@@ -1,0 +1,117 @@
+.home-page {
+  padding: 3rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+}
+
+.home-page h1 {
+  color: #1f2937;
+  margin-bottom: 20px;
+}
+
+.home-page p {
+  color: #6b7280;
+  margin-bottom: 40px;
+  font-size: 1.1rem;
+}
+
+.button-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.modal-button {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.modal-button:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.modal-button:active {
+  background-color: #1d4ed8;
+  transform: translateY(0);
+}
+
+.forms-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  margin: 2rem auto 0;
+  justify-items: center;
+  max-width: 900px;
+}
+
+@media (max-width: 900px) {
+  .forms-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .forms-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.saved-data {
+  padding: 1rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+  width: 280px;
+}
+
+.saved-data.new-data {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+  box-shadow: 0 8px 25px -5px rgba(16, 185, 129, 0.2);
+}
+
+.data-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.data-item {
+  padding: 0.4rem;
+  background-color: #f9fafb;
+  border-radius: 4px;
+  border-left: 2px solid #3b82f6;
+  font-size: 0.85rem;
+}
+
+.picture-preview {
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.picture-preview img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 2px solid #e5e7eb;
+}
