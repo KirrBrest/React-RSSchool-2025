@@ -2,8 +2,7 @@ import type { FormState } from '@/types/interfaces';
 import { create } from 'zustand';
 
 export const useFormStore = create<FormState>((set) => ({
-  formData: null,
-  pictureBase64: null,
+  forms: [],
   countries: [
     'Беларусь',
     'Россия',
@@ -48,8 +47,7 @@ export const useFormStore = create<FormState>((set) => ({
     'Эстония',
   ],
 
-  setFormData: (data) => set({ formData: data }),
-  setPictureBase64: (base64) => set({ pictureBase64: base64 }),
+  addForm: (data) => set((state) => ({ forms: [...state.forms, data] })),
   setCountries: (countries) => set({ countries }),
-  clearFormData: () => set({ formData: null, pictureBase64: null }),
+  clearForms: () => set({ forms: [] }),
 }));

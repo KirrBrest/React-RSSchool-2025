@@ -28,7 +28,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
     };
   }, [isOpen, onClose]);
 
-  const handleBackdropClick = (event: React.MouseEvent) => {
+  const handleBackdropMouseDown = (event: React.MouseEvent) => {
     if (event.target === event.currentTarget) {
       onClose();
     }
@@ -37,7 +37,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
+    <div className="modal-backdrop" onMouseDown={handleBackdropMouseDown}>
       <div
         className="modal-content"
         ref={modalRef}

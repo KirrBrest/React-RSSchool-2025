@@ -6,13 +6,18 @@ import { useFormStore } from '../../store/formStore';
 import { PasswordValidation } from '../../validation/PasswordValidation/PasswordValidation';
 import './Forms.css';
 
-export const ControlledForm = () => {
-  const { setFormData, setPictureBase64, countries } = useFormStore();
+interface ControlledFormProps {
+  onClose: () => void;
+}
+
+export const ControlledForm = ({ onClose }: ControlledFormProps) => {
+  const { addForm, countries } = useFormStore();
 
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isValid, isSubmitting },
   } = useForm<UserFormData>({
     resolver: zodResolver(controlledFormSchema),
@@ -24,18 +29,25 @@ export const ControlledForm = () => {
 
   const onSubmit = async (data: UserFormData) => {
     try {
-      setFormData(data);
-
       if (pictureFile && pictureFile.file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const base64 = e.target?.result as string;
-          setPictureBase64(base64);
+        const base64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            resolve(e.target?.result as string);
+          };
+          reader.readAsDataURL(pictureFile.file as File);
+        });
+
+        const dataWithPicture = {
+          ...data,
+          picture: { ...data.picture, base64 },
         };
-        reader.readAsDataURL(pictureFile.file);
+        addForm(dataWithPicture);
+      } else {
+        addForm(data);
       }
 
-      alert('Форма успешно отправлена!');
+      onClose();
     } catch (error) {
       console.error('Ошибка при отправке формы:', error);
     }
@@ -62,7 +74,7 @@ export const ControlledForm = () => {
         <input
           type="number"
           id="controlled-age"
-          min="0"
+          min="1"
           max="120"
           placeholder="Введите возраст"
           className={errors.age ? 'error' : ''}
@@ -173,7 +185,12 @@ export const ControlledForm = () => {
           id="controlled-picture"
           accept=".png,.jpeg,.jpg"
           className={errors.picture ? 'error' : ''}
-          {...register('picture')}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              setValue('picture', { file });
+            }
+          }}
         />
         {errors.picture && (
           <div className="error-message">{errors.picture.message}</div>

@@ -5,12 +5,16 @@ import { useFormStore } from '../../store/formStore';
 import { PasswordValidation } from '../../validation/PasswordValidation/PasswordValidation';
 import './Forms.css';
 
-export const UncontrolledForm = () => {
+interface UncontrolledFormProps {
+  onClose: () => void;
+}
+
+export const UncontrolledForm = ({ onClose }: UncontrolledFormProps) => {
   const formRef = useRef<HTMLFormElement>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const { setFormData, setPictureBase64, countries } = useFormStore();
+  const { addForm, countries } = useFormStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,33 +35,71 @@ export const UncontrolledForm = () => {
     };
 
     try {
-      const validatedData = uncontrolledFormSchema.parse(data);
-      setFormData(validatedData);
+      const result = uncontrolledFormSchema.safeParse(data);
+
+      if (!result.success) {
+        const newErrors: Record<string, string> = {};
+        result.error.issues.forEach((issue) => {
+          if (issue.path && issue.path.length > 0) {
+            const fieldName = String(issue.path[0]);
+            newErrors[fieldName] = issue.message;
+          }
+        });
+
+        if (
+          data.password &&
+          data.confirmPassword &&
+          data.password !== data.confirmPassword
+        ) {
+          if (newErrors.confirmPassword) {
+            newErrors.confirmPassword = `${newErrors.confirmPassword}. Пароли не совпадают`;
+          } else {
+            newErrors.confirmPassword = 'Пароли не совпадают';
+          }
+        }
+
+        setErrors(newErrors);
+        return;
+      }
+
+      const validatedData = result.data;
       setErrors({});
 
       const file = formData.get('picture') as File;
       if (file && file.size > 0) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const base64 = e.target?.result as string;
-          setPictureBase64(base64);
+        const base64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            resolve(e.target?.result as string);
+          };
+          reader.readAsDataURL(file);
+        });
+
+        const dataWithPicture = {
+          ...validatedData,
+          picture: { ...validatedData.picture, base64 },
         };
-        reader.readAsDataURL(file);
+        addForm(dataWithPicture);
+      } else {
+        addForm(validatedData);
       }
 
-      alert('Форма успешно отправлена!');
+      onClose();
     } catch (error) {
       const newErrors: Record<string, string> = {};
-      if (error && typeof error === 'object' && 'errors' in error) {
+
+      if (error && typeof error === 'object' && 'issues' in error) {
         const zodError = error as {
-          errors: Array<{ path: string[]; message: string }>;
+          issues: Array<{ path: string[]; message: string }>;
         };
-        zodError.errors.forEach((err) => {
-          if (err.path && err.path[0]) {
-            newErrors[err.path[0]] = err.message;
+        zodError.issues.forEach((issue) => {
+          if (issue.path && issue.path.length > 0) {
+            const fieldName = String(issue.path[0]);
+            newErrors[fieldName] = issue.message;
           }
         });
       }
+
       setErrors(newErrors);
     }
   };
@@ -82,7 +124,7 @@ export const UncontrolledForm = () => {
           type="number"
           id="age"
           name="age"
-          min="0"
+          min="1"
           max="120"
           placeholder="Введите возраст"
           className={errors.age ? 'error' : ''}
@@ -130,15 +172,7 @@ export const UncontrolledForm = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
           className={errors.confirmPassword ? 'error' : ''}
         />
-        {password && confirmPassword && (
-          <div
-            className={`password-match ${password === confirmPassword ? 'match' : 'no-match'}`}
-          >
-            {password === confirmPassword
-              ? '✓ Пароли совпадают'
-              : '✗ Пароли не совпадают'}
-          </div>
-        )}
+
         {errors.confirmPassword && (
           <div className="error-message">{errors.confirmPassword}</div>
         )}

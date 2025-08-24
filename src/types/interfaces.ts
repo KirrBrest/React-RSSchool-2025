@@ -8,14 +8,12 @@ export interface ModalProps {
 }
 
 export interface FormState {
-  formData: UserFormData | null;
-  pictureBase64: string | null;
+  forms: UserFormData[];
   countries: string[];
 
-  setFormData: (data: UserFormData) => void;
-  setPictureBase64: (base64: string) => void;
+  addForm: (data: UserFormData) => void;
   setCountries: (countries: string[]) => void;
-  clearFormData: () => void;
+  clearForms: () => void;
 }
 
 export interface PasswordStrengthProps {

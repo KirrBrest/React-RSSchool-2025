@@ -29,61 +29,54 @@ const imageSchema = z
     }
   );
 
-export const formValidation = z
-  .object({
-    name: z
-      .string()
-      .min(2, 'Имя должно содержать минимум 2 символа')
-      .regex(/^[A-Z]/, 'Имя должно начинаться с заглавной буквы'),
+export const formValidation = z.object({
+  name: z
+    .string()
+    .min(2, 'Имя должно содержать минимум 2 символа')
+    .regex(/^[A-Z]/, 'Имя должно начинаться с заглавной буквы'),
 
-    age: z
-      .number()
-      .min(0, 'Возраст не может быть отрицательным')
-      .max(120, 'Возраст не может быть больше 120'),
+  age: z
+    .number()
+    .min(1, 'Возраст должен быть больше 0')
+    .max(120, 'Возраст не может быть больше 120'),
 
-    email: z
-      .string()
-      .regex(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, 'Неверный формат email')
-      .refine(
-        (email) => {
-          const parts = email.split('@');
-          if (parts.length !== 2) return false;
-          const domain = parts[1];
-          const domainParts = domain.split('.');
+  email: z
+    .string()
+    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, 'Неверный формат email')
+    .refine(
+      (email) => {
+        const parts = email.split('@');
+        if (parts.length !== 2) return false;
+        const domain = parts[1];
+        const domainParts = domain.split('.');
 
-          if (domainParts.length < 2) return false;
+        if (domainParts.length < 2) return false;
 
-          const topLevelDomain = domainParts[domainParts.length - 1];
-          if (topLevelDomain.length < 2) return false;
+        const topLevelDomain = domainParts[domainParts.length - 1];
+        if (topLevelDomain.length < 2) return false;
 
-          return domainParts.every((part) => part.length > 0);
-        },
-        { message: 'Неверный формат email' }
-      ),
+        return domainParts.every((part) => part.length > 0);
+      },
+      { message: 'Неверный формат email' }
+    ),
 
-    password: passwordSchema,
+  password: passwordSchema,
 
-    confirmPassword: z.string(),
+  confirmPassword: z
+    .string()
+    .min(1, 'Подтвердите пароль')
+    .refine((val) => val.length > 0, 'Подтвердите пароль'),
 
-    gender: z.enum(['male', 'female', 'other']),
+  gender: z.enum(['male', 'female', 'other']),
 
-    acceptTerms: z
-      .boolean()
-      .refine((val) => val === true, 'Необходимо принять условия'),
+  acceptTerms: z
+    .boolean()
+    .refine((val) => val === true, 'Необходимо принять условия'),
 
-    picture: imageSchema,
+  picture: imageSchema,
 
-    country: z.string().min(1, 'Выберите страну'),
-  })
-  .refine(
-    (data) => {
-      return data.password === data.confirmPassword;
-    },
-    {
-      message: 'Пароли не совпадают',
-      path: ['confirmPassword'],
-    }
-  );
+  country: z.string().min(1, 'Выберите страну'),
+});
 
 export type UserFormData = z.infer<typeof formValidation>;
 
