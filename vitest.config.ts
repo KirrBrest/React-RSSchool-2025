@@ -11,6 +11,19 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
+      exclude: [
+        '**/types/**',
+        '**/*.d.ts',
+        '**/*.config.*',
+        '**/*.setup.*',
+        '**/index.ts',
+        '**/main.tsx',
+        '**/vite-env.d.ts',
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/coverage/**',
+        '**/*.cjs*',
+      ],
     },
   },
   resolve: {
