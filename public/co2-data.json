@@ -1,0 +1,44 @@
+{
+  "United States": [
+    {
+      "year": 2020,
+      "population": 331002651,
+      "co2": 4713.2,
+      "co2_per_capita": 14.24
+    },
+    {
+      "year": 2021,
+      "population": 332915073,
+      "co2": 4900.1,
+      "co2_per_capita": 14.72
+    }
+  ],
+  "China": [
+    {
+      "year": 2020,
+      "population": 1439323776,
+      "co2": 10667.9,
+      "co2_per_capita": 7.41
+    },
+    {
+      "year": 2021,
+      "population": 1444216107,
+      "co2": 11467.3,
+      "co2_per_capita": 7.94
+    }
+  ],
+  "Germany": [
+    {
+      "year": 2020,
+      "population": 83190556,
+      "co2": 644.1,
+      "co2_per_capita": 7.74
+    },
+    {
+      "year": 2021,
+      "population": 83166711,
+      "co2": 675.2,
+      "co2_per_capita": 8.12
+    }
+  ]
+}
