@@ -1,0 +1,137 @@
+.data-filters {
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid #333;
+}
+
+.filters-row {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.filters-row:last-child {
+  margin-bottom: 0;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 150px;
+}
+
+.filter-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.filter-group select,
+.filter-group input {
+  padding: 8px 12px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #2c2c2c;
+  color: #ffffff;
+  transition: border-color 0.2s;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.filter-group select.highlight {
+  animation: highlight 2s ease-in-out;
+}
+
+@keyframes highlight {
+  0%,
+  100% {
+    background-color: #2c2c2c;
+  }
+  50% {
+    background-color: #1a3a5f;
+  }
+}
+
+.search-group {
+  flex: 1;
+  min-width: 250px;
+}
+
+.sort-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #2c2c2c;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  background-color: #333;
+  border-color: #007bff;
+}
+
+.btn-outline {
+  border-color: #007bff;
+  color: #007bff;
+  background: transparent;
+}
+
+.btn-outline:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-sort {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.btn-sort.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.columns-btn {
+  align-self: flex-end;
+  margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .filter-group {
+    min-width: auto;
+  }
+
+  .search-group {
+    min-width: auto;
+  }
+
+  .sort-buttons {
+    justify-content: center;
+  }
+}
