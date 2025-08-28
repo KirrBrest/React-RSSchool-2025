@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import type {
   CountryData,
   FilterOptions,
@@ -10,7 +10,7 @@ import { ColumnSelector } from '../ColumnSelector';
 import './CountriesList.css';
 
 const dataCache = new Map<string, CountryData>();
-const originalDataCache = new Map<string, unknown>(); // Кэш для оригинальной структуры
+const originalDataCache = new Map<string, unknown>();
 
 function fetchData(key: string): CountryData {
   if (dataCache.has(key)) {
@@ -28,8 +28,6 @@ function fetchData(key: string): CountryData {
       return response.json();
     })
     .then((data: unknown) => {
-      console.log('Loaded data structure:', data);
-
       let processedData: CountryData;
 
       if (data && typeof data === 'object') {
@@ -55,7 +53,6 @@ function fetchData(key: string): CountryData {
           });
 
           originalDataCache.set(key, data);
-          console.log('Converted data structure:', processedData);
         } else {
           processedData = data as CountryData;
         }
@@ -79,7 +76,7 @@ function CountriesDisplay({
   filters: FilterOptions;
   columns: ColumnOption[];
 }) {
-  const filteredAndSortedData = useMemo(() => {
+  const filteredAndSortedData = () => {
     let result = Object.entries(data);
 
     if (filters.selectedRegion) {
@@ -101,15 +98,19 @@ function CountriesDisplay({
           : nameB.localeCompare(nameA);
       } else {
         const popA =
-          dataA.find((d) => d.year === filters.selectedYear)?.population || 0;
+          dataA.find(
+            (d) => d.year === (filters.selectedYear || getLatestYear(dataA))
+          )?.population || 0;
         const popB =
-          dataB.find((d) => d.year === filters.selectedYear)?.population || 0;
+          dataB.find(
+            (d) => d.year === (filters.selectedYear || getLatestYear(dataB))
+          )?.population || 0;
         return filters.sortOrder === 'asc' ? popA - popB : popB - popA;
       }
     });
 
     return result;
-  }, [data, filters]);
+  };
 
   const getYearData = (
     yearlyData: YearlyData[],
@@ -119,12 +120,19 @@ function CountriesDisplay({
     return yearData;
   };
 
+  const getLatestYear = (yearlyData: YearlyData[]): number => {
+    return Math.max(...yearlyData.map((d) => d.year));
+  };
+
   const visibleColumns = columns.filter((col) => col.visible);
 
   return (
     <div className="countries-list">
-      {filteredAndSortedData.map(([countryName, yearlyData]) => {
-        const yearData = getYearData(yearlyData, filters.selectedYear);
+      {filteredAndSortedData().map(([countryName, yearlyData]) => {
+        const yearData = getYearData(
+          yearlyData,
+          filters.selectedYear || getLatestYear(yearlyData)
+        );
         const population = yearData?.population || 'N/A';
 
         const originalData = originalDataCache.get('co2-data') as Record<
@@ -144,8 +152,6 @@ function CountriesDisplay({
           }
         }
 
-        console.log('ISO Code result:', isoCode);
-
         return (
           <div key={countryName} className="country-item">
             <h2>{countryName}</h2>
@@ -161,17 +167,49 @@ function CountriesDisplay({
                 </tr>
               </thead>
               <tbody>
-                {yearlyData.map((data) => (
-                  <tr key={data.year}>
-                    {visibleColumns.map((col) => (
-                      <td key={col.key}>
-                        {data[col.key] !== undefined
-                          ? String(data[col.key])
-                          : 'N/A'}
-                      </td>
-                    ))}
+                {yearlyData
+                  .filter(
+                    (data) =>
+                      filters.selectedYear === null ||
+                      data.year === filters.selectedYear
+                  )
+                  .slice(filters.selectedYear === null ? undefined : -1)
+                  .map((data) => (
+                    <tr
+                      key={data.year}
+                      className={
+                        filters.highlightData &&
+                        filters.selectedYear !== null &&
+                        data.year === filters.selectedYear
+                          ? 'highlight-row'
+                          : ''
+                      }
+                    >
+                      {visibleColumns.map((col) => (
+                        <td key={col.key}>
+                          {data[col.key] !== undefined
+                            ? String(data[col.key])
+                            : 'N/A'}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                {yearlyData.filter(
+                  (data) =>
+                    filters.selectedYear === null ||
+                    data.year === filters.selectedYear
+                ).length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={visibleColumns.length}
+                      style={{ textAlign: 'center', color: '#888' }}
+                    >
+                      {filters.selectedYear === null
+                        ? 'Нет данных для отображения'
+                        : `Нет данных для ${filters.selectedYear} года`}
+                    </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
@@ -183,45 +221,63 @@ function CountriesDisplay({
 
 export function CountriesList() {
   const [filters, setFilters] = useState<FilterOptions>({
-    selectedYear: 2020,
+    selectedYear: null,
     selectedRegion: '',
     searchQuery: '',
     sortBy: 'name',
     sortOrder: 'asc',
+    highlightData: false,
   });
 
-  const [columns, setColumns] = useState<ColumnOption[]>([
-    { key: 'year', label: 'Год', visible: true },
-    { key: 'population', label: 'Население', visible: true },
-    { key: 'cement_co2', label: 'CO2 от цемента', visible: true },
-    {
-      key: 'cement_co2_per_capita',
-      label: 'CO2 от цемента на душу',
-      visible: false,
-    },
-    {
-      key: 'cumulative_cement_co2',
-      label: 'Накопленный CO2 от цемента',
-      visible: false,
-    },
-    { key: 'methane', label: 'Метан', visible: false },
-    { key: 'oil_co2', label: 'CO2 от нефти', visible: false },
-    {
-      key: 'temperature_change_from_co2',
-      label: 'Изменение температуры от CO2',
-      visible: false,
-    },
-    { key: 'coal_co2', label: 'CO2 от угля', visible: false },
-    { key: 'gas_co2', label: 'CO2 от газа', visible: false },
-    { key: 'flaring_co2', label: 'CO2 от сжигания', visible: false },
-    { key: 'other_co2', label: 'Другой CO2', visible: false },
-  ]);
+  const getAvailableColumns = (): ColumnOption[] => {
+    if (Object.keys(data).length === 0) return [];
+
+    const allFields = new Set<string>();
+    Object.values(data).forEach((yearlyData) => {
+      if (Array.isArray(yearlyData)) {
+        yearlyData.forEach((yearData) => {
+          Object.keys(yearData).forEach((field) => allFields.add(field));
+        });
+      }
+    });
+
+    const columns: ColumnOption[] = [];
+
+    const basicFields = ['year', 'population', 'co2', 'co2_per_capita'];
+    basicFields.forEach((field) => {
+      if (allFields.has(field)) {
+        columns.push({
+          key: field,
+          label: field,
+          visible: true,
+        });
+      }
+    });
+
+    allFields.forEach((field) => {
+      if (!basicFields.includes(field)) {
+        columns.push({
+          key: field,
+          label: field,
+          visible: false,
+        });
+      }
+    });
+
+    return columns;
+  };
+
+  const [columns, setColumns] = useState<ColumnOption[]>([]);
 
   const [isColumnSelectorOpen, setIsColumnSelectorOpen] = useState(false);
 
   const data = fetchData('co2-data');
 
-  const availableYears = useMemo(() => {
+  if (columns.length === 0 && Object.keys(data).length > 0) {
+    setColumns(getAvailableColumns());
+  }
+
+  const availableYears = () => {
     const years = new Set<number>();
     Object.values(data).forEach((yearlyData) => {
       if (Array.isArray(yearlyData)) {
@@ -229,26 +285,34 @@ export function CountriesList() {
       }
     });
     return Array.from(years).sort((a, b) => b - a);
-  }, [data]);
+  };
 
-  const availableRegions = useMemo(() => {
+  const availableRegions = () => {
     return [];
-  }, [data]);
+  };
 
-  if (
-    availableYears.length > 0 &&
-    !availableYears.includes(filters.selectedYear)
-  ) {
-    setFilters((prev) => ({ ...prev, selectedYear: availableYears[0] }));
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+
+  if (availableYears().length > 0 && isFirstLoad) {
+    const firstCountryData = Object.values(data)[0];
+    if (
+      firstCountryData &&
+      Array.isArray(firstCountryData) &&
+      firstCountryData.length > 0
+    ) {
+      const latestYear = Math.max(...firstCountryData.map((d) => d.year));
+      setFilters((prev) => ({ ...prev, selectedYear: latestYear }));
+    }
+    setIsFirstLoad(false);
   }
 
   return (
-    <div>
+    <div className="countries-list-container">
       <DataFilters
         filters={filters}
         onFiltersChange={setFilters}
-        availableYears={availableYears}
-        availableRegions={availableRegions}
+        availableYears={availableYears()}
+        availableRegions={availableRegions()}
         onColumnsClick={() => setIsColumnSelectorOpen(true)}
       />
 

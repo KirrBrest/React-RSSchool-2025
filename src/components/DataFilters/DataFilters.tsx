@@ -4,7 +4,9 @@ import './DataFilters.css';
 
 interface DataFiltersProps {
   filters: FilterOptions;
-  onFiltersChange: (filters: FilterOptions) => void;
+  onFiltersChange: (
+    filters: FilterOptions | ((prev: FilterOptions) => FilterOptions)
+  ) => void;
   availableYears: number[];
   availableRegions: string[];
   onColumnsClick: () => void;
@@ -19,10 +21,16 @@ export function DataFilters({
 }: DataFiltersProps) {
   const [highlightYear, setHighlightYear] = useState(false);
 
-  const handleYearChange = (year: number) => {
-    onFiltersChange({ ...filters, selectedYear: year });
+  const handleYearChange = (year: number | null) => {
+    onFiltersChange({ ...filters, selectedYear: year, highlightData: true });
     setHighlightYear(true);
     setTimeout(() => setHighlightYear(false), 2000);
+    setTimeout(() => {
+      onFiltersChange((prev: FilterOptions) => ({
+        ...prev,
+        highlightData: false,
+      }));
+    }, 2000);
   };
 
   const handleRegionChange = (region: string) => {
@@ -46,10 +54,15 @@ export function DataFilters({
           <label htmlFor="year-select">Год:</label>
           <select
             id="year-select"
-            value={filters.selectedYear}
-            onChange={(e) => handleYearChange(Number(e.target.value))}
+            value={filters.selectedYear || 'all'}
+            onChange={(e) =>
+              handleYearChange(
+                e.target.value === 'all' ? null : Number(e.target.value)
+              )
+            }
             className={highlightYear ? 'highlight' : ''}
           >
+            <option value="all">Все годы</option>
             {availableYears.map((year) => (
               <option key={year} value={year}>
                 {year}

@@ -23,11 +23,12 @@ export interface CountryData {
 }
 
 export interface FilterOptions {
-  selectedYear: number;
+  selectedYear: number | null;
   selectedRegion: string;
   searchQuery: string;
   sortBy: 'name' | 'population';
   sortOrder: 'asc' | 'desc';
+  highlightData: boolean;
 }
 
 export interface ColumnOption {
