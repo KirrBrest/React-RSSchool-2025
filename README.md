@@ -28,3 +28,18 @@
 - **Interactions**: Searchin Germany country
 - **Components**: CountriesList
 - **Timeline**: 7 commits, slowest: Step 1
+
+#### Choose another year
+
+![Search Ranked Chart](docs/images/profiling/year-ranked.png)
+![Search Flamegraph Chart](docs/images/profiling/year-flamegraph.png)
+![Search Ranked Chart](docs/images/profiling/year-ranked-2.png)
+![Search Flamegraph Chart](docs/images/profiling/year-flamegraph-2.png)
+
+- **Commit Duration**: 3s
+- **Render Duration**: 315.5ms
+- **Commit Duration-2**: 5.1s
+- **Render Duration-2**: 308.6ms
+- **Interactions**: Change year
+- **Components**: CountriesDisplay, DataFilters, CountryFilters, ColumnSelector
+- **Timeline**: 2 commits, slowest: Step 2
