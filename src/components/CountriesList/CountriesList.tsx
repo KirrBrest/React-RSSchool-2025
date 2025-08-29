@@ -12,6 +12,214 @@ import './CountriesList.css';
 const dataCache = new Map<string, CountryData>();
 const originalDataCache = new Map<string, unknown>();
 
+const REGION_MAP: Record<string, string> = {
+  ALB: 'Europe',
+  AND: 'Europe',
+  AUT: 'Europe',
+  BLR: 'Europe',
+  BEL: 'Europe',
+  BIH: 'Europe',
+  BGR: 'Europe',
+  HRV: 'Europe',
+  CZE: 'Europe',
+  DNK: 'Europe',
+  EST: 'Europe',
+  FIN: 'Europe',
+  FRA: 'Europe',
+  DEU: 'Europe',
+  GRC: 'Europe',
+  HUN: 'Europe',
+  ISL: 'Europe',
+  IRL: 'Europe',
+  ITA: 'Europe',
+  LVA: 'Europe',
+  LTU: 'Europe',
+  LUX: 'Europe',
+  MKD: 'Europe',
+  MLT: 'Europe',
+  MDA: 'Europe',
+  MNE: 'Europe',
+  NLD: 'Europe',
+  NOR: 'Europe',
+  POL: 'Europe',
+  PRT: 'Europe',
+  ROU: 'Europe',
+  RUS: 'Europe',
+  SRB: 'Europe',
+  SVK: 'Europe',
+  SVN: 'Europe',
+  ESP: 'Europe',
+  SWE: 'Europe',
+  CHE: 'Europe',
+  UKR: 'Europe',
+  GBR: 'Europe',
+
+  AFG: 'Asia',
+  ARM: 'Asia',
+  AZE: 'Asia',
+  BHR: 'Asia',
+  BGD: 'Asia',
+  BTN: 'Asia',
+  BRN: 'Asia',
+  KHM: 'Asia',
+  CHN: 'Asia',
+  CYP: 'Asia',
+  GEO: 'Asia',
+  HKG: 'Asia',
+  IND: 'Asia',
+  IDN: 'Asia',
+  IRN: 'Asia',
+  IRQ: 'Asia',
+  ISR: 'Asia',
+  JPN: 'Asia',
+  JOR: 'Asia',
+  KAZ: 'Asia',
+  KWT: 'Asia',
+  KGZ: 'Asia',
+  LAO: 'Asia',
+  LBN: 'Asia',
+  MAC: 'Asia',
+  MYS: 'Asia',
+  MDV: 'Asia',
+  MNG: 'Asia',
+  MMR: 'Asia',
+  NPL: 'Asia',
+  OMN: 'Asia',
+  PAK: 'Asia',
+  PSE: 'Asia',
+  PHL: 'Asia',
+  QAT: 'Asia',
+  SAU: 'Asia',
+  SGP: 'Asia',
+  LKA: 'Asia',
+  SYR: 'Asia',
+  TWN: 'Asia',
+  TJK: 'Asia',
+  THA: 'Asia',
+  TUR: 'Asia',
+  TKM: 'Asia',
+  ARE: 'Asia',
+  UZB: 'Asia',
+  VNM: 'Asia',
+  YEM: 'Asia',
+
+  DZA: 'Africa',
+  AGO: 'Africa',
+  BEN: 'Africa',
+  BWA: 'Africa',
+  BFA: 'Africa',
+  BDI: 'Africa',
+  CMR: 'Africa',
+  CPV: 'Africa',
+  CAF: 'Africa',
+  TCD: 'Africa',
+  COM: 'Africa',
+  COG: 'Africa',
+  COD: 'Africa',
+  DJI: 'Africa',
+  EGY: 'Africa',
+  GNQ: 'Africa',
+  ERI: 'Africa',
+  ETH: 'Africa',
+  GAB: 'Africa',
+  GMB: 'Africa',
+  GHA: 'Africa',
+  GIN: 'Africa',
+  GNB: 'Africa',
+  CIV: 'Africa',
+  KEN: 'Africa',
+  LSO: 'Africa',
+  LBR: 'Africa',
+  LBY: 'Africa',
+  MDG: 'Africa',
+  MWI: 'Africa',
+  MLI: 'Africa',
+  MRT: 'Africa',
+  MUS: 'Africa',
+  MAR: 'Africa',
+  MOZ: 'Africa',
+  NAM: 'Africa',
+  NER: 'Africa',
+  NGA: 'Africa',
+  RWA: 'Africa',
+  STP: 'Africa',
+  SEN: 'Africa',
+  SYC: 'Africa',
+  SLE: 'Africa',
+  SOM: 'Africa',
+  ZAF: 'Africa',
+  SSD: 'Africa',
+  SDN: 'Africa',
+  SWZ: 'Africa',
+  TZA: 'Africa',
+  TGO: 'Africa',
+  TUN: 'Africa',
+  UGA: 'Africa',
+  ZMB: 'Africa',
+  ZWE: 'Africa',
+
+  CAN: 'North America',
+  USA: 'North America',
+  MEX: 'North America',
+  GTM: 'North America',
+  BLZ: 'North America',
+  SLV: 'North America',
+  HND: 'North America',
+  NIC: 'North America',
+  CRI: 'North America',
+  PAN: 'North America',
+  CUB: 'North America',
+  JAM: 'North America',
+  HTI: 'North America',
+  DOM: 'North America',
+  PRI: 'North America',
+  TTO: 'North America',
+  BRB: 'North America',
+  GRD: 'North America',
+  LCA: 'North America',
+  VCT: 'North America',
+  ATG: 'North America',
+  KNA: 'North America',
+  DMA: 'North America',
+  AIA: 'North America',
+  BMU: 'North America',
+  VGB: 'North America',
+  CYM: 'North America',
+
+  ARG: 'South America',
+  BOL: 'South America',
+  BRA: 'South America',
+  CHL: 'South America',
+  COL: 'South America',
+  ECU: 'South America',
+  GUY: 'South America',
+  PRY: 'South America',
+  PER: 'South America',
+  SUR: 'South America',
+  URY: 'South America',
+  VEN: 'South America',
+
+  AUS: 'Oceania',
+  NZL: 'Oceania',
+  FJI: 'Oceania',
+  PNG: 'Oceania',
+  SLB: 'Oceania',
+  VUT: 'Oceania',
+  NCL: 'Oceania',
+  WSM: 'Oceania',
+  KIR: 'Oceania',
+  TON: 'Oceania',
+  TUV: 'Oceania',
+  NRU: 'Oceania',
+  PLW: 'Oceania',
+  FSM: 'Oceania',
+  MHL: 'Oceania',
+  COK: 'Oceania',
+  NIU: 'Oceania',
+  TKL: 'Oceania',
+  ATA: 'Oceania',
+};
+
 function fetchData(key: string): CountryData {
   if (dataCache.has(key)) {
     const cachedData = dataCache.get(key);
@@ -80,9 +288,22 @@ function CountriesDisplay({
     let result = Object.entries(data);
 
     if (filters.selectedRegion) {
-      result = result.filter(([countryName]) =>
-        countryName.toLowerCase().includes(filters.selectedRegion.toLowerCase())
-      );
+      result = result.filter(([countryName]) => {
+        const originalData = originalDataCache.get('co2-data') as Record<
+          string,
+          { iso_code?: string; data: unknown[] }
+        >;
+        if (
+          originalData &&
+          originalData[countryName] &&
+          originalData[countryName].iso_code
+        ) {
+          const isoCode = originalData[countryName].iso_code;
+          const region = REGION_MAP[isoCode];
+          return region === filters.selectedRegion;
+        }
+        return false;
+      });
     }
 
     if (filters.searchQuery) {
@@ -288,7 +509,33 @@ export function CountriesList() {
   };
 
   const availableRegions = () => {
-    return [];
+    const regions = new Set<string>();
+    Object.values(data).forEach((yearlyData) => {
+      if (Array.isArray(yearlyData) && yearlyData.length > 0) {
+        const countryName = Object.keys(data).find(
+          (name) => data[name] === yearlyData
+        );
+        if (countryName) {
+          const originalData = originalDataCache.get('co2-data') as Record<
+            string,
+            { iso_code?: string; data: unknown[] }
+          >;
+          if (
+            originalData &&
+            originalData[countryName] &&
+            originalData[countryName].iso_code
+          ) {
+            const isoCode = originalData[countryName].iso_code;
+            const region = REGION_MAP[isoCode];
+            if (region) {
+              regions.add(region);
+            }
+          }
+        }
+      }
+    });
+
+    return Array.from(regions).sort();
   };
 
   const [isFirstLoad, setIsFirstLoad] = useState(true);
