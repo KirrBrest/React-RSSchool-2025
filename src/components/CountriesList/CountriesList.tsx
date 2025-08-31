@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type {
   CountryData,
   FilterOptions,
@@ -98,6 +98,12 @@ export function CountriesList() {
     highlightData: false,
   });
 
+  const [columns, setColumns] = useState<ColumnOption[]>([]);
+
+  const [isColumnSelectorOpen, setIsColumnSelectorOpen] = useState(false);
+
+  const data = fetchData('co2-data');
+
   const getAvailableColumns = (): ColumnOption[] => {
     if (Object.keys(data).length === 0) return [];
 
@@ -136,17 +142,11 @@ export function CountriesList() {
     return columns;
   };
 
-  const [columns, setColumns] = useState<ColumnOption[]>([]);
-
-  const [isColumnSelectorOpen, setIsColumnSelectorOpen] = useState(false);
-
-  const data = fetchData('co2-data');
-
   if (columns.length === 0 && Object.keys(data).length > 0) {
     setColumns(getAvailableColumns());
   }
 
-  const availableYears = () => {
+  const availableYears = useMemo(() => {
     const years = new Set<number>();
     Object.values(data).forEach((yearlyData) => {
       if (Array.isArray(yearlyData)) {
@@ -154,9 +154,9 @@ export function CountriesList() {
       }
     });
     return Array.from(years).sort((a, b) => b - a);
-  };
+  }, [data]);
 
-  const availableRegions = () => {
+  const availableRegions = useMemo(() => {
     const regions = new Set<string>();
     Object.values(data).forEach((yearlyData) => {
       if (Array.isArray(yearlyData) && yearlyData.length > 0) {
@@ -184,11 +184,11 @@ export function CountriesList() {
     });
 
     return Array.from(regions).sort();
-  };
+  }, [data, originalDataCache]);
 
   const [isFirstLoad, setIsFirstLoad] = useState(true);
 
-  if (availableYears().length > 0 && isFirstLoad) {
+  if (availableYears.length > 0 && isFirstLoad) {
     const firstCountryData = Object.values(data)[0];
     if (
       firstCountryData &&
@@ -206,8 +206,8 @@ export function CountriesList() {
       <DataFilters
         filters={filters}
         onFiltersChange={setFilters}
-        availableYears={availableYears()}
-        availableRegions={availableRegions()}
+        availableYears={availableYears}
+        availableRegions={availableRegions}
         onColumnsClick={() => setIsColumnSelectorOpen(true)}
       />
 

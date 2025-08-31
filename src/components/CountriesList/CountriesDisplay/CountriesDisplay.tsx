@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import type {
   CountryData,
   FilterOptions,
   ColumnOption,
+  YearlyData,
 } from '../../../interfaces/interfaces';
 import { REGION_MAP } from '../../../constants/regions';
 import {
@@ -24,20 +26,31 @@ export function CountriesDisplay({
   columns,
   originalDataCache,
 }: CountriesDisplayProps) {
-  const filteredAndSortedData = () => {
+  const filteredAndSortedData = useMemo(() => {
     return getFilteredAndSortedData(
       data,
       filters,
       REGION_MAP,
       originalDataCache
     );
-  };
+  }, [data, filters, REGION_MAP, originalDataCache]);
 
-  const visibleColumns = columns.filter((col) => col.visible);
+  const visibleColumns = useMemo(() => {
+    return columns.filter((col) => col.visible);
+  }, [columns]);
+
+  const getFilteredYearlyData = useMemo(() => {
+    return (yearlyData: YearlyData[]) => {
+      if (filters.selectedYear === null) {
+        return yearlyData;
+      }
+      return yearlyData.filter((data) => data.year === filters.selectedYear);
+    };
+  }, [filters.selectedYear]);
 
   return (
     <div className="countries-list">
-      {filteredAndSortedData().map(([countryName, yearlyData]) => {
+      {filteredAndSortedData.map(([countryName, yearlyData]) => {
         const yearData = getYearData(
           yearlyData,
           filters.selectedYear || getLatestYear(yearlyData)
@@ -76,38 +89,27 @@ export function CountriesDisplay({
                 </tr>
               </thead>
               <tbody>
-                {yearlyData
-                  .filter(
-                    (data) =>
-                      filters.selectedYear === null ||
+                {getFilteredYearlyData(yearlyData).map((data) => (
+                  <tr
+                    key={data.year}
+                    className={
+                      filters.highlightData &&
+                      filters.selectedYear !== null &&
                       data.year === filters.selectedYear
-                  )
-                  .slice(filters.selectedYear === null ? undefined : -1)
-                  .map((data) => (
-                    <tr
-                      key={data.year}
-                      className={
-                        filters.highlightData &&
-                        filters.selectedYear !== null &&
-                        data.year === filters.selectedYear
-                          ? 'highlight-row'
-                          : ''
-                      }
-                    >
-                      {visibleColumns.map((col) => (
-                        <td key={col.key}>
-                          {data[col.key] !== undefined
-                            ? String(data[col.key])
-                            : 'N/A'}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                {yearlyData.filter(
-                  (data) =>
-                    filters.selectedYear === null ||
-                    data.year === filters.selectedYear
-                ).length === 0 && (
+                        ? 'highlight-row'
+                        : ''
+                    }
+                  >
+                    {visibleColumns.map((col) => (
+                      <td key={col.key}>
+                        {data[col.key] !== undefined
+                          ? String(data[col.key])
+                          : 'N/A'}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                {getFilteredYearlyData(yearlyData).length === 0 && (
                   <tr>
                     <td
                       colSpan={visibleColumns.length}
