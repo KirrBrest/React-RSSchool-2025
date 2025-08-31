@@ -40,7 +40,7 @@ function fetchData(key: string): CountryData {
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
-          console.log('✅ Внешний URL успешно загружен');
+          console.log('✅ Внешний URL успешно подключен, ожидайте загрузку');
           return response.json();
         })
         .catch((error) => {

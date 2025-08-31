@@ -43,3 +43,18 @@
 - **Interactions**: Change year
 - **Components**: CountriesDisplay, DataFilters, CountryFilters, ColumnSelector
 - **Timeline**: 2 commits, slowest: Step 2
+
+#### Adding new Columns
+
+![Search Ranked Chart](docs/images/profiling/columns-ranked.png)
+![Search Flamegraph Chart](docs/images/profiling/columns-flamegraph.png)
+
+- **Commit Duration**: 7.7s
+- **Render Duration**: 382.7ms
+- **Interactions**: Adding 6 new columns
+- **Components**: CountriesDisplay, CountriesList, DataFilters, ColumnSelector
+- **Timeline**: 8 commits, slowest: Step 8
+
+### For all requests:
+
+- **Note**: fetchData called multiple times due to component re-renders
