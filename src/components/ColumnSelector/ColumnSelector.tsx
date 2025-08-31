@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import type { ColumnOption, YearlyData } from '../../interfaces/interfaces';
 import './ColumnSelector.css';
 
@@ -17,22 +17,25 @@ export function ColumnSelector({
 }: ColumnSelectorProps) {
   const [localColumns, setLocalColumns] = useState<ColumnOption[]>(columns);
 
-  const handleColumnToggle = (key: keyof YearlyData) => {
-    const updatedColumns = localColumns.map((col) =>
-      col.key === key ? { ...col, visible: !col.visible } : col
-    );
-    setLocalColumns(updatedColumns);
-  };
+  const handleColumnToggle = useCallback(
+    (key: keyof YearlyData) => {
+      const updatedColumns = localColumns.map((col) =>
+        col.key === key ? { ...col, visible: !col.visible } : col
+      );
+      setLocalColumns(updatedColumns);
+    },
+    [localColumns]
+  );
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     onColumnsChange(localColumns);
     onClose();
-  };
+  }, [localColumns, onColumnsChange, onClose]);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setLocalColumns(columns);
     onClose();
-  };
+  }, [columns, onClose]);
 
   if (!isOpen) return null;
 

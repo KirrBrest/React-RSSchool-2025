@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import type {
   CountryData,
   FilterOptions,
@@ -104,6 +104,14 @@ export function CountriesList() {
 
   const data = fetchData('co2-data');
 
+  const handleColumnsClick = useCallback(() => {
+    setIsColumnSelectorOpen(true);
+  }, []);
+
+  const handleColumnSelectorClose = useCallback(() => {
+    setIsColumnSelectorOpen(false);
+  }, []);
+
   const getAvailableColumns = (): ColumnOption[] => {
     if (Object.keys(data).length === 0) return [];
 
@@ -208,7 +216,7 @@ export function CountriesList() {
         onFiltersChange={setFilters}
         availableYears={availableYears}
         availableRegions={availableRegions}
-        onColumnsClick={() => setIsColumnSelectorOpen(true)}
+        onColumnsClick={handleColumnsClick}
       />
 
       <CountriesDisplay
@@ -220,7 +228,7 @@ export function CountriesList() {
 
       <ColumnSelector
         isOpen={isColumnSelectorOpen}
-        onClose={() => setIsColumnSelectorOpen(false)}
+        onClose={handleColumnSelectorClose}
         columns={columns}
         onColumnsChange={setColumns}
       />

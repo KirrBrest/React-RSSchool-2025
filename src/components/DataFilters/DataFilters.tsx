@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import type { FilterOptions } from '../../interfaces/interfaces';
 import './DataFilters.css';
 
@@ -21,31 +21,45 @@ export function DataFilters({
 }: DataFiltersProps) {
   const [highlightYear, setHighlightYear] = useState(false);
 
-  const handleYearChange = (year: number | null) => {
-    onFiltersChange({ ...filters, selectedYear: year, highlightData: true });
-    setHighlightYear(true);
-    setTimeout(() => setHighlightYear(false), 2000);
-    setTimeout(() => {
-      onFiltersChange((prev: FilterOptions) => ({
-        ...prev,
-        highlightData: false,
-      }));
-    }, 2000);
-  };
+  const handleYearChange = useCallback(
+    (year: number | null) => {
+      onFiltersChange({ ...filters, selectedYear: year, highlightData: true });
+      setHighlightYear(true);
+      setTimeout(() => setHighlightYear(false), 2000);
+      setTimeout(() => {
+        onFiltersChange((prev: FilterOptions) => ({
+          ...prev,
+          highlightData: false,
+        }));
+      }, 2000);
+    },
+    [filters, onFiltersChange]
+  );
 
-  const handleRegionChange = (region: string) => {
-    onFiltersChange({ ...filters, selectedRegion: region });
-  };
+  const handleRegionChange = useCallback(
+    (region: string) => {
+      onFiltersChange({ ...filters, selectedRegion: region });
+    },
+    [filters, onFiltersChange]
+  );
 
-  const handleSearchChange = (query: string) => {
-    onFiltersChange({ ...filters, searchQuery: query });
-  };
+  const handleSearchChange = useCallback(
+    (query: string) => {
+      onFiltersChange({ ...filters, searchQuery: query });
+    },
+    [filters, onFiltersChange]
+  );
 
-  const handleSortChange = (sortBy: 'name' | 'population') => {
-    const newSortOrder =
-      filters.sortBy === sortBy && filters.sortOrder === 'asc' ? 'desc' : 'asc';
-    onFiltersChange({ ...filters, sortBy, sortOrder: newSortOrder });
-  };
+  const handleSortChange = useCallback(
+    (sortBy: 'name' | 'population') => {
+      const newSortOrder =
+        filters.sortBy === sortBy && filters.sortOrder === 'asc'
+          ? 'desc'
+          : 'asc';
+      onFiltersChange({ ...filters, sortBy, sortOrder: newSortOrder });
+    },
+    [filters, onFiltersChange]
+  );
 
   return (
     <div className="data-filters">
