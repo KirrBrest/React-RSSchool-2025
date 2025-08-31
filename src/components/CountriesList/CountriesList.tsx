@@ -27,18 +27,26 @@ function fetchData(key: string): CountryData {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+      console.log('✅ Локальный файл успешно загружен');
       return response.json();
     })
-    .catch(() => {
-      console.log('Локальный файл не найден, загружаем с внешнего URL...');
+    .catch((error) => {
+      console.log('❌ Локальный файл не найден:', error.message);
+      console.log('🔄 Загружаем с внешнего URL...');
       return fetch(
         'https://nyc3.digitaloceanspaces.com/owid-public/data/co2/owid-co2-data.json'
-      ).then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      });
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          console.log('✅ Внешний URL успешно загружен');
+          return response.json();
+        })
+        .catch((error) => {
+          console.error('❌ Ошибка загрузки с внешнего URL:', error.message);
+          throw error;
+        });
     })
     .then((data: unknown) => {
       let processedData: CountryData;
