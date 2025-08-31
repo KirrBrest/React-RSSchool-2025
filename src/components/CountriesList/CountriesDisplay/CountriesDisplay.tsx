@@ -76,7 +76,7 @@ export const CountriesDisplay = React.memo(function CountriesDisplay({
         }
 
         return (
-          <div key={countryName} className="country-item">
+          <div key={`${countryName}-${isoCode}`} className="country-item">
             <h2>{countryName}</h2>
             <p>Population: {population}</p>
             <p>ISO Code: {isoCode}</p>
@@ -92,7 +92,7 @@ export const CountriesDisplay = React.memo(function CountriesDisplay({
               <tbody>
                 {getFilteredYearlyData(yearlyData).map((data) => (
                   <tr
-                    key={data.year}
+                    key={`${countryName}-${data.year}`}
                     className={
                       filters.highlightData &&
                       filters.selectedYear !== null &&
@@ -102,7 +102,7 @@ export const CountriesDisplay = React.memo(function CountriesDisplay({
                     }
                   >
                     {visibleColumns.map((col) => (
-                      <td key={col.key}>
+                      <td key={`${countryName}-${data.year}-${col.key}`}>
                         {data[col.key] !== undefined
                           ? String(data[col.key])
                           : 'N/A'}
