@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useCallback } from 'react';
 import type { FilterOptions } from '../../interfaces/interfaces';
 import './DataFilters.css';
@@ -12,7 +13,7 @@ interface DataFiltersProps {
   onColumnsClick: () => void;
 }
 
-export function DataFilters({
+export const DataFilters = React.memo(function DataFilters({
   filters,
   onFiltersChange,
   availableYears,
@@ -145,4 +146,4 @@ export function DataFilters({
       </div>
     </div>
   );
-}
+});

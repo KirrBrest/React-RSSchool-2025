@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useCallback } from 'react';
 import type { ColumnOption, YearlyData } from '../../interfaces/interfaces';
 import './ColumnSelector.css';
@@ -9,7 +10,7 @@ interface ColumnSelectorProps {
   onColumnsChange: (columns: ColumnOption[]) => void;
 }
 
-export function ColumnSelector({
+export const ColumnSelector = React.memo(function ColumnSelector({
   isOpen,
   onClose,
   columns,
@@ -75,4 +76,4 @@ export function ColumnSelector({
       </div>
     </div>
   );
-}
+});

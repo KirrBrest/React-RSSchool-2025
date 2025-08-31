@@ -1,3 +1,4 @@
+import React from 'react';
 import { useMemo } from 'react';
 import type {
   CountryData,
@@ -20,7 +21,7 @@ interface CountriesDisplayProps {
   originalDataCache: Map<string, unknown>;
 }
 
-export function CountriesDisplay({
+export const CountriesDisplay = React.memo(function CountriesDisplay({
   data,
   filters,
   columns,
@@ -33,7 +34,7 @@ export function CountriesDisplay({
       REGION_MAP,
       originalDataCache
     );
-  }, [data, filters, REGION_MAP, originalDataCache]);
+  }, [data, filters, originalDataCache]);
 
   const visibleColumns = useMemo(() => {
     return columns.filter((col) => col.visible);
@@ -128,4 +129,4 @@ export function CountriesDisplay({
       })}
     </div>
   );
-}
+});
