@@ -1,14 +1,14 @@
 # React RSSchool 2025 Project
 
-## Для работы приложения необходим либо локальный файл в папке public, либо данные будут получены по url (вероятно понадобится время)
+## Для работы приложения необходим либо локальный файл в папке public - очень рекомендую, либо данные будут получены по url (вероятно понадобится время)
 
-## For the application to work, either a local file in the public folder is required, or the data will be received via url (this will probably take long time)
+## For the application to work, either a local file in the public folder is required - recomended, or the data will be received via url (this will probably take long time)
 
 ## Performance Analysis
 
 ### Profiling Results
 
-#### Sorting Performance by name
+### Sorting Performance by name
 
 ![Search Ranked Chart](docs/images/profiling/sorting-ranked.png)
 ![Search Flamegraph Chart](docs/images/profiling/sorting-flamegraph.png)
@@ -18,7 +18,7 @@
 - **Interactions**: Changed sort order by name
 - **Components**: CountriesDisplay, DataFilters, CountryList, ColumnSelector
 
-#### Search Performance
+### Search Performance
 
 ![Search Ranked Chart](docs/images/profiling/search-ranked.png)
 ![Search Flamegraph Chart](docs/images/profiling/search-flamegraph.png)
@@ -29,7 +29,7 @@
 - **Components**: CountriesList
 - **Timeline**: 7 commits, slowest: Step 1
 
-#### Choose another year
+### Choose another year
 
 ![Search Ranked Chart](docs/images/profiling/year-ranked.png)
 ![Search Flamegraph Chart](docs/images/profiling/year-flamegraph.png)
@@ -44,7 +44,7 @@
 - **Components**: CountriesDisplay, DataFilters, CountryFilters, ColumnSelector
 - **Timeline**: 2 commits, slowest: Step 2
 
-#### Adding new Columns
+### Adding new Columns
 
 ![Search Ranked Chart](docs/images/profiling/columns-ranked.png)
 ![Search Flamegraph Chart](docs/images/profiling/columns-flamegraph.png)
@@ -61,7 +61,7 @@
 
 ## Results after optimization
 
-#### Sorting Performance by name
+### Sorting Performance by name
 
 ![Search Ranked Chart](docs/images/profiling/sorting-ranked-optimized.png)
 ![Search Flamegraph Chart](docs/images/profiling/sorting-flamegraph-optimized.png)
@@ -71,7 +71,7 @@
 - **Interactions**: Changed sort order by name
 - **Components**: CountriesDisplay, DataFilters, CountryList, ColumnSelector
 
-#### Search Performance
+### Search Performance
 
 ![Search Ranked Chart](docs/images/profiling/search-ranked-optimized.png)
 ![Search Flamegraph Chart](docs/images/profiling/search-flamegraph-optimized.png)
@@ -82,7 +82,7 @@
 - **Components**: DataFilters, CountriesList, CountriesDisplay
 - **Timeline**: 1 commit
 
-#### Choose another year
+### Choose another year
 
 ![Search Ranked Chart](docs/images/profiling/year-ranked-optimized.png)
 ![Search Flamegraph Chart](docs/images/profiling/year-flamegraph-optimized.png)
@@ -92,7 +92,7 @@
 - **Interactions**: Change year
 - **Components**: CountriesDisplay, DataFilters, CountryFilters
 
-#### Adding new Columns
+### Adding new Columns
 
 ![Search Ranked Chart](docs/images/profiling/columns-ranked-optimized.png)
 ![Search Flamegraph Chart](docs/images/profiling/columns-flamegraph-optimized.png)
